@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.3)
-project(Demoniac)
+project(CuckooSniffer)
 
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} --std=c++1z")
@@ -13,7 +13,9 @@ set(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/bin)
 
 LINK_DIRECTORIES(/usr/local/lib)
 
-set(INCLUDES /usr/local/include)
+set(INCLUDES
+        ${PROJECT_SOURCE_DIR}/src
+        /usr/local/include)
 
 include_directories(${INCLUDES})
 
@@ -21,7 +23,12 @@ include_directories(${INCLUDES})
 set (CuckooSniffer_VERSION_MAJOR 0)
 set (CuckooSniffer_VERSION_MINOR 1)
 
+set(SRC_FILES
+        src/main.cpp
+        src/sniffer_manager.cpp
+        src/sniffer/smtp_sniffer.cpp
+        )
 
-add_executable(CuckooSniffer src/cuckoo_sniffer.cpp)
+add_executable(CuckooSniffer ${SRC_FILES})
 
 target_link_libraries(CuckooSniffer tins)
