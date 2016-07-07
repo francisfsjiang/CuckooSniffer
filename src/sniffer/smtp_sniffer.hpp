@@ -3,7 +3,32 @@
 
 #include "sniffer.hpp"
 
-class SMTPSniffer: public Sniffer{
+class SMTPSniffer: public TCPSniffer{
+
+public:
+
+    virtual void on_client_payload(const Tins::TCPIP::Stream&);
+
+    virtual void on_server_payload(const Tins::TCPIP::Stream&);
+
+    virtual void on_connection_close(const Tins::TCPIP::Stream&);
+
+    virtual void on_connection_terminated(
+            Tins::TCPIP::Stream&,
+            Tins::TCPIP::StreamFollower::TerminationReason);
+
+    SMTPSniffer(Tins::TCPIP::Stream&);
+    ~SMTPSniffer();
+
+private:
+
+    enum STATUS{
+        INIT,
+
+    };
+
+    std::string client_data;
+    std::string
 
 };
 

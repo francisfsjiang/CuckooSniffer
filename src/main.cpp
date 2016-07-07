@@ -3,80 +3,40 @@
 #include "tins/tcp_ip/stream_follower.h"
 #include "tins/sniffer.h"
 #include "tins/packet.h"
-#include "tins/ip_address.h"
-#include "tins/ipv6_address.h"
 
 #include "sniffer_manager.hpp"
+#include "sniffer.hpp"
 
-
-std::string client_endpoint(const Tins::TCPIP::Stream& stream) {
-    std::ostringstream output;
-
-    if (stream.is_v6()) {
-        output << stream.client_addr_v6();
-    }
-    else {
-        output << stream.client_addr_v4();
-    }
-    output << ":" << stream.client_port();
-    return output.str();
-}
-
-
-std::string server_endpoint(const Tins::TCPIP::Stream& stream) {
-    std::ostringstream output;
-    if (stream.is_v6()) {
-        output << stream.server_addr_v6();
-    }
-    else {
-        output << stream.server_addr_v4();
-    }
-    output << ":" << stream.server_port();
-    return output.str();
-}
-
-std::string stream_identifier(const Tins::TCPIP::Stream& stream) {
-    std::ostringstream output;
-    output << client_endpoint(stream) << " - " << server_endpoint(stream);
-    return output.str();
-}
-
-
-void on_client_data(Tins::TCPIP::Stream& stream) {
-
-    std::string data(stream.client_payload().begin(), stream.client_payload().end());
-
-    std::cout << client_endpoint(stream) << " >> "
-    << server_endpoint(stream) << ": " << std::endl << data << std::endl;
-}
-
-
-void on_server_data(Tins::TCPIP::Stream& stream) {
-    std::string data(stream.server_payload().begin(), stream.server_payload().end());
-    std::cout << server_endpoint(stream) << " >> "
-    << client_endpoint(stream) << ": " << std::endl << data << std::endl;
-}
-
-
-void on_connection_closed(Tins::TCPIP::Stream& stream) {
-    std::cout << "[+] Connection closed: " << stream_identifier(stream) << std::endl;
-}
 
 
 void on_new_connection(Tins::TCPIP::Stream& stream) {
-    std::string stream_id = stream_identifier(stream);
-    Sniffer* sniffer = SNIFFER_MANAGER.get_sniffer(stream.server_port());
-        stream.client_data_callback(&on_client_data);
-        stream.server_data_callback(&on_server_data);
+    std::string stream_id = TCPSniffer::stream_identifier(stream);
+    TCPSniffer* tcp_sniffer;
+    std::cout << stream.server_port() << std::endl;
+    switch (stream.server_port()) {
+        case 25:                            //SMTP
+            tcp_sniffer = new SMTPSniffer(stream);
+            break;
+        default:
+            tcp_sniffer = nullptr;
+    }
 
-        stream.stream_closed_callback(&on_connection_closed);
+    if (tcp_sniffer == nullptr) {
+        return;
+    }
+
+    SNIFFER_MANAGER.append_sniffer(stream_id, tcp_sniffer);
 
 }
 
 
 void on_connection_terminated(Tins::TCPIP::Stream& stream, Tins::TCPIP::StreamFollower::TerminationReason reason) {
-    std::cout << "[+] Connection terminated " << stream_identifier(stream) << std::endl;
+    std::cout << "[+] Connection terminated " << TCPSniffer::stream_identifier(stream) << std::endl;
+    std::string stream_id = TCPSniffer::stream_identifier(stream);
+    ((TCPSniffer*)SNIFFER_MANAGER.get_sniffer(stream_id)) ->on_connection_terminated(stream, reason);
+    SNIFFER_MANAGER.erase_sniffer(TCPSniffer::stream_identifier(stream));
 }
+
 
 int main(int argc, char* argv[]) {
     try {
@@ -89,7 +49,34 @@ int main(int argc, char* argv[]) {
         follower.stream_termination_callback(on_connection_terminated);
 
         sniffer.sniff_loop([&](Tins::PDU& packet) {
-            follower.process_packet(packet);
+//            std::cout << "get packet" << std::endl;
+            Tins::PDU* layer2_pdu = &packet;
+            Tins::PDU* layer3_pdu = layer2_pdu->inner_pdu();
+            Tins::PDU* layer4_pdu = layer3_pdu->inner_pdu();
+//            std::cout << layer2_pdu->pdu_type() << " " << layer3_pdu->pdu_type() << " " << layer4_pdu->pdu_type() << std::endl;
+            switch (layer2_pdu->pdu_type()) {
+                case Tins::PDU::ETHERNET_II:
+
+                    switch (layer3_pdu->pdu_type()) {
+                        case Tins::PDU::IP:
+
+                            switch (layer4_pdu->pdu_type()) {
+                                case Tins::PDU::TCP:
+                                    follower.process_packet(packet);
+                                    break;
+                                default:
+                                    break;
+                            }
+                            break;
+
+                        default:
+                            break;
+                    }
+                    break;
+
+                default:
+                    break;
+            }
             return true;
         });
     }
