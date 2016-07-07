@@ -10,7 +10,16 @@
 class Sniffer {
 
 public:
-    virtual ~Sniffer(){};
+
+    virtual ~Sniffer() {};
+
+    inline std::string get_id() {
+        return id_;
+    }
+
+protected:
+
+    std::string id_;
 
 };
 
@@ -29,7 +38,6 @@ public:
             Tins::TCPIP::Stream&,
             Tins::TCPIP::StreamFollower::TerminationReason) = 0;
 
-    TCPSniffer(){};
     virtual ~TCPSniffer(){};
 
     inline static std::string client_endpoint(const Tins::TCPIP::Stream& stream) {
@@ -64,7 +72,7 @@ public:
     }
 };
 
-#include "sniffer/smtp_sniffer.hpp"
+#include "smtp/smtp_sniffer.hpp"
 
 
 #endif //CUCKOOSNIFFER_SNIFFER_HPP

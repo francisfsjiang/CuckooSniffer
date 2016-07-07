@@ -7,6 +7,8 @@ class SMTPSniffer: public TCPSniffer{
 
 public:
 
+    SMTPSniffer(const std::string&);
+
     virtual void on_client_payload(const Tins::TCPIP::Stream&);
 
     virtual void on_server_payload(const Tins::TCPIP::Stream&);
@@ -21,14 +23,6 @@ public:
     ~SMTPSniffer();
 
 private:
-
-    enum STATUS{
-        INIT,
-
-    };
-
-    std::string client_data;
-    std::string
 
 };
 

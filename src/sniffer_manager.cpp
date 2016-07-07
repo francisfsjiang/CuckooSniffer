@@ -1,6 +1,6 @@
 #include "sniffer_manager.hpp"
 
-#include "sniffer/smtp_sniffer.hpp"
+#include "smtp/smtp_sniffer.hpp"
 
 SnifferManager& SNIFFER_MANAGER = SnifferManager::get_instance();
 

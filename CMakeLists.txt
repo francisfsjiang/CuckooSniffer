@@ -26,7 +26,11 @@ set (CuckooSniffer_VERSION_MINOR 1)
 set(SRC_FILES
         src/main.cpp
         src/sniffer_manager.cpp
-        src/sniffer/smtp_sniffer.cpp
+        src/smtp/smtp_sniffer.cpp
+        src/smtp/smtp_sniffer_data.cpp
+        src/smtp/smtp_data_processor.cpp
+        src/util/base64.cpp
+        src/util/file.cpp
         )
 
 add_executable(CuckooSniffer ${SRC_FILES})
