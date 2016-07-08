@@ -14,9 +14,9 @@ int SMTPDataProcessor::process(const SnifferData& sniffer_data_arg) {
 
     const SMTPSnifferData& sniffer_data = (const SMTPSnifferData&)sniffer_data_arg;
     const std::string& data = sniffer_data.get_data();
-    std::cout << "***************" << std::endl;
-    std::cout << data << std::endl;
-    std::cout << "***************" << std::endl;
+//    std::cout << "***************" << std::endl;
+//    std::cout << data << std::endl;
+//    std::cout << "***************" << std::endl;
     std::cout << "Start process SMTP" << std::endl;
 
     std::istrstream input_stream(data.c_str());
@@ -38,7 +38,7 @@ int SMTPDataProcessor::process(const SnifferData& sniffer_data_arg) {
     static const std::regex            ua_command("User-Agent: (.+)");
     static const std::regex      boundary_command("boundary=\"([\\w-]+)\"");
     static const std::regex  content_type_command("Content-Type: ([-/\\w]+)");
-    static const std::regex          name_command("name=\"([-\\=\\+\?\\w]+)\"");
+    static const std::regex          name_command("name=\"([-\\=\\+\?\\w\\.]+)\"");
     static const std::regex      encoding_command("Content-Transfer-Encoding: (\\w+)");
 
     bool have_boundary = false;
@@ -99,8 +99,8 @@ int SMTPDataProcessor::process(const SnifferData& sniffer_data_arg) {
                     file_encoding = match(line, encoding_command);
 
                     File* f = new File(
-                            file_mime_type,
                             file_name,
+                            file_mime_type,
                             file_encoding
                     );
 
@@ -119,7 +119,12 @@ int SMTPDataProcessor::process(const SnifferData& sniffer_data_arg) {
                                 f -> add_content(line);
                             }
                         }
+                        std::cout << f ->get_name() << std::endl;
+                        std::cout << f ->get_mime_type() << std::endl;
+                        std::cout << f -> get_encoding() << std::endl;
                         std::cout << f -> get_content() << std::endl;
+
+                        delete f; //TODO delete this
                     }
                     else {
 

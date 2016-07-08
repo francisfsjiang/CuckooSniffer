@@ -42,6 +42,7 @@ int main(int argc, char* argv[]) {
     try {
         Tins::SnifferConfiguration config;
         config.set_filter("tcp port 25 || tcp port 143");
+        config.set_promisc_mode(true);
         Tins::Sniffer sniffer(argv[1], config);
 
         Tins::TCPIP::StreamFollower follower;

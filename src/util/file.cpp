@@ -2,12 +2,12 @@
 
 
 File::File(
-        const std::string& mime_type,
         const std::string& name,
+        const std::string& mime_type,
         const std::string& encoding
 ) :
-        mime_type_(mime_type),
         name_(name),
+        mime_type_(mime_type),
         encoding_(encoding)
 {
 
