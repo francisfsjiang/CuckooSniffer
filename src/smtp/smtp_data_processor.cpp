@@ -15,9 +15,8 @@ int SMTPDataProcessor::process(const SnifferData& sniffer_data_arg) {
     const SMTPSnifferData& sniffer_data = (const SMTPSnifferData&)sniffer_data_arg;
     const std::string& data = sniffer_data.get_data();
 //    std::cout << "***************" << std::endl;
-//    std::cout << data << std::endl;
 //    std::cout << "***************" << std::endl;
-    std::cout << "Start process SMTP" << std::endl;
+//    std::cout << "Start process SMTP" << std::endl;
 
     std::istrstream input_stream(data.c_str());
 
@@ -25,21 +24,25 @@ int SMTPDataProcessor::process(const SnifferData& sniffer_data_arg) {
 
     //based on RFC5321
 
+
     static const std::set<std::string> target_file_type = {
             "application/octet-stream",
+            "application/zip",
+            "application/x-msdownload",
             "text/x-script.phyton"
     };
 
     static const std::regex         hello_command("(?:EHLO|HELO) (\\S+)");
     static const std::regex          auth_command("AUTH PLAIN (\\S+)");
-    static const std::regex          mail_command("(?:MAIL|mail) FROM\\:(\\S+)");
-    static const std::regex          rcpt_command("(?:RCPT|rcpt) TO\\:(\\S+)");
+    static const std::regex          mail_command("(?:MAIL|mail) FROM\\:\\s*(\\S+)");
+    static const std::regex          rcpt_command("(?:RCPT|rcpt) TO\\:\\s*(\\S+)");
     static const std::regex          date_command("Date: (.+)");
     static const std::regex            ua_command("User-Agent: (.+)");
-    static const std::regex      boundary_command("boundary=\"([\\w-]+)\"");
-    static const std::regex  content_type_command("Content-Type: ([-/\\w]+)");
+    static const std::regex      boundary_command("boundary=\"([\\w_=-]+)\"");
+    static const std::regex  content_type_command("Content-[Tt]ype:\\s*([-/\\w]+)");
     static const std::regex          name_command("name=\"([-\\=\\+\?\\w\\.]+)\"");
-    static const std::regex      encoding_command("Content-Transfer-Encoding: (\\w+)");
+    static const std::regex      encoding_command("Content-[Tt]ransfer-[Ee]ncoding: (\\w+)");
+    static const std::regex          quit_command("(QUIT)");
 
     bool have_boundary = false;
     bool file_section = false;
@@ -47,107 +50,115 @@ int SMTPDataProcessor::process(const SnifferData& sniffer_data_arg) {
     std::string file_mime_type, file_name, file_encoding;
 
     try {
+
+        //read email headers
         while (std::getline(input_stream, line)) {
             if ((s = match(line, hello_command)) != "") {
                 record.insert(std::make_pair("domin", s));
             }
-            else if ((s = match(line, auth_command)) != "") {
-                record.insert(std::make_pair("auth_info", base64_decode(s)));
+            if ((s = match(line, auth_command)) != "") {
+                record.insert(std::make_pair("auth_info", s));
             }
-            else if ((s = match(line, mail_command)) != "") {
+            if ((s = match(line, mail_command)) != "") {
                 record.insert(std::make_pair("sender_address", s));
             }
-            else if ((s = match(line, rcpt_command)) != "") {
+            if ((s = match(line, rcpt_command)) != "") {
                 record.insert(std::make_pair("receiver_address", s));
             }
-            else if ((s = match(line, date_command)) != "") {
+            if ((s = match(line, date_command)) != "") {
                 record.insert(std::make_pair("date", s));
             }
-            else if ((s = match(line, ua_command)) != "") {
+            if ((s = match(line, ua_command)) != "") {
                 record.insert(std::make_pair("user_agent", s));
             }
-            else if ((s = match(line, boundary_command)) != "") {
+            if ((s = match(line, boundary_command)) != "") {
                 boundary = s;
                 have_boundary = true;
-                std::cout << "get boundary," << s << std::endl;
+                std::cout << "get boundary  " << s << std::endl;
                 break;
             }
         }
-        std::getline(input_stream, line);
         for(const auto& iter: record) {
             std::cout << iter.first << ":" << iter.second << std::endl;
         }
-        // after find boundary
-        while (true) {
-            if (is_boundary(boundary, line)) {
-                std::getline(input_stream, line);
-                if (line == "\r") std::getline(input_stream, line);
-                if ((s = match(line, content_type_command)) != "") {
-                    if (target_file_type.find(s) != target_file_type.end()) {
-                        file_section = true;
-                    }
-                }
-                else {
-                    file_section = false;
-                }
-                if (file_section) { //read and record file section
 
-                    file_mime_type = s;
-                    std::getline(input_stream, line);
-                    file_name = match(line, name_command);
-                    std::getline(input_stream, line);
-                    file_encoding = match(line, encoding_command);
-
-                    File* f = new File(
-                            file_name,
-                            file_mime_type,
-                            file_encoding
-                    );
-
-                    do {
-                        std::getline(input_stream, line);
-                    } while (line != "\r");
-
-                    if (file_encoding == "base64") {
-                        while (true) {
-//                            std::getline(input_stream, line);
-                            input_stream >> line;
-                            if (is_boundary(boundary, line) || line == "") {
-                                break;
-                            }
-                            else {
-                                f -> add_content(line);
-                            }
-                        }
-                        std::cout << f ->get_name() << std::endl;
-                        std::cout << f ->get_mime_type() << std::endl;
-                        std::cout << f -> get_encoding() << std::endl;
-                        std::cout << f -> get_content() << std::endl;
-
-                        delete f; //TODO delete this
-                    }
-                    else {
-
-                    }
-
-                }
-                else { //skip this non-file section
-                    do {
-                        std::getline(input_stream, line);
-                    } while (!is_boundary(boundary, line));
-                    continue;
-                }
+        //find the first boundary
+        while (std::getline(input_stream, line)) {
+            if (is_boundary(line, boundary)) {
+                break;
             }
-            else { //skip all the non-boundary line
-                std::getline(input_stream, line);
+        }
+        while (true) {
+            //init
+            file_mime_type = file_name = file_encoding = "";
+
+            //now line is boundary
+            while (std::getline(input_stream, line)) {
+                if (line == "" || line == "\r") {
+                    break;
+                }
+                if (file_mime_type == "")
+                    file_mime_type  = match(line, content_type_command);
+                if (file_name == "")
+                    file_name       = match(line, name_command);
+                if (file_encoding == "")
+                    file_encoding   = match(line, encoding_command);
+            }
+
+            if (file_mime_type == "" && file_name == "" && file_encoding == "") {
+                break;
+            }
+
+            if (target_file_type.find(file_mime_type) == target_file_type.end()) {
+                //not in file section, go to next boundary
+                while (std::getline(input_stream, line)) {
+                    if (is_boundary(line, boundary)) {
+                        break;
+                    }
+                }
                 continue;
             }
+
+            File* f = new File(
+                    file_name,
+                    file_mime_type,
+                    file_encoding
+            );
+
+
+            if (file_encoding == "base64") {
+                while (true) {
+//                            std::getline(input_stream, line);
+                    input_stream >> line;
+                    if (is_boundary(line, boundary)) {
+                        char ch;
+                        do {
+                            input_stream.get(ch);
+                        } while (ch == '\n' || ch == '\r');
+                        input_stream.putback(ch);
+                        break;
+                    }
+                    if (line == "" || line == "\r") {
+                        continue;
+                    }
+                    else {
+                        f -> add_content(line);
+                    }
+                }
+                std::cout << f ->get_name() << std::endl;
+                std::cout << f ->get_mime_type() << std::endl;
+                std::cout << f -> get_encoding() << std::endl;
+                std::cout << f -> get_content() << std::endl << std::endl;
+            }
+            else {
+
+            }
+
         }
     }
     catch (std::exception e){
 
     }
-
     return 1;
 
 }

@@ -12,17 +12,12 @@
 void on_new_connection(Tins::TCPIP::Stream& stream) {
     std::string stream_id = TCPSniffer::stream_identifier(stream);
     TCPSniffer* tcp_sniffer;
-    std::cout << stream.server_port() << std::endl;
     switch (stream.server_port()) {
         case 25:                            //SMTP
             tcp_sniffer = new SMTPSniffer(stream);
             break;
         default:
-            tcp_sniffer = nullptr;
-    }
-
-    if (tcp_sniffer == nullptr) {
-        return;
+            return;
     }
 
     SNIFFER_MANAGER.append_sniffer(stream_id, tcp_sniffer);
@@ -50,11 +45,9 @@ int main(int argc, char* argv[]) {
         follower.stream_termination_callback(on_connection_terminated);
 
         sniffer.sniff_loop([&](Tins::PDU& packet) {
-//            std::cout << "get packet" << std::endl;
             Tins::PDU* layer2_pdu = &packet;
             Tins::PDU* layer3_pdu = layer2_pdu->inner_pdu();
             Tins::PDU* layer4_pdu = layer3_pdu->inner_pdu();
-//            std::cout << layer2_pdu->pdu_type() << " " << layer3_pdu->pdu_type() << " " << layer4_pdu->pdu_type() << std::endl;
             switch (layer2_pdu->pdu_type()) {
                 case Tins::PDU::ETHERNET_II:
 

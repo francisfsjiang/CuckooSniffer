@@ -7,5 +7,3 @@
 [**Winpcap(Windows)**](https://www.winpcap.org/)
 
 [**Libtins**](https://libtins.github.io/)
-
-[**Vmime**](http://www.vmime.org)
