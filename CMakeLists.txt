@@ -15,7 +15,7 @@ if (WIN32)
     set(LIBTINS_LIB     ${LIBTINS_ROOT}/lib)
 
     include_directories(${WINPCAP_INCLUDE} ${LIBTINS_INCLUDE})
-    link_libraries(${WINPCAP_LIB} ${LIBTINS_LIB})
+    link_directories(${WINPCAP_LIB} ${LIBTINS_LIB})
 
     set(LIBS tins wpcap)
 
