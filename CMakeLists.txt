@@ -25,7 +25,7 @@ if (WIN32)
     set(INCLUDE_DIRS    ${INCLUDE_DIRS} ${WINPCAP_INCLUDE} ${LIBTINS_INCLUDE})
     set(LIB_DIRS        ${LIB_DIRS} ${WINPCAP_LIB} ${LIBTINS_LIB})
 
-    set(LIBS ${LIBS} wpcap)
+    set(LIBS ${LIBS} wpcap Ws2_32 Iphlpapi)
 
 elseif (UNIX)
 
