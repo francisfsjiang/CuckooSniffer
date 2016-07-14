@@ -1,7 +1,7 @@
 #include <sniffer_manager.hpp>
-#include "smtp_sniffer.hpp"
-#include "smtp_sniffer_data.hpp"
-#include "smtp_data_processor.hpp"
+#include "smtp/smtp_sniffer.hpp"
+#include "smtp/smtp_sniffer_data.hpp"
+#include "smtp/smtp_data_processor.hpp"
 
 
 void SMTPSniffer::on_client_payload(const Tins::TCPIP::Stream& stream) {

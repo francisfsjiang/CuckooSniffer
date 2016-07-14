@@ -4,8 +4,8 @@
 #include <regex>
 #include <set>
 
-#include "smtp_data_processor.hpp"
-#include "smtp_sniffer_data.hpp"
+#include "smtp/smtp_data_processor.hpp"
+#include "smtp/smtp_sniffer_data.hpp"
 #include "util/base64.hpp"
 #include "util/file.hpp"
 

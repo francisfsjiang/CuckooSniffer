@@ -1,7 +1,6 @@
 #ifndef CUCKOOSNIFFER_SNIFFER_MANAGER_HPP
 #define CUCKOOSNIFFER_SNIFFER_MANAGER_HPP
 
-#include <i386/types.h>
 #include <tins/pdu.h>
 #include "sniffer.hpp"
 

@@ -1,4 +1,4 @@
-#include "smtp_sniffer_data.hpp"
+#include "smtp/smtp_sniffer_data.hpp"
 
 
 SMTPSnifferData::SMTPSnifferData(SnifferData::DataType data_type, std::string&& data) {
