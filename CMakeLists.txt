@@ -49,6 +49,7 @@ set(SRC_FILES
         src/util/base64.cpp
         src/util/file.cpp
         src/util/function.cpp
+        src/util/mail_process.cpp
         src/smtp/smtp_sniffer.cpp
         src/smtp/smtp_sniffer_data.cpp
         src/smtp/smtp_data_processor.cpp
@@ -57,7 +58,7 @@ set(SRC_FILES
         src/imap/imap_data_processor.cpp
         )
 
-add_executable(CuckooSniffer src/main.cpp ${SRC_FILES} src/util/function.cpp src/util/function.hpp)
+add_executable(CuckooSniffer src/main.cpp ${SRC_FILES})
 
 target_link_libraries(CuckooSniffer ${LIBS})
 

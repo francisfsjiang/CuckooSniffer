@@ -29,7 +29,7 @@ private:
         PART
     };
 
-    Status status_;
+    Status status_ = Status::NONE;
 
     IMAPSnifferData* sniffer_data_ = nullptr;
 

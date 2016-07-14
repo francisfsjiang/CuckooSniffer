@@ -14,12 +14,6 @@ public:
 
     virtual ~SMTPDataProcessor();
 
-private:
-
-    std::string match(const std::string&, const std::regex&);
-
-    bool is_boundary(const std::string&, const std::string&);
-
 };
 
 

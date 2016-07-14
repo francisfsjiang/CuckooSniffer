@@ -7,6 +7,13 @@
 
 void IMAPSniffer::on_client_payload(const Tins::TCPIP::Stream& stream) {
     if (status_ != Status::NONE) {
+
+        //TODO make this in thread
+        IMAPDataProcessor processor;
+        processor.process(*sniffer_data_);
+        delete sniffer_data_;
+
+
         status_ = Status::NONE;
         sniffer_data_ = nullptr;
     }
@@ -44,22 +51,25 @@ void IMAPSniffer::on_client_payload(const Tins::TCPIP::Stream& stream) {
         const auto& vec = split_str(caught_str, ",");
         std::cout << vec[0] << " - " << vec[1] << std::endl;
 
-        status_ = Status::PART;
-        sniffer_data_ = new IMAPSnifferData();
+        // status_ = Status::PART;
+        // sniffer_data_ = new IMAPSnifferData();
     }
 }
 
 void IMAPSniffer::on_server_payload(const Tins::TCPIP::Stream& stream) {
     std::string data = std::string(
-            stream.client_payload().begin(),
-            stream.client_payload().end()
+            stream.server_payload().begin(),
+            stream.server_payload().end()
     );
     switch (status_) {
         case Status::NONE:
             break;
         case Status::MULTI:
+//        std::cout << "server payload " << std::endl << data << std::endl;
+            sniffer_data_ -> append(data);
             break;
         case Status::PART:
+            sniffer_data_ -> append(data);
             break;
         default:
             return;
@@ -69,17 +79,6 @@ void IMAPSniffer::on_server_payload(const Tins::TCPIP::Stream& stream) {
 void IMAPSniffer::on_connection_close(const Tins::TCPIP::Stream& stream) {
     std::cout << "Connection Close" << std::endl;
 
-//    //TODO make this process in thread
-//    IMAPSnifferData* imap_data = new IMAPSnifferData(
-//            SnifferData::DataType::IMAP,
-//            std::string(stream.client_payload().begin(), stream.client_payload().end())
-//    );
-//
-//    IMAPDataProcessor processor;
-//    processor.process(*((SnifferData*)imap_data));
-//
-//
-//    delete imap_data;
     SNIFFER_MANAGER.erase_sniffer(id_);
 }
 
