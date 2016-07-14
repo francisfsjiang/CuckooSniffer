@@ -11,6 +11,9 @@ public:
         IMAP
     };
 
+    SnifferData() = delete;
+
+
     virtual ~SnifferData() {};
 
     inline virtual DataType get_data_type() {
@@ -21,6 +24,7 @@ protected:
 
     DataType data_type_;
 
+    SnifferData(DataType data_type) : data_type_(data_type) {}
 
 };
 

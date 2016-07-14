@@ -13,7 +13,7 @@ public:
 
     virtual ~Sniffer() {};
 
-    inline std::string get_id() {
+    inline const std::string& get_id() {
         return id_;
     }
 
@@ -37,6 +37,12 @@ public:
     virtual void on_connection_terminated(
             Tins::TCPIP::Stream&,
             Tins::TCPIP::StreamFollower::TerminationReason) = 0;
+
+    TCPSniffer() = delete;
+
+    inline TCPSniffer(Tins::TCPIP::Stream& stream) {
+        id_ = stream_identifier(stream);
+    }
 
     virtual ~TCPSniffer(){};
 
@@ -71,8 +77,5 @@ public:
         return output.str();
     }
 };
-
-#include "smtp/smtp_sniffer.hpp"
-
 
 #endif //CUCKOOSNIFFER_SNIFFER_HPP

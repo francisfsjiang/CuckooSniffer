@@ -4,19 +4,19 @@
 #include <regex>
 #include <set>
 
-#include "smtp/smtp_data_processor.hpp"
-#include "smtp/smtp_sniffer_data.hpp"
+#include "imap/imap_data_processor.hpp"
+#include "imap/imap_sniffer_data.hpp"
 #include "util/base64.hpp"
 #include "util/file.hpp"
 
 
-int SMTPDataProcessor::process(const SnifferData& sniffer_data_arg) {
+int IMAPDataProcessor::process(const SnifferData& sniffer_data_arg) {
 
-    const SMTPSnifferData& sniffer_data = (const SMTPSnifferData&)sniffer_data_arg;
+    const IMAPSnifferData& sniffer_data = (const IMAPSnifferData&)sniffer_data_arg;
     const std::string& data = sniffer_data.get_data();
 //    std::cout << "***************" << std::endl;
 //    std::cout << "***************" << std::endl;
-//    std::cout << "Start process SMTP" << std::endl;
+//    std::cout << "Start process IMAP" << std::endl;
 
     std::istrstream input_stream(data.c_str());
 
@@ -163,7 +163,7 @@ int SMTPDataProcessor::process(const SnifferData& sniffer_data_arg) {
 
 }
 
-std::string SMTPDataProcessor::match(const std::string& s, const std::regex& re) {
+std::string IMAPDataProcessor::match(const std::string& s, const std::regex& re) {
     std::smatch match;
     if (std::regex_search(s, match, re) && match.size() > 1) {
         return match.str(1);
@@ -173,9 +173,9 @@ std::string SMTPDataProcessor::match(const std::string& s, const std::regex& re)
     }
 }
 
-bool SMTPDataProcessor::is_boundary(const std::string& boundary, const std::string& line) {
+bool IMAPDataProcessor::is_boundary(const std::string& boundary, const std::string& line) {
     return line.find(boundary) != std::string::npos;
 }
 
 
-SMTPDataProcessor::~SMTPDataProcessor() { }
+IMAPDataProcessor::~IMAPDataProcessor() { }

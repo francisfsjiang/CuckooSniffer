@@ -15,7 +15,6 @@ void SMTPSniffer::on_connection_close(const Tins::TCPIP::Stream& stream) {
 
     //TODO make this process in thread
     SMTPSnifferData* smtp_data = new SMTPSnifferData(
-            SnifferData::DataType::SMTP,
             std::string(stream.client_payload().begin(), stream.client_payload().end())
     );
 
@@ -34,25 +33,22 @@ void SMTPSniffer::on_connection_terminated(
     std::cout << "[+] On Connection terminated " << id_ << std::endl;
 }
 
-SMTPSniffer::SMTPSniffer(Tins::TCPIP::Stream& stream) {
+SMTPSniffer::SMTPSniffer(Tins::TCPIP::Stream& stream): TCPSniffer(stream) {
+
     stream.ignore_server_data();
     stream.auto_cleanup_client_data(false);
     stream.client_data_callback(
             [this](const Tins::TCPIP::Stream& tcp_stream) {
-                this->on_client_payload(tcp_stream);
+                this -> on_client_payload(tcp_stream);
             }
     );
 
     stream.stream_closed_callback(
             [this](const Tins::TCPIP::Stream& tcp_stream) {
-                this->on_connection_close(tcp_stream);
+                this -> on_connection_close(tcp_stream);
             }
     );
 
-}
-
-SMTPSniffer::SMTPSniffer(const std::string& id) {
-    id_ = id;
 }
 
 SMTPSniffer::~SMTPSniffer() {

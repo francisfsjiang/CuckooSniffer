@@ -6,8 +6,6 @@
 
 class Sniffer;
 
-class SMTPSniffer;
-
 class SnifferManager{
 
 public:

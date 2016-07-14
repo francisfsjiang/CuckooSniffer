@@ -1,18 +1,18 @@
-#ifndef CUCKOOSNIFFER_SMTP_DATA_PROCESSOR_HPP
-#define CUCKOOSNIFFER_SMTP_DATA_PROCESSOR_HPP
+#ifndef CUCKOOSNIFFER_IMAP_DATA_PROCESSOR_HPP
+#define CUCKOOSNIFFER_IMAP_DATA_PROCESSOR_HPP
 
 #include <regex>
 
 #include "data_processor.hpp"
 #include "sniffer_data.hpp"
 
-class SMTPDataProcessor: public DataProcessor {
+class IMAPDataProcessor: public DataProcessor{
 
 public:
 
     virtual int process(const SnifferData&);
 
-    virtual ~SMTPDataProcessor();
+    virtual ~IMAPDataProcessor();
 
 private:
 
@@ -23,4 +23,4 @@ private:
 };
 
 
-#endif //CUCKOOSNIFFER_SMTP_DATA_PROCESSOR_HPP
+#endif //CUCKOOSNIFFER_IMAP_DATA_PROCESSOR_HPP

@@ -45,15 +45,22 @@ link_directories(${LIB_DIRS})
 set(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/bin)
 
 set(SRC_FILES
-        src/main.cpp
         src/sniffer_manager.cpp
+        src/util/base64.cpp
+        src/util/file.cpp
+        src/util/function.cpp
         src/smtp/smtp_sniffer.cpp
         src/smtp/smtp_sniffer_data.cpp
         src/smtp/smtp_data_processor.cpp
-        src/util/base64.cpp
-        src/util/file.cpp
+        src/imap/imap_sniffer.cpp
+        src/imap/imap_sniffer_data.cpp
+        src/imap/imap_data_processor.cpp
         )
 
-add_executable(CuckooSniffer ${SRC_FILES})
+add_executable(CuckooSniffer src/main.cpp ${SRC_FILES} src/util/function.cpp src/util/function.hpp)
 
 target_link_libraries(CuckooSniffer ${LIBS})
+
+add_executable(Test src/test.cpp ${SRC_FILES})
+
+target_link_libraries(Test ${LIBS})

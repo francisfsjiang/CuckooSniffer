@@ -1,29 +1,40 @@
-#include <strstream>
-#include <iostream>
-#include <map>
 #include <regex>
+#include <iostream>
+#include <string>
+#include <strstream>
+#include <map>
+#include <fstream>
 #include <set>
 
-#include "smtp/smtp_data_processor.hpp"
-#include "smtp/smtp_sniffer_data.hpp"
+#include "util/function.hpp"
 #include "util/base64.hpp"
 #include "util/file.hpp"
 
+std::string match(const std::string& s, const std::regex& re) {
+    std::smatch match;
+    if (std::regex_search(s, match, re) && match.size() > 1) {
+        return match.str(1);
+    }
+    else {
+        return "";
+    }
+}
 
-int SMTPDataProcessor::process(const SnifferData& sniffer_data_arg) {
+bool is_boundary(const std::string& line, const std::string& boundary) {
+    return line.find(boundary) != std::string::npos;
+}
 
-    const SMTPSnifferData& sniffer_data = (const SMTPSnifferData&)sniffer_data_arg;
-    const std::string& data = sniffer_data.get_data();
-//    std::cout << "***************" << std::endl;
-//    std::cout << "***************" << std::endl;
-//    std::cout << "Start process SMTP" << std::endl;
+void test() {
+    std::ifstream ifs("tb_smtp.log");
+    std::string data( (std::istreambuf_iterator<char>(ifs) ),
+                      (std::istreambuf_iterator<char>()    ) );
+
 
     std::istrstream input_stream(data.c_str());
 
     std::multimap<std::string, std::string> record;
 
     //based on RFC5321
-
 
     static const std::set<std::string> target_file_type = {
             "application/octet-stream",
@@ -38,7 +49,7 @@ int SMTPDataProcessor::process(const SnifferData& sniffer_data_arg) {
     static const std::regex          rcpt_command("(?:RCPT|rcpt) TO\\:\\s*(\\S+)");
     static const std::regex          date_command("Date: (.+)");
     static const std::regex            ua_command("User-Agent: (.+)");
-    static const std::regex      boundary_command("boundary=\"([\\w_=-\\.]+)\"");
+    static const std::regex      boundary_command("boundary=\"([\\w_=-]+)\"");
     static const std::regex  content_type_command("Content-[Tt]ype:\\s*([-/\\w]+)");
     static const std::regex          name_command("name=\"([-\\=\\+\?\\w\\.]+)\"");
     static const std::regex      encoding_command("Content-[Tt]ransfer-[Ee]ncoding: (\\w+)");
@@ -159,23 +170,72 @@ int SMTPDataProcessor::process(const SnifferData& sniffer_data_arg) {
     catch (std::exception e){
 
     }
-    return 1;
+
+
 
 }
 
-std::string SMTPDataProcessor::match(const std::string& s, const std::regex& re) {
+void test2() {
+
+    std::string subject1 = "2333 UID fetch 1319733343,1319733344:1319733346,13242412 (UID RFC822.SIZE BODY.PEEK[])";
+    std::string subject2 = "2333 UID fetch 13242412 (UID RFC822.SIZE BODY.PEEK[]<123,423>)";
+    static const std::regex  multi_email("\\d* UID fetch ([\\d,:]*) \\(UID RFC822.SIZE BODY.PEEK\\[\\]\\)");
+//    static const std::regex  part_email("\\d* UID fetch [\\d,:]* \\(UID RFC822.SIZE BODY.PEEK\\[\\]");
+    static const std::regex    part_email("\\d* UID fetch [\\d,:]* \\(UID RFC822.SIZE BODY.PEEK\\[\\]\\<([\\d,]*)\\>\\)");
+//    static const std::regex  determin_command("\\d* UID fetch ([\\d,:]*) \\(UID RFC822.SIZE BODY.PEEK\\[\\]\\)");
+    std::string result;
     std::smatch match;
-    if (std::regex_search(s, match, re) && match.size() > 1) {
-        return match.str(1);
+
+    std::string subject = subject2;
+    std::string target_str;
+    if (std::regex_search(subject, match, multi_email) && match.size() > 1) {
+        std::cout << match.str(1) << std::endl;
+        target_str = match.str(1);
+        for (const auto& iter: split_str(target_str, ",")) {
+            if (iter.find(":") != std::string::npos) {
+                const auto& vec = split_str(iter, ":");
+                std::cout << vec[0] << "   " << vec[1] << std::endl;
+            }
+            std::cout << iter << std::endl;
+        }
     }
-    else {
-        return "";
+    else if (std::regex_search(subject, match, part_email) && match.size() > 1 ) {
+        std::cout << match.size() << std::endl;
+        std::cout << match.str(1) << std::endl;
+        target_str = match.str(1);
+        for (const auto& iter: split_str(target_str, ",")) {
+            std::cout << iter << std::endl;
+        }
     }
 }
 
-bool SMTPDataProcessor::is_boundary(const std::string& boundary, const std::string& line) {
-    return line.find(boundary) != std::string::npos;
+void test3() {
+
+    std::ifstream ifs("imap_multi.log");
+    std::string subject( (std::istreambuf_iterator<char>(ifs) ),
+                      (std::istreambuf_iterator<char>()    ) );
+    // std::string subject = "\r\n)\r\n* 2 FETCH (UID 1319733344 RFC822.SIZE 25447 BODY[] {25447}\r\n\r\ndawdawdawda\r\n)\r\n";
+//    std::string subject = "abbbbbbba\r\n)\r\ndwadwadwad)\r\n";
+    std::smatch match;
+
+//    static const std::regex departer("a([\\S^\\s]*)");
+    static const std::regex departer("\\* \\d* FETCH \\(UID \\d* RFC822.SIZE \\d* BODY\\[\\] \\{\\d*\\}([\\s^\\S]*?)\n\\)\r\n)");
+
+    if (std::regex_search(subject, match, departer)) {
+        std::cout << match.size() << std::endl;;
+        std::cout << "get " << match.str(1) << std::endl;
+    }
 }
 
+int main()
+{
 
-SMTPDataProcessor::~SMTPDataProcessor() { }
+//    test();
+//    test2();
+
+    test3();
+
+
+    return 0;
+
+}

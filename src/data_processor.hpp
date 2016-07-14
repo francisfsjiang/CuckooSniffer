@@ -7,7 +7,7 @@ class DataProcessor {
 
 public:
 
-    virtual int process(SnifferData*) = 0;
+    virtual int process(const SnifferData&) = 0;
 
     virtual ~DataProcessor() {};
 

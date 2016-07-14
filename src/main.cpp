@@ -5,23 +5,22 @@
 #include "tins/sniffer.h"
 #include "tins/packet.h"
 
-#include "sniffer_manager.hpp"
-#include "sniffer.hpp"
-
-
+#include "cuckoo_sniffer.hpp"
 
 void on_new_connection(Tins::TCPIP::Stream& stream) {
-    std::string stream_id = TCPSniffer::stream_identifier(stream);
     TCPSniffer* tcp_sniffer;
     switch (stream.server_port()) {
         case 25:                            //SMTP
             tcp_sniffer = new SMTPSniffer(stream);
             break;
+        case 143:                           //IMAP
+            tcp_sniffer = new IMAPSniffer(stream);
+            break;
         default:
             return;
     }
 
-    SNIFFER_MANAGER.append_sniffer(stream_id, tcp_sniffer);
+    SNIFFER_MANAGER.append_sniffer(tcp_sniffer -> get_id(), tcp_sniffer);
 
 }
 

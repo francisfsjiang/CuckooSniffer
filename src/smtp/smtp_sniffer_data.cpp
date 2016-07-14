@@ -1,8 +1,10 @@
 #include "smtp/smtp_sniffer_data.hpp"
 
 
-SMTPSnifferData::SMTPSnifferData(SnifferData::DataType data_type, std::string&& data) {
-    data_type_ = data_type;
+SMTPSnifferData::SMTPSnifferData(
+    std::string&& data) :
+    SnifferData(DataType::SMTP)
+ {
     data_ = std::move(data);
 }
 

@@ -9,7 +9,7 @@ class SMTPSnifferData: public SnifferData {
 
 public:
 
-    SMTPSnifferData(SnifferData::DataType, std::string&&);
+    SMTPSnifferData(std::string&&);
 
     const std::string& get_data() const;
 
