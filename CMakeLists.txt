@@ -14,8 +14,10 @@ if (WIN32)
     set(LIBTINS_INCLUDE ${LIBTINS_ROOT}/include)
     set(LIBTINS_LIB     ${LIBTINS_ROOT}/lib)
 
-    include_directories(WINPCAP_INCLUDE LIBTINS_INCLUDE)
-    link_libraries(WINPCAP_LIB LIBTINS_LIB)
+    include_directories(${WINPCAP_INCLUDE} ${LIBTINS_INCLUDE})
+    link_libraries(${WINPCAP_LIB} ${LIBTINS_LIB})
+
+    set(LIBS tins wpcap)
 
 elseif (UNIX)
 
@@ -26,14 +28,14 @@ elseif (UNIX)
     include_directories(${INCLUDES})
     link_directories(/usr/local/lib)
 
+    set(LIBS tins pcap)
+
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} --std=c++1z")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pedantic")
 
 endif()
 
 set(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/bin)
-
-set(LIBS tins pcap)
 
 set(SRC_FILES
         src/main.cpp
