@@ -157,7 +157,7 @@ std::vector<File*> mail_process(const std::string& data){
                 std::cout << f -> get_name() << std::endl;
                 std::cout << f -> get_mime_type() << std::endl;
                 std::cout << f -> get_encoding() << std::endl;
-                std::cout << "size: " << f -> get_content().size() << std::endl;
+                std::cout << "size: " << f -> get_content().size() << std::endl << std::endl;
                 file_vec.push_back(f);
             }
             else {

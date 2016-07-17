@@ -34,6 +34,10 @@ void on_connection_terminated(Tins::TCPIP::Stream& stream, Tins::TCPIP::StreamFo
 
 
 int main(int argc, char* argv[]) {
+    if (argc < 2) {
+        std::cout << "Usage: CuckooSniffer <device name>" << std::endl;
+        return 0;
+    }
     try {
         Tins::SnifferConfiguration config;
         config.set_filter("tcp port 25 || tcp port 143");
