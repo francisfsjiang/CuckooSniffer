@@ -54,21 +54,19 @@ void test2() {
 
 void test3() {
 
-    std::ifstream ifs("imap_multi.log");
-    std::string subject( (std::istreambuf_iterator<char>(ifs) ),
-                      (std::istreambuf_iterator<char>()    ) );
+//    std::ifstream ifs("imap_multi.log");
+//    std::string subject( (std::istreambuf_iterator<char>(ifs) ),
+//                      (std::istreambuf_iterator<char>()    ) );
     // std::string subject = "\r\n)\r\n* 2 FETCH (UID 1319733344 RFC822.SIZE 25447 BODY[] {25447}\r\n\r\ndawdawdawda\r\n)\r\n";
-//    std::string subject = "abbbbbbba\r\n)\r\ndwadwadwad)\r\n";
+    std::string subject = "\r\nC9 UID FETCH 131923 (UID BODY.PEEK[])\r\n";
     std::smatch match;
 
 //    static const std::regex departer("a([\\S^\\s]*)");
     static const std::regex departer("\\* \\d* FETCH \\(UID \\d* RFC822.SIZE \\d* BODY\\[\\] \\{\\d*\\}([\\s^\\S]*?)\n\\)\r\n)");
+    static const std::regex  multi_email("[\\w]* UID (?:fetch)|(?:FETCH) ([\\d,:]*) \\(UID (?:RFC822.SIZE )?BODY.PEEK\\[\\]\\)");
 
-    while(regex_search(subject, match, departer))
-    {
-        // std::cout << "get \n\n" << match.str(1) << std::endl;
-        mail_process(match.str(1));
-        subject = match.suffix();
+    if(regex_search(subject, match, multi_email)) {
+        std::cout << "get \n\n" << match.str(1) << std::endl;
     }
 }
 

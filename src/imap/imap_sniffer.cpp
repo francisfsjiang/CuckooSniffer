@@ -18,8 +18,8 @@ void IMAPSniffer::on_client_payload(const Tins::TCPIP::Stream& stream) {
         sniffer_data_ = nullptr;
     }
 
-    static const std::regex  multi_email("[\\w]* UID fetch ([\\d,:]*) \\(UID (?:RFC822.SIZE)? BODY.PEEK\\[\\]\\)");
-    static const std::regex    part_email("[\\w]* UID fetch ([\\d,:]*) \\(UID (?:RFC822.SIZE)? BODY.PEEK\\[\\]\\<([\\d,]*)\\>\\)");
+    static const std::regex  multi_email("[\\w]* UID (?:fetch)|(?:FETCH) ([\\d,:]*) \\(UID (?:RFC822.SIZE )?BODY.PEEK\\[\\]\\)");
+    static const std::regex    part_email("[\\w]* UID (?:fetch)|(?:FETCH) ([\\d,:]*) \\(UID (?:RFC822.SIZE )?BODY.PEEK\\[\\]\\<([\\d,]*)\\>\\)");
 
     std::string result;
     std::smatch match;
