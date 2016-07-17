@@ -9,6 +9,7 @@ bin/
 .vs/
 *.vcxproj
 CuckooSniffer.dir/
+Test.dir/
 *.sln
 Win32/
 *.filters
