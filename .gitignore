@@ -5,6 +5,18 @@ Makefile
 cmake_install.cmake
 bin/
 
+# VS
+.vs/
+*.vcxproj
+CuckooSniffer.dir/
+*.sln
+Win32/
+*.filters
+*.user
+*.VC.db
+*.opendb
+apphelp.pdb/
+
 # Compiled Object files
 *.slo
 *.lo
