@@ -13,16 +13,24 @@ int cs::imap::DataProcessor::process(const cs::base::SnifferData& sniffer_data_a
     std::string data = sniffer_data.get_data();
 
     std::cout << "stat process imap data" << std::endl;
-//    std::cout << data << std::endl << std::endl;
+    //std::cout << data << std::endl << std::endl;
 
-    static const std::regex departer("\\* \\d* FETCH \\(UID \\d* RFC822.SIZE \\d* BODY\\[\\] \\{\\d*\\}([\\s^\\S]*?)\n\\)\r\n)");
+    static const std::regex departer("\\* \\d* FETCH \\(UID \\d* (?:RFC822.SIZE \\d* )?BODY\\[\\] \\{\\d*\\}([\\s^\\S]*?)\n\\)\r\n");
     std::smatch match;
-    while(regex_search(data, match, departer))
-    {
-        mail_process(match.str(1));
-        data = match.suffix();
-    }
+	try
+	{
+		while (regex_search(data, match, departer))
+		{
+			mail_process(match.str(1));
+			data = match.suffix();
+		}
 
+	}
+	catch (const std::exception&)
+	{
+		std::cerr << "Regex error" << std::endl;
+	}
+    
     return 1;
 
 }

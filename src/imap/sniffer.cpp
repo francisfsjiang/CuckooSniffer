@@ -10,7 +10,7 @@ void Sniffer::on_client_payload(const Tins::TCPIP::Stream &stream) {
     if (status_ != Status::NONE) {
 
         //TODO make this in thread
-        cs::imap::DataProcessor processor;
+        DataProcessor processor;
         processor.process(*sniffer_data_);
         delete sniffer_data_;
 
@@ -32,31 +32,39 @@ void Sniffer::on_client_payload(const Tins::TCPIP::Stream &stream) {
             stream.client_payload().begin(),
             stream.client_payload().end()
     );
+	try
+	{
+		
+		if (std::regex_search(command, match, multi_email) && match.size() > 1) {
+			caught_str = match.str(1);
+			std::cout << "get multi email " << caught_str << std::endl;
+			for (const auto& iter : split_str(caught_str, ",")) {
+				if (iter.find(":") != std::string::npos) {
+					const auto& vec = split_str(iter, ":");
+					std::cout << vec[0] << "   " << vec[1] << std::endl;
+				}
+				else {
+					std::cout << iter << std::endl;
+				}
+			}
+			status_ = Status::MULTI;
+			sniffer_data_ = new SnifferData();
+		}
+		else if (std::regex_search(command, match, part_email) && match.size() > 1) {
+			caught_str = match.str(1);
+			std::cout << "get part email " << caught_str << std::endl;
+			const auto& vec = split_str(caught_str, ",");
+			std::cout << vec[0] << " - " << vec[1] << std::endl;
 
-    if (std::regex_search(command, match, multi_email) && match.size() > 1) {
-        caught_str = match.str(1);
-        std::cout << "get multi email " << caught_str << std::endl;
-        for (const auto &iter: split_str(caught_str, ",")) {
-            if (iter.find(":") != std::string::npos) {
-                const auto &vec = split_str(iter, ":");
-                std::cout << vec[0] << "   " << vec[1] << std::endl;
-            }
-            else {
-                std::cout << iter << std::endl;
-            }
-        }
-        status_ = Status::MULTI;
-        sniffer_data_ = new SnifferData();
-    }
-    else if (std::regex_search(command, match, part_email) && match.size() > 1) {
-        caught_str = match.str(1);
-        std::cout << "get part email " << caught_str << std::endl;
-        const auto &vec = split_str(caught_str, ",");
-        std::cout << vec[0] << " - " << vec[1] << std::endl;
-
-        // status_ = Status::PART;
-        // sniffer_data_ = new IMAPSnifferData();
-    }
+			// status_ = Status::PART;
+			// sniffer_data_ = new IMAPSnifferData();
+		}
+	}
+	catch (const std::exception&)
+	{
+		std::cerr << "Regex error" << std::endl;
+	}
+    
 }
 
 void Sniffer::on_server_payload(const Tins::TCPIP::Stream &stream) {
