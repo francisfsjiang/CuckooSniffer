@@ -1,8 +1,7 @@
-#ifndef CUCKOOSNIFFER_SNIFFER_HPP
-#define CUCKOOSNIFFER_SNIFFER_HPP
+#ifndef CUCKOOSNIFFER_BASE_SNIFFER_HPP
+#define CUCKOOSNIFFER_BASE_SNIFFER_HPP
 
 #include "tins/tcp_ip/stream_follower.h"
-
 #include "tins/ip_address.h"
 #include "tins/ipv6_address.h"
 
@@ -12,11 +11,9 @@ class Sniffer {
 
 public:
 
-    virtual ~Sniffer() {};
+    virtual ~Sniffer();
 
-    inline const std::string &get_id() {
-        return id_;
-    }
+    const std::string &get_id();
 
 protected:
 
@@ -41,43 +38,16 @@ public:
 
     TCPSniffer() = delete;
 
-    inline TCPSniffer(Tins::TCPIP::Stream &stream) {
-        id_ = stream_identifier(stream);
-    }
+    TCPSniffer(Tins::TCPIP::Stream&);
 
     virtual ~TCPSniffer() {};
 
-    inline static std::string client_endpoint(const Tins::TCPIP::Stream &stream) {
-        std::ostringstream output;
-        if (stream.is_v6()) {
-            output << stream.client_addr_v6();
-        }
-        else {
-            output << stream.client_addr_v4();
-        }
-        output << ":" << stream.client_port();
-        return output.str();
-    }
+    static std::string client_endpoint(const Tins::TCPIP::Stream &stream);
 
+    static std::string server_endpoint(const Tins::TCPIP::Stream &stream);
 
-    inline static std::string server_endpoint(const Tins::TCPIP::Stream &stream) {
-        std::ostringstream output;
-        if (stream.is_v6()) {
-            output << stream.server_addr_v6();
-        }
-        else {
-            output << stream.server_addr_v4();
-        }
-        output << ":" << stream.server_port();
-        return output.str();
-    }
-
-    inline static std::string stream_identifier(const Tins::TCPIP::Stream &stream) {
-        std::ostringstream output;
-        output << client_endpoint(stream) << "-" << server_endpoint(stream);
-        return output.str();
-    }
+    static std::string stream_identifier(const Tins::TCPIP::Stream &stream);
 };
 
 }
-#endif //CUCKOOSNIFFER_SNIFFER_HPP
+#endif //CUCKOOSNIFFER_BASE_SNIFFER_HPP

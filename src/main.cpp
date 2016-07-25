@@ -16,8 +16,8 @@ void on_new_connection(Tins::TCPIP::Stream& stream) {
         case 143:                           //IMAP
             tcp_sniffer = new cs::imap::Sniffer(stream);
             break;
-//        case 21:
-//            tcp_sniffer = new FTPSniffer(stream);
+        case 21:
+            tcp_sniffer = new cs::ftp::Sniffer(stream);
         default:
             stream.auto_cleanup_payloads(true);
             return;

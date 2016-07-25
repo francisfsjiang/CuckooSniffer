@@ -1,8 +1,9 @@
 #include "sniffer_manager.hpp"
+#include "base/sniffer.hpp"
 
 namespace cs {
 
-SnifferManager &SNIFFER_MANAGER = SnifferManager::get_instance();
+SnifferManager& SNIFFER_MANAGER = SnifferManager::get_instance();
 
 SnifferManager SnifferManager::instance;
 
@@ -16,14 +17,23 @@ void SnifferManager::append_sniffer(std::string sniffer_id, cs::base::Sniffer *s
 }
 
 cs::base::Sniffer *SnifferManager::get_sniffer(std::string sniffer_id) {
-    return sniffer_container[sniffer_id];
+    auto search = sniffer_container.find(sniffer_id);
+    if (search != sniffer_container.end()) {
+        return search -> second;
+    }
+    else {
+        return nullptr;
+    }
 }
 
 void SnifferManager::erase_sniffer(std::string sniffer_id) {
-    cs::base::Sniffer *sniffer = sniffer_container[sniffer_id];
-    delete sniffer;
-    sniffer_container.erase(sniffer_id);
-    std::cout << "erase sniffer " << sniffer_id << ", total: " << sniffer_container.size() << std::endl;
+    auto search = sniffer_container.find(sniffer_id);
+    if (search != sniffer_container.end()) {
+        cs::base::Sniffer* sniffer_ptr = search -> second;
+        sniffer_container.erase(sniffer_id);
+        delete sniffer_ptr;
+        std::cout << "erase sniffer " << sniffer_id << ", total: " << sniffer_container.size() << std::endl;
+    }
 }
 
 SnifferManager::SnifferManager() {

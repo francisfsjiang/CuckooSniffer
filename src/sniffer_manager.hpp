@@ -5,8 +5,6 @@
 
 namespace cs {
 
-class Sniffer;
-
 class SnifferManager {
 
 public:
@@ -28,7 +26,7 @@ private:
 
 };
 
-extern SnifferManager &SNIFFER_MANAGER;
+extern SnifferManager& SNIFFER_MANAGER;
 
 }
 

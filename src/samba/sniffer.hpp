@@ -21,7 +21,7 @@ public:
 
     Sniffer(Tins::TCPIP::Stream &);
 
-    ~Sniffer();
+    virtual ~Sniffer();
 
 private:
 

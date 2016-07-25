@@ -6,6 +6,6 @@
 
 #include "smtp/sniffer.hpp"
 #include "imap/sniffer.hpp"
-//#include "ftp/ftp_sniffer.hpp"
+#include "ftp/sniffer.hpp"
 
 #endif //CUCKOOSNIFFER_CUCKOO_SNIFFER_HPP

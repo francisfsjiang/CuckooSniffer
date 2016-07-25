@@ -66,7 +66,7 @@ set(SRC_FILES
         src/samba/sniffer.cpp
         src/samba/sniffer_data.cpp
         src/samba/data_processor.cpp
-        )
+        src/base/sniffer.cpp)
 
 add_library(libcuckoo_sniffer STATIC ${SRC_FILES})
 

@@ -24,7 +24,7 @@ void Sniffer::on_connection_close(const Tins::TCPIP::Stream &stream) {
 
 
     delete smtp_data;
-    SNIFFER_MANAGER.erase_sniffer(id_);
+    delete this;
 }
 
 void Sniffer::on_connection_terminated(
@@ -32,6 +32,7 @@ void Sniffer::on_connection_terminated(
         Tins::TCPIP::StreamFollower::TerminationReason) {
 
     std::cout << "[+] On Connection terminated " << id_ << std::endl;
+    delete this;
 }
 
 Sniffer::Sniffer(Tins::TCPIP::Stream &stream) : TCPSniffer(stream) {
@@ -53,7 +54,7 @@ Sniffer::Sniffer(Tins::TCPIP::Stream &stream) : TCPSniffer(stream) {
 }
 
 Sniffer::~Sniffer() {
-
+    cs::SNIFFER_MANAGER.erase_sniffer(id_);
 }
 
 }
