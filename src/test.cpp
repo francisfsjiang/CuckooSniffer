@@ -15,7 +15,7 @@ void test() {
     std::ifstream ifs("tb_smtp.log");
     std::string data( (std::istreambuf_iterator<char>(ifs) ),
                       (std::istreambuf_iterator<char>()    ) );
-    mail_process(data);
+    cs::util::mail_process(data);
 }
 
 void test2() {
@@ -34,9 +34,9 @@ void test2() {
     if (std::regex_search(subject, match, multi_email) && match.size() > 1) {
         std::cout << match.str(1) << std::endl;
         target_str = match.str(1);
-        for (const auto& iter: split_str(target_str, ",")) {
+        for (const auto& iter: cs::util::split_str(target_str, ",")) {
             if (iter.find(":") != std::string::npos) {
-                const auto& vec = split_str(iter, ":");
+                const auto& vec = cs::util::split_str(iter, ":");
                 std::cout << vec[0] << "   " << vec[1] << std::endl;
             }
             std::cout << iter << std::endl;
@@ -46,7 +46,7 @@ void test2() {
         std::cout << match.size() << std::endl;
         std::cout << match.str(1) << std::endl;
         target_str = match.str(1);
-        for (const auto& iter: split_str(target_str, ",")) {
+        for (const auto& iter: cs::util::split_str(target_str, ",")) {
             std::cout << iter << std::endl;
         }
     }

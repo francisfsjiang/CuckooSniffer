@@ -67,10 +67,12 @@ set(SRC_FILES
         src/samba/data_processor.cpp
         )
 
-add_executable(CuckooSniffer src/main.cpp ${SRC_FILES})
+add_library(libcuckoo_sniffer STATIC ${SRC_FILES})
 
-target_link_libraries(CuckooSniffer ${LIBS})
+add_executable(CuckooSniffer src/main.cpp)
 
-add_executable(Test src/test.cpp ${SRC_FILES})
+target_link_libraries(CuckooSniffer libcuckoo_sniffer ${LIBS})
 
-target_link_libraries(Test ${LIBS})
+add_executable(Test src/test.cpp)
+
+target_link_libraries(Test libcuckoo_sniffer ${LIBS})

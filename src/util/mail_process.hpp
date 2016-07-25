@@ -3,6 +3,10 @@
 
 #include "util/file.hpp"
 
-std::vector<File*> mail_process(const std::string& data);
+namespace cs::util {
+
+std::vector<File *> mail_process(const std::string &data);
+
+}
 
 #endif //CUCKOOSNIFFER_UTIL_MAIL_PROCESSOR_HPP

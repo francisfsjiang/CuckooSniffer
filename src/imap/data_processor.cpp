@@ -2,7 +2,6 @@
 
 #include "imap/data_processor.hpp"
 #include "imap/sniffer_data.hpp"
-#include "util/base64.hpp"
 #include "util/file.hpp"
 #include "util/mail_process.hpp"
 
@@ -21,7 +20,7 @@ int cs::imap::DataProcessor::process(const cs::base::SnifferData& sniffer_data_a
 	{
 		while (regex_search(data, match, departer))
 		{
-			mail_process(match.str(1));
+			util::mail_process(match.str(1));
 			data = match.suffix();
 		}
 

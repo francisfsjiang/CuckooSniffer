@@ -38,9 +38,9 @@ void Sniffer::on_client_payload(const Tins::TCPIP::Stream &stream) {
 		if (std::regex_search(command, match, multi_email) && match.size() > 1) {
 			caught_str = match.str(1);
 			std::cout << "get multi email " << caught_str << std::endl;
-			for (const auto& iter : split_str(caught_str, ",")) {
+			for (const auto& iter : util::split_str(caught_str, ",")) {
 				if (iter.find(":") != std::string::npos) {
-					const auto& vec = split_str(iter, ":");
+					const auto& vec = util::split_str(iter, ":");
 					std::cout << vec[0] << "   " << vec[1] << std::endl;
 				}
 				else {
@@ -53,7 +53,7 @@ void Sniffer::on_client_payload(const Tins::TCPIP::Stream &stream) {
 		else if (std::regex_search(command, match, part_email) && match.size() > 1) {
 			caught_str = match.str(1);
 			std::cout << "get part email " << caught_str << std::endl;
-			const auto& vec = split_str(caught_str, ",");
+			const auto& vec = util::split_str(caught_str, ",");
 			std::cout << vec[0] << " - " << vec[1] << std::endl;
 
 			// status_ = Status::PART;

@@ -1,28 +1,31 @@
 #ifndef CUCKOOSNIFFER_UTIL_FILE_HPP
 #define CUCKOOSNIFFER_UTIL_FILE_HPP
 
-
 #include <string>
+
+namespace cs::util {
 
 class File {
 
 public:
 
     File(
-            const std::string&,
-            const std::string&,
-            const std::string&
+            const std::string &,
+            const std::string &,
+            const std::string &
     );
 
-    void add_content(const std::string& str);
-
+    void add_content(const std::string &str);
 
 
 private:
 public:
     const std::string &get_content() const;
+
     const std::string &get_mime_type() const;
+
     const std::string &get_name() const;
+
     const std::string &get_encoding() const;
 
 private:
@@ -33,5 +36,6 @@ private:
 
 };
 
+}
 
 #endif //CUCKOOSNIFFER_UTIL_FILE_HPP

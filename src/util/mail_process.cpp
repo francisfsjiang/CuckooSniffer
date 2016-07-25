@@ -7,8 +7,9 @@
 
 #include "util/mail_process.hpp"
 
+namespace cs::util {
 
-std::string match(const std::string& s, const std::regex& re) {
+std::string match(const std::string &s, const std::regex &re) {
     std::smatch match;
     if (std::regex_search(s, match, re) && match.size() > 1) {
         return match.str(1);
@@ -18,11 +19,11 @@ std::string match(const std::string& s, const std::regex& re) {
     }
 }
 
-bool is_boundary(const std::string& line, const std::string& boundary) {
+bool is_boundary(const std::string &line, const std::string &boundary) {
     return line.find(boundary) != std::string::npos;
 }
 
-std::vector<File*> mail_process(const std::string& data){
+std::vector<File *> mail_process(const std::string &data) {
 
     std::istrstream input_stream(data.c_str());
 
@@ -38,24 +39,24 @@ std::vector<File*> mail_process(const std::string& data){
             "text/x-script.phyton"
     };
 
-    static const std::regex         hello_command("(?:EHLO|HELO) (\\S+)");
-    static const std::regex          auth_command("AUTH PLAIN (\\S+)");
-    static const std::regex          mail_command("(?:MAIL|mail) FROM\\:\\s*(\\S+)");
-    static const std::regex          rcpt_command("(?:RCPT|rcpt) TO\\:\\s*(\\S+)");
-    static const std::regex          date_command("Date: (.+)");
-    static const std::regex            ua_command("User-Agent: (.+)");
-    static const std::regex      boundary_command("boundary=\"([\\w_=\\.-]+)\"");
-    static const std::regex  content_type_command("Content-[Tt]ype:\\s*([-/\\w]+)");
-    static const std::regex          name_command("name=\"([-\\=\\+\?\\w\\.]+)\"");
-    static const std::regex      encoding_command("Content-[Tt]ransfer-[Ee]ncoding: (\\w+)");
-    static const std::regex          quit_command("(QUIT)");
+    static const std::regex hello_command("(?:EHLO|HELO) (\\S+)");
+    static const std::regex auth_command("AUTH PLAIN (\\S+)");
+    static const std::regex mail_command("(?:MAIL|mail) FROM\\:\\s*(\\S+)");
+    static const std::regex rcpt_command("(?:RCPT|rcpt) TO\\:\\s*(\\S+)");
+    static const std::regex date_command("Date: (.+)");
+    static const std::regex ua_command("User-Agent: (.+)");
+    static const std::regex boundary_command("boundary=\"([\\w_=\\.-]+)\"");
+    static const std::regex content_type_command("Content-[Tt]ype:\\s*([-/\\w]+)");
+    static const std::regex name_command("name=\"([-\\=\\+\?\\w\\.]+)\"");
+    static const std::regex encoding_command("Content-[Tt]ransfer-[Ee]ncoding: (\\w+)");
+    static const std::regex quit_command("(QUIT)");
 
     bool have_boundary = false;
     bool file_section = false;
     std::string line, s, boundary;
     std::string file_mime_type, file_name, file_encoding;
 
-    std::vector<File*> file_vec;
+    std::vector<File *> file_vec;
 
     try {
 
@@ -86,7 +87,7 @@ std::vector<File*> mail_process(const std::string& data){
                 break;
             }
         }
-        for(const auto& iter: record) {
+        for (const auto &iter: record) {
             std::cout << iter.first << ":" << iter.second << std::endl;
         }
 
@@ -106,11 +107,11 @@ std::vector<File*> mail_process(const std::string& data){
                     break;
                 }
                 if (file_mime_type == "")
-                    file_mime_type  = match(line, content_type_command);
+                    file_mime_type = match(line, content_type_command);
                 if (file_name == "")
-                    file_name       = match(line, name_command);
+                    file_name = match(line, name_command);
                 if (file_encoding == "")
-                    file_encoding   = match(line, encoding_command);
+                    file_encoding = match(line, encoding_command);
             }
 
             if (file_mime_type == "" && file_name == "" && file_encoding == "") {
@@ -127,7 +128,7 @@ std::vector<File*> mail_process(const std::string& data){
                 continue;
             }
 
-            File* f = new File(
+            File *f = new File(
                     file_name,
                     file_mime_type,
                     file_encoding
@@ -151,13 +152,13 @@ std::vector<File*> mail_process(const std::string& data){
                         continue;
                     }
                     else {
-                        f -> add_content(line);
+                        f->add_content(line);
                     }
                 }
-                std::cout << f -> get_name() << std::endl;
-                std::cout << f -> get_mime_type() << std::endl;
-                std::cout << f -> get_encoding() << std::endl;
-                std::cout << "size: " << f -> get_content().size() << std::endl << std::endl;
+                std::cout << f->get_name() << std::endl;
+                std::cout << f->get_mime_type() << std::endl;
+                std::cout << f->get_encoding() << std::endl;
+                std::cout << "size: " << f->get_content().size() << std::endl << std::endl;
                 file_vec.push_back(f);
             }
             else {
@@ -166,7 +167,9 @@ std::vector<File*> mail_process(const std::string& data){
 
         }
     }
-    catch (std::exception e){
+    catch (std::exception e) {
     }
     return file_vec;
+}
+
 }
