@@ -1,7 +1,7 @@
 #ifndef CUCKOOSNIFFER_SMTP_SNIFFER_HPP
 #define CUCKOOSNIFFER_SMTP_SNIFFER_HPP
 
-#include "sniffer.hpp"
+#include "base/sniffer.hpp"
 
 namespace cs::smtp {
 

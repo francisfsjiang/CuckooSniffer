@@ -1,7 +1,7 @@
 #ifndef CUCKOOSNIFFER_SAMBA_SNIFFER_HPP
 #define CUCKOOSNIFFER_SAMBA_SNIFFER_HPP
 
-#include "sniffer.hpp"
+#include "base/sniffer.hpp"
 
 namespace cs::samba {
 

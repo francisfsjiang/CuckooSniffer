@@ -5,24 +5,37 @@
 #include "tins/sniffer.h"
 #include "tins/packet.h"
 
-#include "cuckoo_sniffer.hpp"
+#include "sniffer_manager.hpp"
+
+#include "smtp/sniffer.hpp"
+#include "imap/sniffer.hpp"
+#include "ftp/data_sniffer.hpp"
+#include "ftp/command_sniffer.hpp"
 
 void on_new_connection(Tins::TCPIP::Stream& stream) {
     cs::base::TCPSniffer* tcp_sniffer = nullptr;
-    std::cout << stream.server_port() << std::endl;
+    uint16_t port = stream.server_port();
+    std::cout << port << std::endl;
     switch (stream.server_port()) {
-        case 25:                            //SMTP
+        case 25:        //SMTP
             tcp_sniffer = new cs::smtp::Sniffer(stream);
             break;
-        case 143:                           //IMAP
+        case 143:       //IMAP
             tcp_sniffer = new cs::imap::Sniffer(stream);
             break;
-        case 21:
-            tcp_sniffer = new cs::ftp::Sniffer(stream);
+        case 21:        //FTP
+            tcp_sniffer = new cs::ftp::CommandSniffer(stream);
             break;
         default:
-            stream.auto_cleanup_payloads(true);
-            return;
+            const auto& ftp_data_connection = cs::ftp::CommandSniffer::get_data_connection_pool();
+            if (ftp_data_connection.find(port) != ftp_data_connection.end()) {
+                tcp_sniffer = new cs::ftp::DataSniffer(stream);
+            }
+            else {
+                stream.auto_cleanup_payloads(true);
+                return;
+            }
+            break;
     }
 
     cs::SNIFFER_MANAGER.append_sniffer(tcp_sniffer -> get_id(), (cs::base::Sniffer*)tcp_sniffer);

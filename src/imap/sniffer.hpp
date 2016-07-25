@@ -1,7 +1,7 @@
 #ifndef CUCKOOSNIFFER_IMAP_SNIFFER_HPP
 #define CUCKOOSNIFFER_IMAP_SNIFFER_HPP
 
-#include "sniffer.hpp"
+#include "base/sniffer.hpp"
 #include "imap/collected_data.hpp"
 
 namespace cs::imap {

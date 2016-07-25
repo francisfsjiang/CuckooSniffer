@@ -1,11 +1,11 @@
 #ifndef CUCKOOSNIFFER_FTP_SNIFFER_HPP
 #define CUCKOOSNIFFER_FTP_SNIFFER_HPP
 
-#include "sniffer.hpp"
+#include "base/sniffer.hpp"
 
 namespace cs::ftp {
 
-class Sniffer : public cs::base::TCPSniffer {
+class CommandSniffer : public cs::base::TCPSniffer {
 
 public:
 
@@ -19,15 +19,17 @@ public:
             Tins::TCPIP::Stream &,
             Tins::TCPIP::StreamFollower::TerminationReason);
 
-    Sniffer(Tins::TCPIP::Stream &);
+    CommandSniffer(Tins::TCPIP::Stream &);
 
-    virtual ~Sniffer();
+    virtual ~CommandSniffer();
 
-    const std::map<unsigned short, std::string>& get_data_connection_pool();
+    static std::map<unsigned short, std::string>& get_data_connection_pool();
 
 private:
+
     static std::map<unsigned short, std::string> data_connection_pool_;
 
+    uint16_t port_;
 };
 
 }

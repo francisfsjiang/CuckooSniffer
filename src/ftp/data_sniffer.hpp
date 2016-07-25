@@ -1,11 +1,17 @@
-#ifndef CUCKOOSNIFFER_HTTP_SNIFFER_HPP
-#define CUCKOOSNIFFER_HTTP_SNIFFER_HPP
+#ifndef CUCKOOSNIFFER_FTP_DATA_SNIFFER_HPP
+#define CUCKOOSNIFFER_FTP_DATA_SNIFFER_HPP
 
 #include "base/sniffer.hpp"
 
-namespace cs::http {
+namespace cs::util {
 
-class Sniffer : public cs::base::TCPSniffer {
+class File;
+
+}
+
+namespace cs::ftp {
+
+class DataSniffer : public cs::base::TCPSniffer {
 
 public:
 
@@ -19,15 +25,17 @@ public:
             Tins::TCPIP::Stream &,
             Tins::TCPIP::StreamFollower::TerminationReason);
 
-    Sniffer(Tins::TCPIP::Stream &);
+    DataSniffer(Tins::TCPIP::Stream &);
 
-    virtual ~Sniffer();
+    virtual ~DataSniffer();
 
 private:
+
+    cs::util::File* file_;
 
 };
 
 }
 
 
-#endif //CUCKOOSNIFFER_HTTP_SNIFFER_HPP
+#endif //CUCKOOSNIFFER_FTP_DATA_SNIFFER_HPP

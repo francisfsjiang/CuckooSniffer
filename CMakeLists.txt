@@ -58,9 +58,10 @@ set(SRC_FILES
         src/imap/sniffer.cpp
         src/imap/collected_data.cpp
         src/imap/data_processor.cpp
-        src/ftp/sniffer.cpp
+        src/ftp/data_sniffer.cpp
         src/ftp/collected_data.cpp
         src/ftp/data_processor.cpp
+        src/ftp/command_sniffer.cpp
         src/http/sniffer.cpp
         src/http/collected_data.cpp
         src/http/data_processor.cpp

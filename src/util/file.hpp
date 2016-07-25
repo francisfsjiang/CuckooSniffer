@@ -29,10 +29,15 @@ public:
     const std::string &get_encoding() const;
 
 private:
+
+    char* buffer;
+
     std::string content_;
     std::string mime_type_;
     std::string name_;
     std::string encoding_;
+
+    bool encoded = false;
 
 };
 

@@ -1,9 +1,16 @@
 #ifndef CUCKOOSNIFFER_SNIFFER_MANAGER_HPP
 #define CUCKOOSNIFFER_SNIFFER_MANAGER_HPP
 
-#include "base/sniffer.hpp"
+#include <string>
+#include <map>
 
 namespace cs {
+
+namespace base {
+
+class Sniffer;
+
+}
 
 class SnifferManager {
 
