@@ -1,4 +1,5 @@
 #include <regex>
+#include <fstream>
 
 #include "sniffer_manager.hpp"
 #include "ftp/data_sniffer.hpp"
@@ -15,13 +16,13 @@ void DataSniffer::on_client_payload(const Tins::TCPIP::Stream &stream) {
 }
 
 void DataSniffer::on_server_payload(const Tins::TCPIP::Stream &stream) {
-    std::string command = std::string(
+    std::string data = std::string(
             stream.server_payload().begin(),
             stream.server_payload().end()
     );
 
-    std::cout << command.size() << std::endl;
-
+    std::cout << data.size() << std::endl;
+    payload_ += data;
 //    //TODO make this process in thread
 //    CollectedData *ftp_data = new CollectedData(
 //            std::string(stream.client_payload().begin(), stream.client_payload().end())
@@ -36,15 +37,24 @@ void DataSniffer::on_server_payload(const Tins::TCPIP::Stream &stream) {
 }
 
 void DataSniffer::on_connection_close(const Tins::TCPIP::Stream &stream) {
+
+    std::cout << payload_.size() << std::endl;
+    file_ -> set_size(payload_.size());
+    file_ -> add_content(payload_.c_str(), payload_.size());
+
+    std::ofstream ofs("test.dll");
+    ofs.write(file_ -> buffer_, file_ -> buffer_size_);
+    ofs.close();
+
     std::cout << "FTP data Connection Close" << std::endl;
     cs::ftp::CommandSniffer::get_data_connection_pool().erase(stream.server_port());
     cs::SNIFFER_MANAGER.erase_sniffer(id_);
 }
 
 void DataSniffer::on_connection_terminated(
-        Tins::TCPIP::Stream &,
+        Tins::TCPIP::Stream& stream,
         Tins::TCPIP::StreamFollower::TerminationReason) {
-    std::cout << "[+] On Connection terminated " << id_ << std::endl;
+    std::cout << "[+] On FTP Data Connection terminated " << id_ << std::endl;
     cs::ftp::CommandSniffer::get_data_connection_pool().erase(stream.server_port());
     cs::SNIFFER_MANAGER.erase_sniffer(id_);
 }
@@ -52,10 +62,10 @@ void DataSniffer::on_connection_terminated(
 DataSniffer::DataSniffer(Tins::TCPIP::Stream &stream) : TCPSniffer(stream) {
     std::cout << "get ftp data connection" << std::endl;
 
-    file_ = new cs::util::File()
+    file_ = new cs::util::File();
+    file_ -> set_encode_status(true);
 
     stream.ignore_client_data();
-    stream.auto_cleanup_server_data(true);
     stream.server_data_callback(
             [this](const Tins::TCPIP::Stream& tcp_stream) {
                 this -> on_server_payload(tcp_stream);

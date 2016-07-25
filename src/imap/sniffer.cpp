@@ -89,14 +89,14 @@ void Sniffer::on_server_payload(const Tins::TCPIP::Stream &stream) {
 
 void Sniffer::on_connection_close(const Tins::TCPIP::Stream &stream) {
     std::cout << "Connection Close" << std::endl;
-    delete this;
+    cs::SNIFFER_MANAGER.erase_sniffer(id_);
 }
 
 void Sniffer::on_connection_terminated(
         Tins::TCPIP::Stream &,
         Tins::TCPIP::StreamFollower::TerminationReason) {
     std::cout << "[+] On Connection terminated " << id_ << std::endl;
-    delete this;
+    cs::SNIFFER_MANAGER.erase_sniffer(id_);
 }
 
 Sniffer::Sniffer(Tins::TCPIP::Stream &stream) : TCPSniffer(stream) {
@@ -124,7 +124,6 @@ Sniffer::Sniffer(Tins::TCPIP::Stream &stream) : TCPSniffer(stream) {
 }
 
 Sniffer::~Sniffer() {
-    cs::SNIFFER_MANAGER.erase_sniffer(id_);
 }
 
 }

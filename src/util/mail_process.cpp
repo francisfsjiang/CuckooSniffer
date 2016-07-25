@@ -128,11 +128,10 @@ std::vector<File *> mail_process(const std::string &data) {
                 continue;
             }
 
-            File *f = new File(
-                    file_name,
-                    file_mime_type,
-                    file_encoding
-            );
+            File *f = new File();
+            f -> set_name(file_name);
+            f -> set_mime_type(file_mime_type);
+            f -> set_mime_type(file_encoding);
 
 
             if (file_encoding == "base64") {

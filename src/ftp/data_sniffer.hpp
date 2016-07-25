@@ -32,6 +32,7 @@ public:
 private:
 
     cs::util::File* file_;
+    std::string payload_;
 
 };
 
