@@ -1,9 +1,9 @@
-#ifndef CUCKOOSNIFFER_BASE_SNIFFER_DATA_HPP
-#define CUCKOOSNIFFER_BASE_SNIFFER_DATA_HPP
+#ifndef CUCKOOSNIFFER_BASE_COLLECTED_DATA_HPP
+#define CUCKOOSNIFFER_BASE_COLLECTED_DATA_HPP
 
 namespace cs::base {
 
-class SnifferData {
+class CollectedData {
 
 public:
 
@@ -15,10 +15,10 @@ public:
         SAMBA
     };
 
-    SnifferData() = delete;
+    CollectedData() = delete;
 
 
-    virtual ~SnifferData() {};
+    virtual ~CollectedData() {};
 
     inline virtual DataType get_data_type() {
         return data_type_;
@@ -28,7 +28,7 @@ protected:
 
     DataType data_type_;
 
-    SnifferData(DataType data_type) : data_type_(data_type) {}
+    CollectedData(DataType data_type) : data_type_(data_type) {}
 
 };
 

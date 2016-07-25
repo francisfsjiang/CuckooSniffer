@@ -47,26 +47,27 @@ set(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/bin)
 
 set(SRC_FILES
         src/sniffer_manager.cpp
+        src/base/sniffer.cpp
         src/util/base64.cpp
         src/util/file.cpp
         src/util/function.cpp
         src/util/mail_process.cpp
         src/smtp/sniffer.cpp
-        src/smtp/sniffer_data.cpp
+        src/smtp/collected_data.cpp
         src/smtp/data_processor.cpp
         src/imap/sniffer.cpp
-        src/imap/sniffer_data.cpp
+        src/imap/collected_data.cpp
         src/imap/data_processor.cpp
         src/ftp/sniffer.cpp
-        src/ftp/sniffer_data.cpp
+        src/ftp/collected_data.cpp
         src/ftp/data_processor.cpp
         src/http/sniffer.cpp
-        src/http/sniffer_data.cpp
+        src/http/collected_data.cpp
         src/http/data_processor.cpp
         src/samba/sniffer.cpp
-        src/samba/sniffer_data.cpp
+        src/samba/collected_data.cpp
         src/samba/data_processor.cpp
-        src/base/sniffer.cpp)
+        )
 
 add_library(libcuckoo_sniffer STATIC ${SRC_FILES})
 

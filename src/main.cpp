@@ -9,6 +9,7 @@
 
 void on_new_connection(Tins::TCPIP::Stream& stream) {
     cs::base::TCPSniffer* tcp_sniffer = nullptr;
+    std::cout << stream.server_port() << std::endl;
     switch (stream.server_port()) {
         case 25:                            //SMTP
             tcp_sniffer = new cs::smtp::Sniffer(stream);
@@ -18,12 +19,13 @@ void on_new_connection(Tins::TCPIP::Stream& stream) {
             break;
         case 21:
             tcp_sniffer = new cs::ftp::Sniffer(stream);
+            break;
         default:
             stream.auto_cleanup_payloads(true);
             return;
     }
 
-    cs::SNIFFER_MANAGER.append_sniffer(tcp_sniffer -> get_id(), tcp_sniffer);
+    cs::SNIFFER_MANAGER.append_sniffer(tcp_sniffer -> get_id(), (cs::base::Sniffer*)tcp_sniffer);
 
 }
 
@@ -43,7 +45,7 @@ int main(int argc, char* argv[]) {
     }
     try {
         Tins::SnifferConfiguration config;
-        config.set_filter("tcp port 25 || tcp port 143");
+//        config.set_filter("(tcp port 25) or (tcp port 143) or (tcp port 21)");
         config.set_promisc_mode(true);
         Tins::Sniffer sniffer(argv[1], config);
 

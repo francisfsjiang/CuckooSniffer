@@ -4,7 +4,7 @@
 #include <regex>
 
 #include "base/data_processor.hpp"
-#include "base/sniffer_data.hpp"
+#include "base/collected_data.hpp"
 
 namespace cs::smtp {
 
@@ -12,7 +12,7 @@ class DataProcessor : public cs::base::DataProcessor {
 
 public:
 
-    virtual int process(const cs::base::SnifferData &);
+    virtual int process(const cs::base::CollectedData &);
 
     virtual ~DataProcessor();
 

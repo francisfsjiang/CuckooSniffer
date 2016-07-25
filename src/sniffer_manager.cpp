@@ -29,9 +29,8 @@ cs::base::Sniffer *SnifferManager::get_sniffer(std::string sniffer_id) {
 void SnifferManager::erase_sniffer(std::string sniffer_id) {
     auto search = sniffer_container.find(sniffer_id);
     if (search != sniffer_container.end()) {
-        cs::base::Sniffer* sniffer_ptr = search -> second;
+        delete search -> second;
         sniffer_container.erase(sniffer_id);
-        delete sniffer_ptr;
         std::cout << "erase sniffer " << sniffer_id << ", total: " << sniffer_container.size() << std::endl;
     }
 }

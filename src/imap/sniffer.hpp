@@ -2,7 +2,7 @@
 #define CUCKOOSNIFFER_IMAP_SNIFFER_HPP
 
 #include "sniffer.hpp"
-#include "imap/sniffer_data.hpp"
+#include "imap/collected_data.hpp"
 
 namespace cs::imap {
 
@@ -34,7 +34,7 @@ private:
 
     Status status_ = Status::NONE;
 
-    cs::imap::SnifferData *sniffer_data_ = nullptr;
+    cs::imap::CollectedData *sniffer_data_ = nullptr;
 
 };
 

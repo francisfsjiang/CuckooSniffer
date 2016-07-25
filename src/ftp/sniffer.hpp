@@ -23,7 +23,10 @@ public:
 
     virtual ~Sniffer();
 
+    const std::map<unsigned short, std::string>& get_data_connection_pool();
+
 private:
+    static std::map<unsigned short, std::string> data_connection_pool_;
 
 };
 

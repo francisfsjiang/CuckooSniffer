@@ -3,13 +3,13 @@
 
 namespace cs::base {
 
-class SnifferData;
+class CollectedData;
 
 class DataProcessor {
 
 public:
 
-    virtual int process(const SnifferData &) = 0;
+    virtual int process(const CollectedData &) = 0;
 
     virtual ~DataProcessor() {};
 
@@ -17,4 +17,4 @@ public:
 
 }
 
-#endif //CUCKOOSNIFFER_DATA_PROCESSOR_HPP
+#endif //CUCKOOCOLLECTED_DATA_PROCESSOR_HPP

@@ -1,6 +1,6 @@
 #include "sniffer_manager.hpp"
 #include "samba/sniffer.hpp"
-#include "samba/sniffer_data.hpp"
+#include "samba/collected_data.hpp"
 #include "samba/data_processor.hpp"
 
 namespace cs::samba {
@@ -15,12 +15,12 @@ void Sniffer::on_connection_close(const Tins::TCPIP::Stream &stream) {
     std::cout << "Connection Close" << std::endl;
 
     //TODO make this process in thread
-    SnifferData *samba_data = new SnifferData(
+    CollectedData *samba_data = new CollectedData(
             std::string(stream.client_payload().begin(), stream.client_payload().end())
     );
 
     DataProcessor processor;
-    processor.process(*((SnifferData *) samba_data));
+    processor.process(*((CollectedData *) samba_data));
 
 
     delete samba_data;

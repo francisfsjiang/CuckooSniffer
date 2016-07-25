@@ -1,7 +1,7 @@
 #include <util/function.hpp>
 #include "sniffer_manager.hpp"
 #include "imap/sniffer.hpp"
-#include "imap/sniffer_data.hpp"
+#include "imap/collected_data.hpp"
 #include "imap/data_processor.hpp"
 
 namespace cs::imap {
@@ -48,7 +48,7 @@ void Sniffer::on_client_payload(const Tins::TCPIP::Stream &stream) {
 				}
 			}
 			status_ = Status::MULTI;
-			sniffer_data_ = new SnifferData();
+			sniffer_data_ = new CollectedData();
 		}
 		else if (std::regex_search(command, match, part_email) && match.size() > 1) {
 			caught_str = match.str(1);
@@ -57,7 +57,7 @@ void Sniffer::on_client_payload(const Tins::TCPIP::Stream &stream) {
 			std::cout << vec[0] << " - " << vec[1] << std::endl;
 
 			// status_ = Status::PART;
-			// sniffer_data_ = new IMAPSnifferData();
+			// sniffer_data_ = new IMAPCollectedData();
 		}
 	}
 	catch (const std::exception&)

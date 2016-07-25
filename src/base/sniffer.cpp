@@ -4,7 +4,7 @@
 namespace cs::base {
 
 Sniffer::~Sniffer() {
-    cs::SNIFFER_MANAGER.erase_sniffer(id_);
+    std::cout << "sniffer deconstructor invoked " << std::endl;
 };
 
 const std::string& Sniffer::get_id() {

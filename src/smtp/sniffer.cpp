@@ -1,6 +1,6 @@
 #include "sniffer_manager.hpp"
 #include "smtp/sniffer.hpp"
-#include "smtp/sniffer_data.hpp"
+#include "smtp/collected_data.hpp"
 #include "smtp/data_processor.hpp"
 
 namespace cs::smtp {
@@ -15,12 +15,12 @@ void Sniffer::on_connection_close(const Tins::TCPIP::Stream &stream) {
     std::cout << "Connection Close" << std::endl;
 
     //TODO make this process in thread
-    SnifferData *smtp_data = new SnifferData(
+    CollectedData *smtp_data = new CollectedData(
             std::string(stream.client_payload().begin(), stream.client_payload().end())
     );
 
     DataProcessor processor;
-    processor.process(*((SnifferData *) smtp_data));
+    processor.process(*((CollectedData *) smtp_data));
 
 
     delete smtp_data;

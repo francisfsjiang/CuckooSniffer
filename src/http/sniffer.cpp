@@ -1,6 +1,6 @@
 #include "sniffer_manager.hpp"
 #include "http/sniffer.hpp"
-#include "http/sniffer_data.hpp"
+#include "http/collected_data.hpp"
 #include "http/data_processor.hpp"
 
 namespace cs::http {
@@ -15,12 +15,12 @@ void Sniffer::on_connection_close(const Tins::TCPIP::Stream &stream) {
     std::cout << "Connection Close" << std::endl;
 
     //TODO make this process in thread
-    SnifferData *http_data = new SnifferData(
+    CollectedData *http_data = new CollectedData(
             std::string(stream.client_payload().begin(), stream.client_payload().end())
     );
 
     DataProcessor processor;
-    processor.process(*((SnifferData *) http_data));
+    processor.process(*((CollectedData *) http_data));
 
 
     delete http_data;
