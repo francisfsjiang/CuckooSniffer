@@ -16,7 +16,6 @@ if (WIN32)
     set(WINPCAP_ROOT D:/libs/WpdPack)
     set(LIBTINS_ROOT D:/libs/libtins)
 
-
     set(WINPCAP_INCLUDE ${WINPCAP_ROOT}/Include)
     set(WINPCAP_LIB     ${WINPCAP_ROOT}/Lib)
     set(LIBTINS_INCLUDE ${LIBTINS_ROOT}/include)
@@ -26,6 +25,8 @@ if (WIN32)
     set(LIB_DIRS        ${LIB_DIRS} ${WINPCAP_LIB} ${LIBTINS_LIB})
 
     set(LIBS ${LIBS} wpcap Ws2_32 Iphlpapi)
+
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /std:c++latest")
 
 elseif (UNIX)
 
