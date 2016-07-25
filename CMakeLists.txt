@@ -50,12 +50,21 @@ set(SRC_FILES
         src/util/file.cpp
         src/util/function.cpp
         src/util/mail_process.cpp
-        src/smtp/smtp_sniffer.cpp
-        src/smtp/smtp_sniffer_data.cpp
-        src/smtp/smtp_data_processor.cpp
-        src/imap/imap_sniffer.cpp
-        src/imap/imap_sniffer_data.cpp
-        src/imap/imap_data_processor.cpp
+        src/smtp/sniffer.cpp
+        src/smtp/sniffer_data.cpp
+        src/smtp/data_processor.cpp
+        src/imap/sniffer.cpp
+        src/imap/sniffer_data.cpp
+        src/imap/data_processor.cpp
+        src/ftp/sniffer.cpp
+        src/ftp/sniffer_data.cpp
+        src/ftp/data_processor.cpp
+        src/http/sniffer.cpp
+        src/http/sniffer_data.cpp
+        src/http/data_processor.cpp
+        src/samba/sniffer.cpp
+        src/samba/sniffer_data.cpp
+        src/samba/data_processor.cpp
         )
 
 add_executable(CuckooSniffer src/main.cpp ${SRC_FILES})

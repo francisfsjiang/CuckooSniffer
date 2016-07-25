@@ -6,6 +6,7 @@
 #include "tins/ip_address.h"
 #include "tins/ipv6_address.h"
 
+namespace cs::base {
 
 class Sniffer {
 
@@ -13,7 +14,7 @@ public:
 
     virtual ~Sniffer() {};
 
-    inline const std::string& get_id() {
+    inline const std::string &get_id() {
         return id_;
     }
 
@@ -24,29 +25,29 @@ protected:
 };
 
 
-class TCPSniffer: public Sniffer {
+class TCPSniffer : public Sniffer {
 
 public:
 
-    virtual void on_client_payload(const Tins::TCPIP::Stream&) = 0;
+    virtual void on_client_payload(const Tins::TCPIP::Stream &) = 0;
 
-    virtual void on_server_payload(const Tins::TCPIP::Stream&) = 0;
+    virtual void on_server_payload(const Tins::TCPIP::Stream &) = 0;
 
-    virtual void on_connection_close(const Tins::TCPIP::Stream&) = 0;
+    virtual void on_connection_close(const Tins::TCPIP::Stream &) = 0;
 
     virtual void on_connection_terminated(
-            Tins::TCPIP::Stream&,
+            Tins::TCPIP::Stream &,
             Tins::TCPIP::StreamFollower::TerminationReason) = 0;
 
     TCPSniffer() = delete;
 
-    inline TCPSniffer(Tins::TCPIP::Stream& stream) {
+    inline TCPSniffer(Tins::TCPIP::Stream &stream) {
         id_ = stream_identifier(stream);
     }
 
-    virtual ~TCPSniffer(){};
+    virtual ~TCPSniffer() {};
 
-    inline static std::string client_endpoint(const Tins::TCPIP::Stream& stream) {
+    inline static std::string client_endpoint(const Tins::TCPIP::Stream &stream) {
         std::ostringstream output;
         if (stream.is_v6()) {
             output << stream.client_addr_v6();
@@ -59,7 +60,7 @@ public:
     }
 
 
-    inline static std::string server_endpoint(const Tins::TCPIP::Stream& stream) {
+    inline static std::string server_endpoint(const Tins::TCPIP::Stream &stream) {
         std::ostringstream output;
         if (stream.is_v6()) {
             output << stream.server_addr_v6();
@@ -71,11 +72,12 @@ public:
         return output.str();
     }
 
-    inline static std::string stream_identifier(const Tins::TCPIP::Stream& stream) {
+    inline static std::string stream_identifier(const Tins::TCPIP::Stream &stream) {
         std::ostringstream output;
         output << client_endpoint(stream) << "-" << server_endpoint(stream);
         return output.str();
     }
 };
 
+}
 #endif //CUCKOOSNIFFER_SNIFFER_HPP

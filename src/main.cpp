@@ -8,28 +8,31 @@
 #include "cuckoo_sniffer.hpp"
 
 void on_new_connection(Tins::TCPIP::Stream& stream) {
-    TCPSniffer* tcp_sniffer;
+    cs::base::TCPSniffer* tcp_sniffer = nullptr;
     switch (stream.server_port()) {
         case 25:                            //SMTP
-            tcp_sniffer = new SMTPSniffer(stream);
+            tcp_sniffer = new cs::smtp::Sniffer(stream);
             break;
         case 143:                           //IMAP
-            tcp_sniffer = new IMAPSniffer(stream);
+            tcp_sniffer = new cs::imap::Sniffer(stream);
             break;
+//        case 21:
+//            tcp_sniffer = new FTPSniffer(stream);
         default:
+            stream.auto_cleanup_payloads(true);
             return;
     }
 
-    SNIFFER_MANAGER.append_sniffer(tcp_sniffer -> get_id(), tcp_sniffer);
+    cs::SNIFFER_MANAGER.append_sniffer(tcp_sniffer -> get_id(), tcp_sniffer);
 
 }
 
 
 void on_connection_terminated(Tins::TCPIP::Stream& stream, Tins::TCPIP::StreamFollower::TerminationReason reason) {
-    std::cout << "[+] Connection terminated " << TCPSniffer::stream_identifier(stream) << std::endl;
-    std::string stream_id = TCPSniffer::stream_identifier(stream);
-    ((TCPSniffer*)SNIFFER_MANAGER.get_sniffer(stream_id)) ->on_connection_terminated(stream, reason);
-    SNIFFER_MANAGER.erase_sniffer(TCPSniffer::stream_identifier(stream));
+    std::cout << "[+] Connection terminated " << cs::base::TCPSniffer::stream_identifier(stream) << std::endl;
+    std::string stream_id = cs::base::TCPSniffer::stream_identifier(stream);
+    ((cs::base::TCPSniffer*)cs::SNIFFER_MANAGER.get_sniffer(stream_id)) ->on_connection_terminated(stream, reason);
+    cs::SNIFFER_MANAGER.erase_sniffer(cs::base::TCPSniffer::stream_identifier(stream));
 }
 
 

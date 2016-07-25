@@ -3,13 +3,15 @@
 
 
 #include <string>
-#include "sniffer_data.hpp"
+#include "base/sniffer_data.hpp"
 
-class SMTPSnifferData: public SnifferData {
+namespace cs::smtp {
+
+class SnifferData: public cs::base::SnifferData {
 
 public:
 
-    SMTPSnifferData(std::string&&);
+    SnifferData(std::string&&);
 
     const std::string& get_data() const;
 
@@ -18,6 +20,8 @@ private:
     std::string data_;
 
 };
+
+}
 
 
 #endif //CUCKOOSNIFFER_SMTP_SNIFFER_DATA_HPP

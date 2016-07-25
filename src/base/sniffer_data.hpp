@@ -1,6 +1,7 @@
 #ifndef CUCKOOSNIFFER_SNIFFER_DATA_HPP
 #define CUCKOOSNIFFER_SNIFFER_DATA_HPP
 
+namespace cs::base {
 
 class SnifferData {
 
@@ -8,7 +9,10 @@ public:
 
     enum DataType {
         SMTP,
-        IMAP
+        IMAP,
+        FTP,
+        HTTP,
+        SAMBA
     };
 
     SnifferData() = delete;
@@ -27,5 +31,7 @@ protected:
     SnifferData(DataType data_type) : data_type_(data_type) {}
 
 };
+
+}
 
 #endif //CUCKOOSNIFFER_SNIFFER_CONTENT_HPP
