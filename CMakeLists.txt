@@ -1,15 +1,26 @@
 cmake_minimum_required(VERSION 3.3)
 project(CuckooSniffer)
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DTINS_STATIC")
+SET(CMAKE_FIND_LIBRARY_SUFFIXES ".a")
+SET(BUILD_SHARED_LIBRARIES OFF)
 
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DTINS_STATIC")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DBOOST_ALL_DYN_LINK")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DBOOST_LOG_DYN_LINK")
+set(CMAKE_CXX_LINKER_FLAGS "-static")
 
 set(INCLUDE_DIRS
         ${PROJECT_SOURCE_DIR}/src)
 
 set(LIB_DIRS)
 
-set(LIBS tins)
+set(LIBS tins
+        boost_log
+        boost_log_setup
+        boost_thread
+        boost_system
+        boost_date_time
+        )
 
 if (WIN32)
 
@@ -27,6 +38,16 @@ if (WIN32)
     set(LIBS ${LIBS} wpcap Ws2_32 Iphlpapi)
 
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /std:c++latest")
+
+elseif (APPLE)
+
+    set(INCLUDE_DIRS    ${INCLUDE_DIRS} /usr/local/include /usr/local/boost/include)
+    set(LIB_DIRS        ${LIB_DIRS} /usr/local/lib /usr/local/boost/lib)
+
+    set(LIBS ${LIBS} pcap)
+
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} --std=c++1z")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pedantic")
 
 elseif (UNIX)
 
