@@ -5,7 +5,7 @@
 #include "util/file.hpp"
 #include "util/mail_process.hpp"
 
-namespace cs::samba {
+namespace cs { namespace samba {
 
 int DataProcessor::process(const cs::base::CollectedData &sniffer_data_arg) {
 
@@ -19,4 +19,4 @@ int DataProcessor::process(const cs::base::CollectedData &sniffer_data_arg) {
 
 DataProcessor::~DataProcessor() {}
 
-}
+}}

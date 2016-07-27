@@ -4,7 +4,7 @@
 #include "samba/collected_data.hpp"
 #include "samba/data_processor.hpp"
 
-namespace cs::samba {
+namespace cs { namespace samba {
 
 void Sniffer::on_client_payload(const Tins::TCPIP::Stream &stream) {
 }
@@ -57,4 +57,4 @@ Sniffer::~Sniffer() {
 
 }
 
-}
+}}

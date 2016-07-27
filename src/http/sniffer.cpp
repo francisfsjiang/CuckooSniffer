@@ -4,7 +4,7 @@
 #include "http/collected_data.hpp"
 #include "http/data_processor.hpp"
 
-namespace cs::http {
+namespace cs { namespace http {
 
 void Sniffer::on_client_payload(const Tins::TCPIP::Stream &stream) {
 }
@@ -57,4 +57,4 @@ Sniffer::~Sniffer() {
 
 }
 
-}
+}}

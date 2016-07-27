@@ -1,7 +1,7 @@
 #ifndef CUCKOOSNIFFER_BASE_DATA_PROCESSOR_HPP
 #define CUCKOOSNIFFER_BASE_DATA_PROCESSOR_HPP
 
-namespace cs::base {
+namespace cs { namespace base {
 
 class CollectedData;
 
@@ -15,6 +15,6 @@ public:
 
 };
 
-}
+}}
 
 #endif //CUCKOOCOLLECTED_DATA_PROCESSOR_HPP

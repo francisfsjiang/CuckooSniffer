@@ -9,7 +9,7 @@
 #include "util/file.hpp"
 #include "util/function.hpp"
 
-namespace cs::ftp {
+namespace cs { namespace ftp {
 
 void DataSniffer::on_client_payload(const Tins::TCPIP::Stream &stream) {
 
@@ -47,7 +47,7 @@ void DataSniffer::on_connection_close(const Tins::TCPIP::Stream &stream) {
     ofs.close();
 
     std::cout << "FTP data Connection Close" << std::endl;
-    cs::ftp::CommandSniffer::get_data_connection_pool().erase(stream.server_port());
+    CommandSniffer::get_data_connection_pool().erase(stream.server_port());
     cs::SNIFFER_MANAGER.erase_sniffer(id_);
 }
 
@@ -55,7 +55,7 @@ void DataSniffer::on_connection_terminated(
         Tins::TCPIP::Stream& stream,
         Tins::TCPIP::StreamFollower::TerminationReason) {
     std::cout << "[+] On FTP Data Connection terminated " << id_ << std::endl;
-    cs::ftp::CommandSniffer::get_data_connection_pool().erase(stream.server_port());
+    CommandSniffer::get_data_connection_pool().erase(stream.server_port());
     cs::SNIFFER_MANAGER.erase_sniffer(id_);
 }
 
@@ -84,4 +84,4 @@ DataSniffer::DataSniffer(Tins::TCPIP::Stream &stream) : TCPSniffer(stream) {
 DataSniffer::~DataSniffer() {
 }
 
-}
+}}

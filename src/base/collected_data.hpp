@@ -1,7 +1,7 @@
 #ifndef CUCKOOSNIFFER_BASE_COLLECTED_DATA_HPP
 #define CUCKOOSNIFFER_BASE_COLLECTED_DATA_HPP
 
-namespace cs::base {
+namespace cs { namespace base {
 
 class CollectedData {
 
@@ -32,6 +32,6 @@ protected:
 
 };
 
-}
+}}
 
 #endif //CUCKOOSNIFFER_SNIFFER_CONTENT_HPP

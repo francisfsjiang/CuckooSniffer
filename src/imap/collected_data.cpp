@@ -1,6 +1,6 @@
 #include "imap/collected_data.hpp"
 
-namespace cs::imap {
+namespace cs { namespace imap {
 
 CollectedData::CollectedData() : cs::base::CollectedData(DataType::IMAP) {
 }
@@ -13,4 +13,4 @@ const std::string &CollectedData::get_data() const {
     return data_;
 }
 
-}
+}}

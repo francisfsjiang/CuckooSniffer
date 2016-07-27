@@ -3,7 +3,7 @@
 
 #include "base/sniffer.hpp"
 
-namespace cs::http {
+namespace cs { namespace http {
 
 class Sniffer : public cs::base::TCPSniffer {
 
@@ -27,7 +27,7 @@ private:
 
 };
 
-}
+}}
 
 
 #endif //CUCKOOSNIFFER_HTTP_SNIFFER_HPP

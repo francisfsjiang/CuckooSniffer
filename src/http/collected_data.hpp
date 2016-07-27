@@ -5,7 +5,7 @@
 #include <string>
 #include "base/collected_data.hpp"
 
-namespace cs::http {
+namespace cs { namespace http {
 
 class CollectedData: public cs::base::CollectedData {
 
@@ -21,7 +21,7 @@ private:
 
 };
 
-}
+}}
 
 
 #endif //CUCKOOSNIFFER_HTTP_COLLECTED_DATA_HPP

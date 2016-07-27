@@ -1,10 +1,11 @@
 #include "ftp/data_processor.hpp"
+
 #include "ftp/collected_data.hpp"
 #include "util/base64.hpp"
 #include "util/file.hpp"
 #include "util/mail_process.hpp"
 
-namespace cs::ftp {
+namespace cs { namespace ftp {
 
 int DataProcessor::process(const cs::base::CollectedData &sniffer_data_arg) {
 
@@ -18,4 +19,4 @@ int DataProcessor::process(const cs::base::CollectedData &sniffer_data_arg) {
 
 DataProcessor::~DataProcessor() {}
 
-}
+}}

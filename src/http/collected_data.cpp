@@ -1,6 +1,6 @@
 #include "http/collected_data.hpp"
 
-namespace cs::http {
+namespace cs { namespace http {
 
 CollectedData::CollectedData(
         std::string &&data) :
@@ -12,4 +12,4 @@ const std::string &CollectedData::get_data() const {
     return data_;
 }
 
-}
+}}

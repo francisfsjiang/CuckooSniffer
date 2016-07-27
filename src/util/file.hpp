@@ -3,7 +3,7 @@
 
 #include <string>
 
-namespace cs::util {
+namespace cs { namespace util {
 
 class File {
 
@@ -45,6 +45,6 @@ private:
 
 };
 
-}
+}}
 
 #endif //CUCKOOSNIFFER_UTIL_FILE_HPP

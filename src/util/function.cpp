@@ -1,6 +1,6 @@
 #include "function.hpp"
 
-namespace cs::util {
+namespace cs { namespace util {
 
 std::vector<std::string> split_str(const std::string str, const std::string split) {
     std::string::size_type last_pos = 0, new_pos;
@@ -17,4 +17,4 @@ std::vector<std::string> split_str(const std::string str, const std::string spli
     }
 }
 
-}
+}}
