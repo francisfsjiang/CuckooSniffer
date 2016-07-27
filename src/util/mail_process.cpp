@@ -1,8 +1,8 @@
 #include "util/mail_process.hpp"
 
 #include <vector>
-#include <strstream>
 #include <iostream>
+#include <sstream>
 #include <map>
 #include <regex>
 #include <set>
@@ -27,7 +27,7 @@ bool is_boundary(const std::string &line, const std::string &boundary) {
 
 std::vector<File *> mail_process(const std::string &data) {
 
-    std::istrstream input_stream(data.c_str());
+    std::istringstream input_stream(data.c_str());
 
     std::multimap<std::string, std::string> record;
 
