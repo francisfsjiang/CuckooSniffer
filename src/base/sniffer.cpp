@@ -1,5 +1,6 @@
-#include "sniffer_manager.hpp"
 #include "base/sniffer.hpp"
+
+#include "sniffer_manager.hpp"
 
 namespace cs::base {
 

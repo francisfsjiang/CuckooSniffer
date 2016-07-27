@@ -1,5 +1,6 @@
-#include "sniffer_manager.hpp"
 #include "samba/sniffer.hpp"
+
+#include "sniffer_manager.hpp"
 #include "samba/collected_data.hpp"
 #include "samba/data_processor.hpp"
 

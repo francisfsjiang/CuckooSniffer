@@ -1,6 +1,7 @@
+#include "imap/data_processor.hpp"
+
 #include <iostream>
 
-#include "imap/data_processor.hpp"
 #include "imap/collected_data.hpp"
 #include "util/file.hpp"
 #include "util/mail_process.hpp"

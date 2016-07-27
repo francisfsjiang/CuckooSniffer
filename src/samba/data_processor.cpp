@@ -1,4 +1,5 @@
 #include "samba/data_processor.hpp"
+
 #include "samba/collected_data.hpp"
 #include "util/base64.hpp"
 #include "util/file.hpp"

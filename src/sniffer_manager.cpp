@@ -1,4 +1,5 @@
 #include "sniffer_manager.hpp"
+
 #include "base/sniffer.hpp"
 
 namespace cs {

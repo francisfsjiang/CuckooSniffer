@@ -1,4 +1,5 @@
 #include "base64.hpp"
+
 #include <iostream>
 
 namespace cs::util {

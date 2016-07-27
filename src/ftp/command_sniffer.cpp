@@ -1,7 +1,8 @@
+#include "ftp/command_sniffer.hpp"
+
 #include <regex>
 
 #include "sniffer_manager.hpp"
-#include "ftp/command_sniffer.hpp"
 #include "ftp/collected_data.hpp"
 #include "ftp/data_processor.hpp"
 #include "util/function.hpp"

@@ -1,5 +1,6 @@
-#include "sniffer_manager.hpp"
 #include "smtp/sniffer.hpp"
+
+#include "sniffer_manager.hpp"
 #include "smtp/collected_data.hpp"
 #include "smtp/data_processor.hpp"
 

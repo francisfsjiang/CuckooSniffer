@@ -51,6 +51,8 @@ elseif (APPLE)
 
 elseif (UNIX)
 
+    set(CMAKE_CXX_COMPILER g++-6)
+
     set(INCLUDE_DIRS    ${INCLUDE_DIRS} /usr/local/include)
     set(LIB_DIRS        ${LIB_DIRS} /usr/local/lib)
 
@@ -67,6 +69,7 @@ link_directories(${LIB_DIRS})
 set(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/bin)
 
 set(SRC_FILES
+        src/cuckoo_sniffer.cpp
         src/sniffer_manager.cpp
         src/base/sniffer.cpp
         src/util/base64.cpp
