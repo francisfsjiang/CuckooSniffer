@@ -1,10 +1,14 @@
-#ifndef CUCKOOSNIFFER_TASK_QUEUE_HPP
-#define CUCKOOSNIFFER_TASK_QUEUE_HPP
+#ifndef CUCKOOSNIFFER_THREADS_TASK_QUEUE_HPP
+#define CUCKOOSNIFFER_THREADS_TASK_QUEUE_HPP
+
+namespace cs {
+namespace threads {
 
 
-class task_queue {
 
-};
 
+
+}
+}
 
 #endif //CUCKOOSNIFFER_TASK_QUEUE_HPP

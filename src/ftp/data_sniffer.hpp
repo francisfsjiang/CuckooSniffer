@@ -7,11 +7,13 @@ namespace cs{ namespace util {
 
 class File;
 
-}}
+}
+}
 
 
 
-namespace cs { namespace ftp {
+namespace cs {
+namespace ftp {
 
 class DataSniffer : public cs::base::TCPSniffer {
 
@@ -38,7 +40,8 @@ private:
 
 };
 
-}}
+}
+}
 
 
 #endif //CUCKOOSNIFFER_FTP_DATA_SNIFFER_HPP

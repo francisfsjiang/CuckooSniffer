@@ -6,7 +6,8 @@
 #include "base/data_processor.hpp"
 #include "base/collected_data.hpp"
 
-namespace cs { namespace imap {
+namespace cs {
+namespace imap {
 
 class DataProcessor : public cs::base::DataProcessor {
 
@@ -18,7 +19,8 @@ public:
 
 };
 
-}}
+}
+}
 
 
 #endif //CUCKOOSNIFFER_IMAP_DATA_PROCESSOR_HPP

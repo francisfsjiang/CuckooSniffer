@@ -8,7 +8,8 @@
 
 #include "util/file.hpp"
 
-namespace cs { namespace util {
+namespace cs {
+namespace util {
 
 std::string match(const std::string &s, const std::regex &re) {
     std::smatch match;
@@ -172,4 +173,5 @@ std::vector<File *> mail_process(const std::string &data) {
     return file_vec;
 }
 
-}}
+}
+}

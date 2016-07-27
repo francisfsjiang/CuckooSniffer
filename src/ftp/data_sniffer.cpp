@@ -9,7 +9,8 @@
 #include "util/file.hpp"
 #include "util/function.hpp"
 
-namespace cs { namespace ftp {
+namespace cs {
+namespace ftp {
 
 void DataSniffer::on_client_payload(const Tins::TCPIP::Stream &stream) {
 
@@ -84,4 +85,5 @@ DataSniffer::DataSniffer(Tins::TCPIP::Stream &stream) : TCPSniffer(stream) {
 DataSniffer::~DataSniffer() {
 }
 
-}}
+}
+}

@@ -4,7 +4,8 @@
 #include "base/sniffer.hpp"
 #include "imap/collected_data.hpp"
 
-namespace cs { namespace imap {
+namespace cs {
+namespace imap {
 
 class Sniffer : public cs::base::TCPSniffer {
 
@@ -38,6 +39,7 @@ private:
 
 };
 
-}}
+}
+}
 
 #endif //CUCKOOSNIFFER_IMAP_SNIFFER_HPP

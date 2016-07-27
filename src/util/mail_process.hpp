@@ -4,12 +4,14 @@
 #include <vector>
 #include <string>
 
-namespace cs { namespace util {
+namespace cs {
+namespace util {
 
 class File;
 
 std::vector<File *> mail_process(const std::string &data);
 
-}}
+}
+}
 
 #endif //CUCKOOSNIFFER_UTIL_MAIL_PROCESSOR_HPP

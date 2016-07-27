@@ -6,7 +6,8 @@
 #include "base/data_processor.hpp"
 #include "base/collected_data.hpp"
 
-namespace cs { namespace ftp {
+namespace cs {
+namespace ftp {
 
 class DataProcessor : public cs::base::DataProcessor {
 
@@ -18,7 +19,8 @@ public:
 
 };
 
-}}
+}
+}
 
 
 #endif //CUCKOOSNIFFER_FTP_DATA_PROCESSOR_HPP

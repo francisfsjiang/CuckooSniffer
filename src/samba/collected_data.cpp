@@ -1,6 +1,7 @@
 #include "samba/collected_data.hpp"
 
-namespace cs { namespace samba {
+namespace cs {
+namespace samba {
 
 CollectedData::CollectedData(
         std::string &&data) :
@@ -12,4 +13,5 @@ const std::string &CollectedData::get_data() const {
     return data_;
 }
 
-}}
+}
+}

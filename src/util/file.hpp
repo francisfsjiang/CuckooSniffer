@@ -3,7 +3,8 @@
 
 #include <string>
 
-namespace cs { namespace util {
+namespace cs {
+namespace util {
 
 class File {
 
@@ -45,6 +46,7 @@ private:
 
 };
 
-}}
+}
+}
 
 #endif //CUCKOOSNIFFER_UTIL_FILE_HPP

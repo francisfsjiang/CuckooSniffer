@@ -5,7 +5,8 @@
 #include "imap/collected_data.hpp"
 #include "imap/data_processor.hpp"
 
-namespace cs { namespace imap {
+namespace cs {
+namespace imap {
 
 void Sniffer::on_client_payload(const Tins::TCPIP::Stream &stream) {
     if (status_ != Status::NONE) {
@@ -127,4 +128,5 @@ Sniffer::Sniffer(Tins::TCPIP::Stream &stream) : TCPSniffer(stream) {
 Sniffer::~Sniffer() {
 }
 
-}}
+}
+}

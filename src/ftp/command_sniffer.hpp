@@ -3,7 +3,8 @@
 
 #include "base/sniffer.hpp"
 
-namespace cs { namespace ftp {
+namespace cs {
+namespace ftp {
 
 class CommandSniffer : public cs::base::TCPSniffer {
 
@@ -32,7 +33,8 @@ private:
     uint16_t port_;
 };
 
-}}
+}
+}
 
 
 #endif //CUCKOOSNIFFER_FTP_SNIFFER_HPP

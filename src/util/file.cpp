@@ -3,7 +3,8 @@
 #include <cstdlib>
 #include <cstring>
 
-namespace cs { namespace util {
+namespace cs {
+namespace util {
 
 File::File() {
     encoded_ = false;
@@ -56,4 +57,5 @@ void File::set_encode_status(bool flag) {
     encoded_ = flag;
 }
 
-}}
+}
+}

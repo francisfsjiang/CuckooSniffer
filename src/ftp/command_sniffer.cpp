@@ -7,7 +7,8 @@
 #include "ftp/data_processor.hpp"
 #include "util/function.hpp"
 
-namespace cs { namespace ftp {
+namespace cs {
+namespace ftp {
 
 std::map<unsigned short, std::string> CommandSniffer::data_connection_pool_ =
         std::map<unsigned short, std::string>();
@@ -108,4 +109,5 @@ std::map<unsigned short, std::string>& CommandSniffer::get_data_connection_pool(
 CommandSniffer::~CommandSniffer() {
 }
 
-}}
+}
+}

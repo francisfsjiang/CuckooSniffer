@@ -3,7 +3,8 @@
 
 #include "base/sniffer.hpp"
 
-namespace cs { namespace samba {
+namespace cs {
+namespace samba {
 
 class Sniffer : public cs::base::TCPSniffer {
 
@@ -27,7 +28,8 @@ private:
 
 };
 
-}}
+}
+}
 
 
 #endif //CUCKOOSNIFFER_SAMBA_SNIFFER_HPP

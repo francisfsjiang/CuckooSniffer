@@ -5,7 +5,8 @@
 #include "util/file.hpp"
 #include "util/mail_process.hpp"
 
-namespace cs { namespace ftp {
+namespace cs {
+namespace ftp {
 
 int DataProcessor::process(const cs::base::CollectedData &sniffer_data_arg) {
 
@@ -19,4 +20,5 @@ int DataProcessor::process(const cs::base::CollectedData &sniffer_data_arg) {
 
 DataProcessor::~DataProcessor() {}
 
-}}
+}
+}

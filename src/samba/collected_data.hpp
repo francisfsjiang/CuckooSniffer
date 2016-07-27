@@ -5,7 +5,8 @@
 #include <string>
 #include "base/collected_data.hpp"
 
-namespace cs { namespace samba {
+namespace cs {
+namespace samba {
 
 class CollectedData: public cs::base::CollectedData {
 
@@ -21,7 +22,8 @@ private:
 
 };
 
-}}
+}
+}
 
 
 #endif //CUCKOOSNIFFER_SAMBA_COLLECTED_DATA_HPP

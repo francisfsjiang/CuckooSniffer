@@ -5,7 +5,8 @@
 #include <string>
 #include "base/collected_data.hpp"
 
-namespace cs { namespace ftp {
+namespace cs {
+namespace ftp {
 
 class CollectedData: public base::CollectedData {
 
@@ -21,7 +22,8 @@ private:
 
 };
 
-}}
+}
+}
 
 
 #endif //CUCKOOSNIFFER_FTP_COLLECTED_DATA_HPP
