@@ -51,12 +51,18 @@ elseif (APPLE)
 
 elseif (UNIX)
 
-    set(INCLUDE_DIRS    ${INCLUDE_DIRS} /usr/local/include)
-    set(LIB_DIRS        ${LIB_DIRS} /usr/local/lib)
+    set(INCLUDE_DIRS    ${INCLUDE_DIRS}
+        /usr/local/include
+        /usr/local/libtins/include
+        )
+    set(LIB_DIRS        ${LIB_DIRS}
+        /usr/local/lib
+        /usr/local/libtins/lib
+        )
 
     set(LIBS ${LIBS} pcap)
 
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} --std=c++1z")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} --std=c++17")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pedantic")
 
 endif()
