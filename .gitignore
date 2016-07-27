@@ -4,6 +4,8 @@ CMakeFiles/
 Makefile
 cmake_install.cmake
 bin/
+Debug/
+x64/
 *.dir/
 
 # VS

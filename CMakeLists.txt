@@ -11,25 +11,28 @@ set(INCLUDE_DIRS
 
 set(LIB_DIRS)
 
-set(LIBS tins
-        boost_log
-        boost_log_setup
-        boost_thread
-        boost_system
-        boost_date_time
-        )
+set(LIBS tins)
+
+set(BOOST_LIBS
+    boost_log
+    boost_log_setup
+    boost_thread
+    boost_system
+    boost_date_time
+)
 
 if (WIN32)
+    #set(CMAKE_GENERATOR_PLATFORM x64)
 
     set(INCLUDE_DIRS    ${INCLUDE_DIRS}
         D:/libs/WpdPack/Include
         D:/libs/libtins/include
-        D:/libs/boost/include
+        D:/libs/boost64
     )
     set(LIB_DIRS        ${LIB_DIRS}
         D:/libs/WpdPack/Lib
         D:/libs/libtins/lib
-        D:/libs/boost/lib
+        D:/libs/boost64
     )
 
     set(LIBS ${LIBS} wpcap Ws2_32 Iphlpapi)
@@ -45,7 +48,7 @@ elseif (APPLE)
         /usr/local/boost/lib
     )
 
-    set(LIBS ${LIBS} pcap)
+    set(LIBS ${LIBS} ${BOOST_LIBS} pcap)
 
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} --std=c++14")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pedantic")
@@ -62,7 +65,7 @@ elseif (UNIX)
           /usr/local/libtins/lib
         )
 
-    set(LIBS ${LIBS} pcap pthread)
+    set(LIBS ${LIBS} ${BOOST_LIBS} pcap pthread)
 
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} --std=c++14")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pedantic")
