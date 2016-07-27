@@ -21,25 +21,39 @@ set(LIBS tins
 
 if (WIN32)
 
-    set(WINPCAP_ROOT D:/libs/WpdPack)
-    set(LIBTINS_ROOT D:/libs/libtins)
-
-    set(WINPCAP_INCLUDE ${WINPCAP_ROOT}/Include)
-    set(WINPCAP_LIB     ${WINPCAP_ROOT}/Lib)
-    set(LIBTINS_INCLUDE ${LIBTINS_ROOT}/include)
-    set(LIBTINS_LIB     ${LIBTINS_ROOT}/lib)
-
-    set(INCLUDE_DIRS    ${INCLUDE_DIRS} ${WINPCAP_INCLUDE} ${LIBTINS_INCLUDE})
-    set(LIB_DIRS        ${LIB_DIRS} ${WINPCAP_LIB} ${LIBTINS_LIB})
+    set(INCLUDE_DIRS    ${INCLUDE_DIRS}
+        D:/libs/WpdPack/Include
+        D:/libs/libtins/include
+        D:/libs/boost/include
+    )
+    set(LIB_DIRS        ${LIB_DIRS}
+        D:/libs/WpdPack/Lib
+        D:/libs/libtins/lib
+        D:/libs/boost/lib
+    )
 
     set(LIBS ${LIBS} wpcap Ws2_32 Iphlpapi)
 
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /std:c++latest")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /wd4503")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /wd4456")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /wd4459")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /wd4003")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D_CRT_SECURE_NO_DEPRECATE")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D_CRT_SECURE_NO_WARNINGS")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D_SCL_SECURE_NO_DEPRECATE")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D_SCL_SECURE_NO_WARNINGS")
 
 elseif (APPLE)
 
-    set(INCLUDE_DIRS    ${INCLUDE_DIRS} /usr/local/include /usr/local/boost/include)
-    set(LIB_DIRS        ${LIB_DIRS} /usr/local/lib /usr/local/boost/lib)
+    set(INCLUDE_DIRS    ${INCLUDE_DIRS}
+        /usr/local/include
+        /usr/local/boost/include
+    )
+    set(LIB_DIRS        ${LIB_DIRS}
+        /usr/local/lib
+        /usr/local/boost/lib
+    )
 
     set(LIBS ${LIBS} pcap)
 
@@ -50,12 +64,12 @@ elseif (UNIX)
     set(CMAKE_CXX_COMPILER g++-6)
 
     set(INCLUDE_DIRS    ${INCLUDE_DIRS}
-        /usr/local/include
-        /usr/local/libtins/include
+          /usr/local/include
+          /usr/local/libtins/include
         )
     set(LIB_DIRS        ${LIB_DIRS}
-        /usr/local/lib
-        /usr/local/libtins/lib
+          /usr/local/lib
+          /usr/local/libtins/lib
         )
 
     set(LIBS ${LIBS} pcap pthread)

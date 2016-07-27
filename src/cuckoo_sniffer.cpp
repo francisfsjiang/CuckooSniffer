@@ -1,4 +1,7 @@
 #include "cuckoo_sniffer.hpp"
+
+#include <functional>
+
 #include <boost/log/common.hpp>
 #include <boost/log/core.hpp>
 #include <boost/log/trivial.hpp>
@@ -62,6 +65,7 @@ void init_log() {
     init_log_in_thread();
 
     LOG_INFO << "Logger started.";
+
 }
 
 }
