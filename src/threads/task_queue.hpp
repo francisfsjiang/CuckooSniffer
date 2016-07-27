@@ -1,0 +1,10 @@
+#ifndef CUCKOOSNIFFER_TASK_QUEUE_HPP
+#define CUCKOOSNIFFER_TASK_QUEUE_HPP
+
+
+class task_queue {
+
+};
+
+
+#endif //CUCKOOSNIFFER_TASK_QUEUE_HPP
