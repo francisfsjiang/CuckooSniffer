@@ -34,8 +34,6 @@ if (WIN32)
 
     set(LIBS ${LIBS} wpcap Ws2_32 Iphlpapi)
 
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /std:c++latest")
-
 elseif (APPLE)
 
     set(INCLUDE_DIRS    ${INCLUDE_DIRS} /usr/local/include /usr/local/boost/include)
@@ -60,7 +58,7 @@ elseif (UNIX)
 
     set(LIBS ${LIBS} pcap pthread)
 
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} --std=c++17")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} --std=c++14")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pedantic")
 
 endif()
