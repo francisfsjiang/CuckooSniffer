@@ -101,6 +101,8 @@ set(SRC_FILES
         src/samba/sniffer.cpp
         src/samba/collected_data.cpp
         src/samba/data_processor.cpp
+        src/threads/thread_pool.cpp
+        src/threads/task_queue.cpp
         )
 
 add_library(libcuckoo_sniffer STATIC ${SRC_FILES})

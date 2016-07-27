@@ -1,6 +1,5 @@
 #include "util/mail_process.hpp"
 
-#include <vector>
 #include <iostream>
 #include <sstream>
 #include <map>
