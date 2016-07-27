@@ -3,7 +3,7 @@
 
 #include "base/sniffer.hpp"
 
-namespace cs::smtp {
+namespace cs { namespace smtp {
 
 class Sniffer : public cs::base::TCPSniffer {
 
@@ -27,7 +27,7 @@ private:
 
 };
 
-}
+}}
 
 
 #endif //CUCKOOSNIFFER_SMTP_SNIFFER_HPP

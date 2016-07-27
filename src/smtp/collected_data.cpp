@@ -1,6 +1,6 @@
 #include "smtp/collected_data.hpp"
 
-namespace cs::smtp {
+namespace cs { namespace smtp {
 
 CollectedData::CollectedData(
         std::string &&data) :
@@ -12,4 +12,4 @@ const std::string &CollectedData::get_data() const {
     return data_;
 }
 
-}
+}}

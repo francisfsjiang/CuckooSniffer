@@ -4,7 +4,7 @@
 #include "smtp/collected_data.hpp"
 #include "smtp/data_processor.hpp"
 
-namespace cs::smtp {
+namespace cs { namespace smtp {
 
 void Sniffer::on_client_payload(const Tins::TCPIP::Stream &stream) {
 }
@@ -58,4 +58,4 @@ Sniffer::~Sniffer() {
     cs::SNIFFER_MANAGER.erase_sniffer(id_);
 }
 
-}
+}}

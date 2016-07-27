@@ -2,7 +2,7 @@
 
 #include "sniffer_manager.hpp"
 
-namespace cs::base {
+namespace cs { namespace base {
 
 Sniffer::~Sniffer() {
     std::cout << "sniffer deconstructor invoked " << std::endl;
@@ -49,4 +49,4 @@ std::string TCPSniffer::stream_identifier(const Tins::TCPIP::Stream &stream) {
     return output.str();
 }
 
-}
+}}

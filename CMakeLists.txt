@@ -34,16 +34,6 @@ if (WIN32)
 
     set(LIBS ${LIBS} wpcap Ws2_32 Iphlpapi)
 
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /std:c++latest")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /wd4503")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /wd4456")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /wd4459")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /wd4003")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D_CRT_SECURE_NO_DEPRECATE")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D_CRT_SECURE_NO_WARNINGS")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D_SCL_SECURE_NO_DEPRECATE")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D_SCL_SECURE_NO_WARNINGS")
-
 elseif (APPLE)
 
     set(INCLUDE_DIRS    ${INCLUDE_DIRS}
@@ -57,7 +47,7 @@ elseif (APPLE)
 
     set(LIBS ${LIBS} pcap)
 
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} --std=c++1z")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} --std=c++14")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pedantic")
 
 elseif (UNIX)
@@ -74,7 +64,7 @@ elseif (UNIX)
 
     set(LIBS ${LIBS} pcap pthread)
 
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} --std=c++17")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} --std=c++14")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pedantic")
 
 endif()

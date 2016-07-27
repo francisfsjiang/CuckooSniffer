@@ -6,8 +6,9 @@
 #include "util/file.hpp"
 #include "util/mail_process.hpp"
 
+namespace cs { namespace imap {
 
-int cs::imap::DataProcessor::process(const cs::base::CollectedData& sniffer_data_arg) {
+int DataProcessor::process(const cs::base::CollectedData& sniffer_data_arg) {
 
     const cs::imap::CollectedData& sniffer_data = (const CollectedData&)sniffer_data_arg;
     std::string data = sniffer_data.get_data();
@@ -36,4 +37,8 @@ int cs::imap::DataProcessor::process(const cs::base::CollectedData& sniffer_data
 }
 
 
-cs::imap::DataProcessor::~DataProcessor() { }
+DataProcessor::~DataProcessor() {
+
+}
+
+}}

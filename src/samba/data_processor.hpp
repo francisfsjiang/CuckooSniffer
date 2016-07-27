@@ -6,7 +6,7 @@
 #include "base/data_processor.hpp"
 #include "base/collected_data.hpp"
 
-namespace cs::samba {
+namespace cs { namespace samba {
 
 class DataProcessor : public cs::base::DataProcessor {
 
@@ -18,7 +18,7 @@ public:
 
 };
 
-}
+}}
 
 
 #endif //CUCKOOSNIFFER_SAMBA_DATA_PROCESSOR_HPP

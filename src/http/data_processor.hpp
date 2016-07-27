@@ -6,7 +6,7 @@
 #include "base/data_processor.hpp"
 #include "base/collected_data.hpp"
 
-namespace cs::http {
+namespace cs { namespace http {
 
 class DataProcessor : public cs::base::DataProcessor {
 
@@ -18,7 +18,7 @@ public:
 
 };
 
-}
+}}
 
 
 #endif //CUCKOOSNIFFER_HTTP_DATA_PROCESSOR_HPP

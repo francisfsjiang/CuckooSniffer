@@ -5,9 +5,9 @@
 #include <string>
 #include "base/collected_data.hpp"
 
-namespace cs::ftp {
+namespace cs { namespace ftp {
 
-class CollectedData: public cs::base::CollectedData {
+class CollectedData: public base::CollectedData {
 
 public:
 
@@ -21,7 +21,7 @@ private:
 
 };
 
-}
+}}
 
 
 #endif //CUCKOOSNIFFER_FTP_COLLECTED_DATA_HPP

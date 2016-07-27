@@ -5,7 +5,7 @@
 #include "tins/ip_address.h"
 #include "tins/ipv6_address.h"
 
-namespace cs::base {
+namespace cs { namespace base {
 
 class Sniffer {
 
@@ -49,5 +49,5 @@ public:
     static std::string stream_identifier(const Tins::TCPIP::Stream &stream);
 };
 
-}
+}}
 #endif //CUCKOOSNIFFER_BASE_SNIFFER_HPP
