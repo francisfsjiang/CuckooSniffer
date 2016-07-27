@@ -2,8 +2,6 @@ cmake_minimum_required(VERSION 3.3)
 project(CuckooSniffer)
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DTINS_STATIC")
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DBOOST_ALL_DYN_LINK")
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DBOOST_LOG_DYN_LINK")
 set(CMAKE_CXX_LINKER_FLAGS "-static")
 
 set(INCLUDE_DIRS
@@ -26,13 +24,13 @@ if (WIN32)
 
     set(INCLUDE_DIRS    ${INCLUDE_DIRS}
         D:/libs/WpdPack/Include
-        D:/libs/libtins/include
+        D:/libs/libtins64-debug/include
         D:/libs/boost64
     )
     set(LIB_DIRS        ${LIB_DIRS}
-        D:/libs/WpdPack/Lib
-        D:/libs/libtins/lib
-        D:/libs/boost64
+        D:/libs/WpdPack/Lib/x64
+        D:/libs/libtins64-debug/lib
+        D:/libs/boost64/lib64-msvc-14.0
     )
 
     set(LIBS ${LIBS} wpcap Ws2_32 Iphlpapi)
