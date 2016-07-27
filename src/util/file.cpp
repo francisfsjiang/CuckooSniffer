@@ -1,5 +1,7 @@
-#include <cstdlib>
 #include "util/file.hpp"
+
+#include <cstdlib>
+#include <cstring>
 
 namespace cs::util {
 

@@ -1,6 +1,7 @@
+#include "imap/sniffer.hpp"
+
 #include <util/function.hpp>
 #include "sniffer_manager.hpp"
-#include "imap/sniffer.hpp"
 #include "imap/collected_data.hpp"
 #include "imap/data_processor.hpp"
 

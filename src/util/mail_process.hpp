@@ -1,9 +1,12 @@
 #ifndef CUCKOOSNIFFER_UTIL_MAIL_PROCESSOR_HPP
 #define CUCKOOSNIFFER_UTIL_MAIL_PROCESSOR_HPP
 
-#include "util/file.hpp"
+#include <vector>
+#include <string>
 
 namespace cs::util {
+
+class File;
 
 std::vector<File *> mail_process(const std::string &data);
 

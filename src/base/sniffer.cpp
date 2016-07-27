@@ -1,11 +1,12 @@
-#include "sniffer_manager.hpp"
 #include "base/sniffer.hpp"
+
+#include "sniffer_manager.hpp"
 
 namespace cs::base {
 
 Sniffer::~Sniffer() {
     std::cout << "sniffer deconstructor invoked " << std::endl;
-};
+}
 
 const std::string& Sniffer::get_id() {
     return id_;

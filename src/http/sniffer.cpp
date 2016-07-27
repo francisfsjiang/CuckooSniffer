@@ -1,5 +1,6 @@
-#include "sniffer_manager.hpp"
 #include "http/sniffer.hpp"
+
+#include "sniffer_manager.hpp"
 #include "http/collected_data.hpp"
 #include "http/data_processor.hpp"
 

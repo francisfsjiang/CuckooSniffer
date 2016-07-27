@@ -1,9 +1,6 @@
 cmake_minimum_required(VERSION 3.3)
 project(CuckooSniffer)
 
-SET(CMAKE_FIND_LIBRARY_SUFFIXES ".a")
-SET(BUILD_SHARED_LIBRARIES OFF)
-
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DTINS_STATIC")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DBOOST_ALL_DYN_LINK")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DBOOST_LOG_DYN_LINK")
@@ -50,6 +47,7 @@ elseif (APPLE)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pedantic")
 
 elseif (UNIX)
+    set(CMAKE_CXX_COMPILER g++-6)
 
     set(INCLUDE_DIRS    ${INCLUDE_DIRS}
         /usr/local/include
@@ -60,7 +58,7 @@ elseif (UNIX)
         /usr/local/libtins/lib
         )
 
-    set(LIBS ${LIBS} pcap)
+    set(LIBS ${LIBS} pcap pthread)
 
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} --std=c++17")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pedantic")
@@ -73,6 +71,7 @@ link_directories(${LIB_DIRS})
 set(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/bin)
 
 set(SRC_FILES
+        src/cuckoo_sniffer.cpp
         src/sniffer_manager.cpp
         src/base/sniffer.cpp
         src/util/base64.cpp
