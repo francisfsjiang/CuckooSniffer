@@ -2,6 +2,14 @@
 #define CUCKOOSNIFFER_BASE_COLLECTED_DATA_HPP
 
 namespace cs {
+
+namespace smtp  { class   SMTPCollectedData; }
+namespace imap  { class   IMAPCollectedData; }
+namespace ftp   { class    FTPCollectedData; }
+namespace http  { class   HTTPCollectedData; }
+namespace samba { class  SAMBACollectedData; }
+
+
 namespace base {
 
 class CollectedData {

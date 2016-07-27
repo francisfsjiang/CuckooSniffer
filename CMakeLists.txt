@@ -20,7 +20,6 @@ set(BOOST_LIBS
 )
 
 if (WIN32)
-    #set(CMAKE_GENERATOR_PLATFORM x64)
 
     set(INCLUDE_DIRS    ${INCLUDE_DIRS}
         D:/libs/WpdPack/Include
@@ -36,6 +35,8 @@ if (WIN32)
     set(LIBS ${LIBS} wpcap Ws2_32 Iphlpapi)
 
 elseif (APPLE)
+
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DBOOST_LOG_DYN_LINK")
 
     set(INCLUDE_DIRS    ${INCLUDE_DIRS}
         /usr/local/include
@@ -99,8 +100,8 @@ set(SRC_FILES
         src/samba/sniffer.cpp
         src/samba/collected_data.cpp
         src/samba/data_processor.cpp
-        src/threads/thread_pool.cpp
-        src/threads/task_queue.cpp
+        src/threads/thread.cpp
+        src/threads/data_queue.cpp
         )
 
 add_library(libcuckoo_sniffer STATIC ${SRC_FILES})

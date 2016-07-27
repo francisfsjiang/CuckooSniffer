@@ -14,8 +14,18 @@
 
 namespace cs {
 
+namespace base {
+class CollectedData;
+}
+
+namespace threads {
+class DataQueue;
+}
+
 
 extern boost::log::sources::severity_logger <boost::log::trivial::severity_level> lg;
+
+extern cs::threads::DataQueue& DATA_QUEUE;
 
 void init_log();
 

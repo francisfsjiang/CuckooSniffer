@@ -38,8 +38,8 @@ void Sniffer::on_connection_terminated(
 
 Sniffer::Sniffer(Tins::TCPIP::Stream &stream) : TCPSniffer(stream) {
 
-    stream.ignore_server_data();
-    stream.auto_cleanup_client_data(false);
+    stream.ignore_client_data();
+    stream.auto_cleanup_server_data(false);
     stream.client_data_callback(
             [this](const Tins::TCPIP::Stream &tcp_stream) {
                 this->on_client_payload(tcp_stream);
