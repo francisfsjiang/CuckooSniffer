@@ -1,5 +1,7 @@
 #include "threads/data_queue.hpp"
 
+#include "cuckoo_sniffer.hpp"
+
 namespace cs {
 namespace threads {
 
@@ -16,6 +18,7 @@ void DataQueue::enqueue(cs::base::CollectedData* t)
 {
     std::lock_guard<std::mutex> lock(mutex);
     queue_.push(t);
+    LOG_TRACE << "Data_queue size: " << queue_.size();
     condition_var_.notify_one();
 }
 
@@ -29,6 +32,7 @@ cs::base::CollectedData* DataQueue::dequeue()
     if (!queue_.empty()) {
         cs::base::CollectedData* val = queue_.front();
         queue_.pop();
+        LOG_TRACE << "Data_queue size: " << queue_.size();
         return val;
     }
     else {

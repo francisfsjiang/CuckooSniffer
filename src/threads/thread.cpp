@@ -21,6 +21,15 @@ void thread_process() {
     try {
         cs::base::CollectedData* collected_data = DATA_QUEUE.dequeue();
 
+        LOG_DEBUG << "Thread get collected data.";
+
+        cs::base::DataProcessor* processor =
+                cs::base::get_data_processor_by_data_type(
+                        collected_data->get_data_type()
+                );
+
+        processor -> process(*collected_data);
+
 
         delete collected_data;
     }

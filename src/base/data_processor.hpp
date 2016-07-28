@@ -1,6 +1,8 @@
 #ifndef CUCKOOSNIFFER_BASE_DATA_PROCESSOR_HPP
 #define CUCKOOSNIFFER_BASE_DATA_PROCESSOR_HPP
 
+#include "collected_data.hpp"
+
 namespace cs {
 namespace base {
 
@@ -15,6 +17,8 @@ public:
     virtual ~DataProcessor() {};
 
 };
+
+DataProcessor* get_data_processor_by_data_type(const CollectedData::DataType&);
 
 }
 }

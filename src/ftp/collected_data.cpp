@@ -3,8 +3,7 @@
 namespace cs {
 namespace ftp {
 
-CollectedData::CollectedData(
-        std::string &&data) :
+CollectedData::CollectedData( const std::string& data) :
         cs::base::CollectedData(DataType::FTP) {
     data_ = std::move(data);
 }

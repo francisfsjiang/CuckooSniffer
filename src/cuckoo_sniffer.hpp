@@ -11,17 +11,13 @@
 #define LOG_ERROR       BOOST_LOG_SEV(cs::lg, boost::log::trivial::error)
 #define LOG_FATAL       BOOST_LOG_SEV(cs::lg, boost::log::trivial::fatal)
 
+#include "threads/data_queue.hpp"
 
 namespace cs {
 
 namespace base {
 class CollectedData;
 }
-
-namespace threads {
-class DataQueue;
-}
-
 
 extern boost::log::sources::severity_logger <boost::log::trivial::severity_level> lg;
 

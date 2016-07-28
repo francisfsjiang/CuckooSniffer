@@ -103,7 +103,7 @@ set(SRC_FILES
         src/samba/data_processor.cpp
         src/threads/thread.cpp
         src/threads/data_queue.cpp
-        )
+        src/base/data_processor.cpp)
 
 add_library(libcuckoo_sniffer STATIC ${SRC_FILES})
 
