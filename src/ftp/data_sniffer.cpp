@@ -22,7 +22,7 @@ void DataSniffer::on_server_payload(const Tins::TCPIP::Stream &stream) {
 //            stream.server_payload().begin(),
 //            stream.server_payload().end()
 //    );
-//
+    LOG_TRACE << "FTP data size :" << stream.server_payload().size();
 //    std::cout << data.size() << std::endl;
 //    payload_ += data;
 ////    //TODO make this process in thread
@@ -39,7 +39,7 @@ void DataSniffer::on_server_payload(const Tins::TCPIP::Stream &stream) {
 }
 
 void DataSniffer::on_connection_close(const Tins::TCPIP::Stream &stream) {
-
+    LOG_TRACE << "FTP data size :" << stream.server_payload().size();
     std::string data = std::string(
             stream.server_payload().begin(),
             stream.server_payload().end()
@@ -72,13 +72,14 @@ DataSniffer::DataSniffer(Tins::TCPIP::Stream &stream) : TCPSniffer(stream) {
     file_ = new cs::util::File();
     file_ -> set_encode_status(true);
 
-    stream.ignore_client_data();
+//    stream.ignore_client_data();
     stream.auto_cleanup_server_data(false);
-//    stream.server_data_callback(
-//            [this](const Tins::TCPIP::Stream& tcp_stream) {
-//                this -> on_server_payload(tcp_stream);
-//            }
-//    );
+    stream.auto_cleanup_payloads(false);
+    stream.server_data_callback(
+            [this](const Tins::TCPIP::Stream& tcp_stream) {
+                this -> on_server_payload(tcp_stream);
+            }
+    );
 
     stream.stream_closed_callback(
             [this](const Tins::TCPIP::Stream &tcp_stream) {
