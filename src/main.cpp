@@ -8,16 +8,17 @@
 #include "tins/packet.h"
 
 #include "sniffer_manager.hpp"
-
+#include "threads/thread.hpp"
 #include "smtp/sniffer.hpp"
 #include "imap/sniffer.hpp"
 #include "ftp/data_sniffer.hpp"
 #include "ftp/command_sniffer.hpp"
+#include "util/function.hpp"
 
 void on_new_connection(Tins::TCPIP::Stream& stream) {
     cs::base::TCPSniffer* tcp_sniffer = nullptr;
     uint16_t port = stream.server_port();
-    std::cout << port << std::endl;
+    LOG_TRACE << cs::util::stream_identifier(stream) << " Get tcp stream." ;
     switch (stream.server_port()) {
         case 25:        //SMTP
             tcp_sniffer = new cs::smtp::Sniffer(stream);
@@ -46,10 +47,10 @@ void on_new_connection(Tins::TCPIP::Stream& stream) {
 
 
 void on_connection_terminated(Tins::TCPIP::Stream& stream, Tins::TCPIP::StreamFollower::TerminationReason reason) {
-    std::cout << "[+] Connection terminated " << cs::base::TCPSniffer::stream_identifier(stream) << std::endl;
-    std::string stream_id = cs::base::TCPSniffer::stream_identifier(stream);
+    std::string stream_id = cs::util::stream_identifier(stream);
+    LOG_INFO << "Connection terminated " << stream_id;
     ((cs::base::TCPSniffer*)cs::SNIFFER_MANAGER.get_sniffer(stream_id)) ->on_connection_terminated(stream, reason);
-    cs::SNIFFER_MANAGER.erase_sniffer(cs::base::TCPSniffer::stream_identifier(stream));
+    cs::SNIFFER_MANAGER.erase_sniffer(stream_id);
 }
 
 
@@ -61,6 +62,8 @@ int main(int argc, char* argv[]) {
     try {
 
         cs::init_log();
+
+        cs::threads::start_threads(2);
 
         Tins::SnifferConfiguration config;
 //        config.set_filter("(tcp port 25) or (tcp port 143) or (tcp port 21)");

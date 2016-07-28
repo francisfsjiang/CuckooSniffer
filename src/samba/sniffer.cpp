@@ -1,5 +1,6 @@
 #include "samba/sniffer.hpp"
 
+#include "cuckoo_sniffer.hpp"
 #include "sniffer_manager.hpp"
 #include "samba/collected_data.hpp"
 #include "samba/data_processor.hpp"
@@ -33,7 +34,7 @@ void Sniffer::on_connection_terminated(
         Tins::TCPIP::Stream &,
         Tins::TCPIP::StreamFollower::TerminationReason) {
 
-    std::cout << "[+] On Connection terminated " << id_ << std::endl;
+    LOG_DEBUG << id_ << " SAMBA connection terminated.";
 }
 
 Sniffer::Sniffer(Tins::TCPIP::Stream &stream) : TCPSniffer(stream) {

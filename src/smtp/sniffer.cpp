@@ -1,5 +1,6 @@
 #include "smtp/sniffer.hpp"
 
+#include "cuckoo_sniffer.hpp"
 #include "sniffer_manager.hpp"
 #include "smtp/collected_data.hpp"
 #include "smtp/data_processor.hpp"
@@ -14,7 +15,7 @@ void Sniffer::on_server_payload(const Tins::TCPIP::Stream &stream) {
 }
 
 void Sniffer::on_connection_close(const Tins::TCPIP::Stream &stream) {
-    std::cout << "Connection Close" << std::endl;
+    LOG_DEBUG << id_ << " " << "SMTP Connection Close" << std::endl;
 
     //TODO make this process in thread
     CollectedData *smtp_data = new CollectedData(
@@ -32,9 +33,8 @@ void Sniffer::on_connection_close(const Tins::TCPIP::Stream &stream) {
 void Sniffer::on_connection_terminated(
         Tins::TCPIP::Stream &,
         Tins::TCPIP::StreamFollower::TerminationReason) {
-
-    std::cout << "[+] On Connection terminated " << id_ << std::endl;
-    delete this;
+    LOG_DEBUG << id_ << " SMTP data connection terminated.";
+    cs::SNIFFER_MANAGER.erase_sniffer(id_);
 }
 
 Sniffer::Sniffer(Tins::TCPIP::Stream &stream) : TCPSniffer(stream) {

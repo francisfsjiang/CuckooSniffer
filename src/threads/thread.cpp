@@ -38,8 +38,16 @@ void thread_loop() {
 
 }
 
+std::vector<std::thread> threads_vec;
 
-void start_threads(int) {
+void start_threads(int threads_num) {
+
+    for (unsigned int i = 0; i < threads_num; ++i) {
+        threads_vec.push_back(
+                std::thread(thread_loop)
+        );
+    }
+
 
 }
 

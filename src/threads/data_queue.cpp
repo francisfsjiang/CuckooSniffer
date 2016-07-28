@@ -26,9 +26,14 @@ cs::base::CollectedData* DataQueue::dequeue()
     {
         condition_var_.wait(lock);
     }
-    cs::base::CollectedData* val = queue_.front();
-    queue_.pop();
-    return val;
+    if (!queue_.empty()) {
+        cs::base::CollectedData* val = queue_.front();
+        queue_.pop();
+        return val;
+    }
+    else {
+        return nullptr;
+    }
 }
 
 }

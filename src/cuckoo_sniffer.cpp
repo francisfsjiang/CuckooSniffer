@@ -28,6 +28,7 @@ void init_log_in_thread() {
 }
 
 void init_log() {
+
     boost::shared_ptr <boost::log::core> core = boost::log::core::get();
 
     boost::shared_ptr <boost::log::sinks::text_file_backend> backend =
@@ -45,28 +46,41 @@ void init_log() {
     boost::shared_ptr <sink_t> sink(new sink_t(backend));
 
 
+//    sink->set_formatter(
+//            boost::log::expressions::format("%1% %2% %|6t|%3% : %4%")
+//            % boost::log::expressions::format_date_time<boost::posix_time::ptime>
+//                    ("TimeStamp", "%Y-%m-%d %H:%M:%S.%f")
+//            % boost::log::expressions::attr<boost::log::attributes::current_thread_id::value_type>("ThreadID")
+//            % boost::log::trivial::severity
+//            % boost::log::expressions::smessage
+//    );
     sink->set_formatter(
-            boost::log::expressions::format("%1% %2% %3% %4%")
-            % boost::log::expressions::format_date_time<boost::posix_time::ptime>
-                    ("TimeStamp", "%Y-%m-%d %H:%M:%S")
-            % boost::log::expressions::attr<boost::thread::id>("ThreadID")
-            % boost::log::trivial::severity
-            % boost::log::expressions::smessage
+            boost::log::expressions::stream
+            << boost::log::expressions::format_date_time<boost::posix_time::ptime>
+                    ("TimeStamp", "%Y-%m-%d %H:%M:%S.%f")
+            << " " << boost::log::expressions::attr<boost::log::attributes::current_thread_id::value_type>("ThreadID")
+            << " " << std::setw(7) << std::left << boost::log::trivial::severity
+            << " " << boost::log::expressions::smessage
     );
+
+
+
+
+    boost::log::core::get()->add_global_attribute("TimeStamp", boost::log::attributes::local_clock());
+    boost::log::core::get()->add_global_attribute("ThreadID",  boost::log::attributes::current_thread_id());
 
     core->add_sink(sink);
 
     boost::log::core::get()->set_filter
             (
-                    boost::log::trivial::severity >= boost::log::trivial::info
+                    boost::log::trivial::severity >= boost::log::trivial::trace
             );
 
     boost::log::add_common_attributes();
 
     init_log_in_thread();
 
-    LOG_INFO << "Logger started.";
-
+    LOG_INFO << "Logger start.";
 }
 
 

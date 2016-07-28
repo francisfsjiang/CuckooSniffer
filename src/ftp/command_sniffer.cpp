@@ -2,6 +2,7 @@
 
 #include <regex>
 
+#include "cuckoo_sniffer.hpp"
 #include "sniffer_manager.hpp"
 #include "ftp/collected_data.hpp"
 #include "ftp/data_processor.hpp"
@@ -25,12 +26,12 @@ void CommandSniffer::on_client_payload(const Tins::TCPIP::Stream &stream) {
     try {
         if (std::regex_search(command, match, get_file_command) && match.size() > 1) {
             caught_str = match.str(1);
-            std::cout << "get file command: " << caught_str << std::endl;
+            LOG_DEBUG << "FTP command get file command " << caught_str;
             data_connection_pool_[port_] = caught_str;
         }
     }
     catch (const std::exception& ) {
-        std::cerr << "Regex error" << std::endl;
+        LOG_ERROR << "FTP command sniffer regex error.";
     }
 
 }
@@ -61,24 +62,24 @@ void CommandSniffer::on_server_payload(const Tins::TCPIP::Stream &stream) {
     }
     catch (const std::exception&)
     {
-        std::cerr << "Regex error" << std::endl;
+        LOG_ERROR << "FTP command sniffer regex error.";
     }
 }
 
 void CommandSniffer::on_connection_close(const Tins::TCPIP::Stream &stream) {
-    std::cout << "FTP Connection Close" << std::endl;
+    LOG_DEBUG << id_ << " FTP connection close.";
     cs::SNIFFER_MANAGER.erase_sniffer(id_);
 }
 
 void CommandSniffer::on_connection_terminated(
         Tins::TCPIP::Stream &,
         Tins::TCPIP::StreamFollower::TerminationReason) {
-    std::cout << "[+] On Connection terminated " << id_ << std::endl;
+    LOG_DEBUG << id_ << " FTP connection terminated.";
     cs::SNIFFER_MANAGER.erase_sniffer(id_);
 }
 
 CommandSniffer::CommandSniffer(Tins::TCPIP::Stream &stream) : cs::base::TCPSniffer(stream) {
-    std::cout << "get ftp connection" << std::endl;
+    LOG_DEBUG << id_ << " Get FTP command connection.";
 
     stream.auto_cleanup_client_data(true);
     stream.auto_cleanup_server_data(true);

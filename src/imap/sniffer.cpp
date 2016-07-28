@@ -1,6 +1,7 @@
 #include "imap/sniffer.hpp"
 
-#include <util/function.hpp>
+#include "cuckoo_sniffer.hpp"
+#include "util/function.hpp"
 #include "sniffer_manager.hpp"
 #include "imap/collected_data.hpp"
 #include "imap/data_processor.hpp"
@@ -97,7 +98,7 @@ void Sniffer::on_connection_close(const Tins::TCPIP::Stream &stream) {
 void Sniffer::on_connection_terminated(
         Tins::TCPIP::Stream &,
         Tins::TCPIP::StreamFollower::TerminationReason) {
-    std::cout << "[+] On Connection terminated " << id_ << std::endl;
+    LOG_DEBUG << id_ << " IMAP connection terminated.";
     cs::SNIFFER_MANAGER.erase_sniffer(id_);
 }
 

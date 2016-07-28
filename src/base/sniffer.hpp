@@ -42,12 +42,6 @@ public:
     TCPSniffer(Tins::TCPIP::Stream&);
 
     virtual ~TCPSniffer() {};
-
-    static std::string client_endpoint(const Tins::TCPIP::Stream &stream);
-
-    static std::string server_endpoint(const Tins::TCPIP::Stream &stream);
-
-    static std::string stream_identifier(const Tins::TCPIP::Stream &stream);
 };
 
 }
