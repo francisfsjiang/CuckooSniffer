@@ -74,7 +74,7 @@ elseif (UNIX)
           /usr/local/libtins/lib
         )
 
-    set(LIBS ${LIBS} ${BOOST_LIBS} pcap pthread)
+    set(LIBS ${LIBS} ${BOOST_LIBS} pcap pthread crypto)
 
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} --std=c++14")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pedantic")
