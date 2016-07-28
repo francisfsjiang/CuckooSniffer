@@ -53,7 +53,8 @@ elseif (APPLE)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pedantic")
 
 elseif (UNIX)
-    set(CMAKE_CXX_COMPILER g++-6)
+
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DBOOST_LOG_DYN_LINK")
 
     set(INCLUDE_DIRS    ${INCLUDE_DIRS}
           /usr/local/include
