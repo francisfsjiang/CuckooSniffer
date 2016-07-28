@@ -2,7 +2,6 @@
 
 #include <sstream>
 
-#include "tins/tcp_stream.h"
 #include "tins/tcp_ip/stream_follower.h"
 #include "tins/ip_address.h"
 #include "tins/ipv6_address.h"
