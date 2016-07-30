@@ -12,7 +12,7 @@ class CollectedData: public cs::base::CollectedData {
 
 public:
 
-    CollectedData(std::string&&);
+    CollectedData(const std::string&);
 
     const std::string& get_data() const;
 

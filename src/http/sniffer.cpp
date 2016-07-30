@@ -9,24 +9,25 @@ namespace cs {
 namespace http {
 
 void Sniffer::on_client_payload(const Tins::TCPIP::Stream &stream) {
+    data_ += std::string(
+            stream.client_payload().begin(),
+            stream.client_payload().end()
+    );
 }
 
 void Sniffer::on_server_payload(const Tins::TCPIP::Stream &stream) {
 }
 
 void Sniffer::on_connection_close(const Tins::TCPIP::Stream &stream) {
-    std::cout << "Connection Close" << std::endl;
+    LOG_DEBUG << "HTTP data size: " << data_.size();
 
     //TODO make this process in thread
     CollectedData *http_data = new CollectedData(
-            std::string(stream.client_payload().begin(), stream.client_payload().end())
+            data_
     );
 
-    DataProcessor processor;
-    processor.process(*((CollectedData *) http_data));
+    cs::DATA_QUEUE.enqueue(http_data);
 
-
-    delete http_data;
     SNIFFER_MANAGER.erase_sniffer(id_);
 }
 
@@ -40,8 +41,8 @@ void Sniffer::on_connection_terminated(
 
 Sniffer::Sniffer(Tins::TCPIP::Stream &stream) : TCPSniffer(stream) {
 
-    stream.ignore_client_data();
-    stream.auto_cleanup_server_data(false);
+    stream.ignore_server_data();
+    stream.auto_cleanup_client_data(true);
     stream.client_data_callback(
             [this](const Tins::TCPIP::Stream &tcp_stream) {
                 this->on_client_payload(tcp_stream);

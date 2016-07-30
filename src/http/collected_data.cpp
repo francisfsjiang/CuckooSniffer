@@ -3,10 +3,9 @@
 namespace cs {
 namespace http {
 
-CollectedData::CollectedData(
-        std::string &&data) :
+CollectedData::CollectedData( const std::string &data) :
         cs::base::CollectedData(DataType::HTTP) {
-    data_ = std::move(data);
+    data_ = data;
 }
 
 const std::string &CollectedData::get_data() const {

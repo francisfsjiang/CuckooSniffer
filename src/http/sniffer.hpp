@@ -26,6 +26,7 @@ public:
 
 private:
 
+    std::string data_;
 };
 
 }

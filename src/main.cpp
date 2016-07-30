@@ -5,7 +5,6 @@
 
 #include "tins/tcp_ip/stream_follower.h"
 #include "tins/sniffer.h"
-#include "tins/packet.h"
 
 #include "sniffer_manager.hpp"
 #include "threads/thread.hpp"
@@ -13,6 +12,7 @@
 #include "imap/sniffer.hpp"
 #include "ftp/data_sniffer.hpp"
 #include "ftp/command_sniffer.hpp"
+#include "http/sniffer.hpp"
 #include "util/function.hpp"
 
 void on_new_connection(Tins::TCPIP::Stream& stream) {
@@ -28,6 +28,9 @@ void on_new_connection(Tins::TCPIP::Stream& stream) {
             break;
         case 21:        //FTP
             tcp_sniffer = new cs::ftp::CommandSniffer(stream);
+            break;
+        case 80:
+            tcp_sniffer = new cs::http::Sniffer(stream);
             break;
         default:
             const auto& ftp_data_connection = cs::ftp::CommandSniffer::get_data_connection_pool();
@@ -66,9 +69,11 @@ int main(int argc, char* argv[]) {
         cs::threads::start_threads(2);
 
         Tins::SnifferConfiguration config;
-//        config.set_filter("(tcp port 25) or (tcp port 143) or (tcp port 21)");
+//        config.set_filter("(tcp port 80)");
         config.set_promisc_mode(true);
         Tins::Sniffer sniffer(argv[1], config);
+
+        LOG_INFO << "Start sniffer on " << argv[1];
 
         Tins::TCPIP::StreamFollower follower;
         follower.new_stream_callback(&on_new_connection);

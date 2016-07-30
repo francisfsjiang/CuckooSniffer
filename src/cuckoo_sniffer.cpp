@@ -58,7 +58,7 @@ void init_log() {
             boost::log::expressions::stream
             << boost::log::expressions::format_date_time<boost::posix_time::ptime>
                     ("TimeStamp", "%Y-%m-%d %H:%M:%S.%f")
-            << " " << boost::log::expressions::attr<boost::log::attributes::current_thread_id::value_type>("ThreadID")
+//            << " " << boost::log::expressions::attr<boost::log::attributes::current_thread_id::value_type>("ThreadID")
             << " " << std::setw(7) << std::left << boost::log::trivial::severity
             << " " << boost::log::expressions::smessage
     );
@@ -67,7 +67,7 @@ void init_log() {
 
 
     boost::log::core::get()->add_global_attribute("TimeStamp", boost::log::attributes::local_clock());
-    boost::log::core::get()->add_global_attribute("ThreadID",  boost::log::attributes::current_thread_id());
+//    boost::log::core::get()->add_global_attribute("ThreadID",  boost::log::attributes::current_thread_id());
 
     core->add_sink(sink);
 

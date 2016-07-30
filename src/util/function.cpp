@@ -11,6 +11,7 @@ namespace util {
 
 std::vector<std::string> split_str(const std::string str, const std::string split) {
     std::string::size_type last_pos = 0, new_pos;
+    std::string::size_type spliter_len = split.size();
     std::vector<std::string> vec;
     while (1) {
         new_pos = str.find(split, last_pos);
@@ -19,7 +20,7 @@ std::vector<std::string> split_str(const std::string str, const std::string spli
             return vec;
         }
         else {
-            last_pos = new_pos + 1;
+            last_pos = new_pos + spliter_len;
         }
     }
 }

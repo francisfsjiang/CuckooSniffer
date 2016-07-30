@@ -21,7 +21,7 @@ void thread_process() {
     try {
         cs::base::CollectedData* collected_data = DATA_QUEUE.dequeue();
 
-        LOG_DEBUG << "Thread get collected data.";
+//        LOG_DEBUG << "Thread get collected data.";
 
         cs::base::DataProcessor* processor =
                 cs::base::get_data_processor_by_data_type(
@@ -30,17 +30,16 @@ void thread_process() {
 
         processor -> process(*collected_data);
 
-
         delete collected_data;
     }
     catch(std::exception(e)) {
-        LOG_ERROR << "Thread got exception";
+//        LOG_ERROR << "Thread got exception";
     }
 }
 
 void thread_loop() {
     thread_init();
-    LOG_INFO << "Thread loop start.";
+//    LOG_INFO << "Thread loop start.";
     while(1) {
         thread_process();
     }
