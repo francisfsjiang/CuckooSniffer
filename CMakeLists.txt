@@ -103,14 +103,15 @@ set(SRC_FILES
         src/samba/data_processor.cpp
         src/threads/thread.cpp
         src/threads/data_queue.cpp
-        src/base/data_processor.cpp)
+        src/base/data_processor.cpp src/list_devs.cpp)
 
 add_library(libcuckoo_sniffer STATIC ${SRC_FILES})
 
 add_executable(CuckooSniffer src/main.cpp)
-
 target_link_libraries(CuckooSniffer libcuckoo_sniffer ${LIBS})
 
 add_executable(Test src/test.cpp)
-
 target_link_libraries(Test libcuckoo_sniffer ${LIBS})
+
+add_executable(ListDevs src/list_devs.cpp)
+target_link_libraries(ListDevs libcuckoo_sniffer ${LIBS})

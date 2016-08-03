@@ -13,6 +13,7 @@
 #include "ftp/data_sniffer.hpp"
 #include "ftp/command_sniffer.hpp"
 #include "http/sniffer.hpp"
+#include "samba/sniffer.hpp"
 #include "util/function.hpp"
 
 void on_new_connection(Tins::TCPIP::Stream& stream) {
@@ -29,8 +30,11 @@ void on_new_connection(Tins::TCPIP::Stream& stream) {
         case 21:        //FTP
             tcp_sniffer = new cs::ftp::CommandSniffer(stream);
             break;
-        case 80:
+        case 80:        //HTTP
             tcp_sniffer = new cs::http::Sniffer(stream);
+            break;
+        case 445:       //SAMBA
+            tcp_sniffer = new cs::samba::Sniffer(stream);
             break;
         default:
             const auto& ftp_data_connection = cs::ftp::CommandSniffer::get_data_connection_pool();
@@ -69,7 +73,7 @@ int main(int argc, char* argv[]) {
         cs::threads::start_threads(2);
 
         Tins::SnifferConfiguration config;
-//        config.set_filter("(tcp port 80)");
+        config.set_filter("(tcp port 445)");
         config.set_promisc_mode(true);
         Tins::Sniffer sniffer(argv[1], config);
 

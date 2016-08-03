@@ -21,11 +21,9 @@ void Sniffer::on_server_payload(const Tins::TCPIP::Stream &stream) {
 void Sniffer::on_connection_close(const Tins::TCPIP::Stream &stream) {
     LOG_DEBUG << "HTTP data size: " << data_.size();
 
-    //TODO make this process in thread
     CollectedData *http_data = new CollectedData(
             data_
     );
-
     cs::DATA_QUEUE.enqueue(http_data);
 
     SNIFFER_MANAGER.erase_sniffer(id_);
