@@ -8,7 +8,6 @@ int main(int argc, const char* argv[])
     char errbuf[PCAP_ERRBUF_SIZE];
 
     /* 获取本地机器设备列表 */
-//    if (pcap_findalldevs_ex("rpcap://", NULL /* auth is not needed */, &alldevs, errbuf) == -1)
     if (pcap_findalldevs(&alldevs, errbuf) == -1)
     {
         fprintf(stderr,"Error in pcap_findalldevs_ex: %s\n", errbuf);

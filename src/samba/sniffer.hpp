@@ -26,6 +26,12 @@ public:
 
 private:
 
+    enum COMMAND {
+        CREATE=5,
+        READ=8,
+
+    };
+
 };
 
 }
