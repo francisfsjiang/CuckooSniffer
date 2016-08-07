@@ -26,6 +26,9 @@ public:
 
 private:
 
+    std::string get_file_handle(const std::vector<uint8_t> , uint64_t);
+    std::string get_file_name(const std::vector<uint8_t> , uint64_t, uint64_t);
+
     enum COMMAND {
         CREATE=5,
         READ=8,
