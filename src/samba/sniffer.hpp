@@ -26,8 +26,11 @@ public:
 
 private:
 
-    std::string get_file_handle(const std::vector<uint8_t> , uint64_t);
-    std::string get_file_name(const std::vector<uint8_t> , uint64_t, uint64_t);
+    std::string get_file_handle(const std::vector<uint8_t>&, uint64_t);
+    std::string get_file_name(const std::vector<uint8_t>&, uint64_t, uint64_t);
+    uint64_t get_number(const std::vector<uint8_t>&, uint64_t, uint64_t);
+
+    std::map<uint64_t ,std::string> create_req_map;
 
     enum COMMAND {
         CREATE=5,
