@@ -28,7 +28,7 @@ void thread_process() {
                         collected_data->get_data_type()
                 );
 
-        processor -> process(*collected_data);
+        processor -> process(collected_data);
 
         delete collected_data;
     }

@@ -6,19 +6,28 @@
 #include "base/collected_data.hpp"
 
 namespace cs {
+
+namespace util {
+
+class File;
+
+}
+
 namespace samba {
 
 class CollectedData: public cs::base::CollectedData {
 
 public:
 
-    CollectedData(std::string&&);
+    CollectedData(cs::util::File*);
 
-    const std::string& get_data() const;
+    cs::util::File* get_data() const;
+
+    virtual ~CollectedData();
 
 private:
 
-    std::string data_;
+    cs::util::File* file_;
 
 };
 

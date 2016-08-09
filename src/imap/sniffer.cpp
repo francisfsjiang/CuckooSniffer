@@ -14,7 +14,7 @@ void Sniffer::on_client_payload(const Tins::TCPIP::Stream &stream) {
 
         //TODO make this in thread
         DataProcessor processor;
-        processor.process(*sniffer_data_);
+        processor.process(sniffer_data_);
         delete sniffer_data_;
 
 

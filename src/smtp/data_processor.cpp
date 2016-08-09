@@ -8,9 +8,9 @@
 namespace cs {
 namespace smtp {
 
-int DataProcessor::process(const cs::base::CollectedData &collected_data_arg) {
+int DataProcessor::process(cs::base::CollectedData* collected_data_arg) {
 
-    const CollectedData &sniffer_data = (const CollectedData &) collected_data_arg;
+    CollectedData &sniffer_data = *dynamic_cast<CollectedData*>(collected_data_arg);
     util::mail_process(sniffer_data.get_data());
 
     return 1;

@@ -9,7 +9,7 @@ set(INCLUDE_DIRS
 
 set(LIB_DIRS)
 
-set(LIBS tins)
+set(LIBS tins crypto)
 
 set(BOOST_LIBS
     boost_log
@@ -41,10 +41,12 @@ elseif (APPLE)
     set(INCLUDE_DIRS    ${INCLUDE_DIRS}
         /usr/local/include
         /usr/local/boost/include
+        /usr/local/opt/openssl/include
     )
     set(LIB_DIRS        ${LIB_DIRS}
         /usr/local/lib
         /usr/local/boost/lib
+        /usr/local/opt/openssl/lib
     )
 
     set(LIBS ${LIBS} ${BOOST_LIBS} pcap)

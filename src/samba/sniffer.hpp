@@ -4,6 +4,13 @@
 #include "base/sniffer.hpp"
 
 namespace cs {
+
+namespace util{
+
+class File;
+
+}
+
 namespace samba {
 
 class Sniffer : public cs::base::TCPSniffer {
@@ -30,7 +37,9 @@ private:
     std::string get_file_name(const std::vector<uint8_t>&, uint64_t, uint64_t);
     uint64_t get_number(const std::vector<uint8_t>&, uint64_t, uint64_t);
 
-    std::map<uint64_t ,std::string> create_req_map;
+    std::map<uint64_t ,std::string> create_req_map_;
+    uint64_t server_payload_remain_ = 0;
+    util::File* server_resp_file_;
 
     enum COMMAND {
         CREATE=5,

@@ -13,7 +13,7 @@ class DataProcessor : public cs::base::DataProcessor {
 
 public:
 
-    virtual int process(const cs::base::CollectedData &);
+    virtual int process(cs::base::CollectedData*);
 
     virtual ~DataProcessor();
 

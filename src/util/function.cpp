@@ -2,6 +2,8 @@
 
 #include <sstream>
 
+#include <openssl/md5.h>
+
 #include "tins/tcp_ip/stream_follower.h"
 #include "tins/ip_address.h"
 #include "tins/ipv6_address.h"
@@ -48,5 +50,19 @@ std::string stream_identifier(const Tins::TCPIP::Stream &stream) {
     }
     return output.str();
 }
+
+std::string md5(const char* data, size_t size) {
+    int i;
+    unsigned char md[16];
+    std::ostringstream os;
+    MD5(reinterpret_cast<const unsigned char*>(data), size, md);
+    os << std::hex << std::uppercase;
+    for (int i = 0; i < 16; ++i) {
+        os << static_cast<int>(md[i]);
+    }
+    return os.str();
+}
+
+
 }
 }

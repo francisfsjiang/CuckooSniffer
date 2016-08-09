@@ -12,7 +12,7 @@ class DataProcessor {
 
 public:
 
-    virtual int process(const CollectedData &) = 0;
+    virtual int process(CollectedData*) = 0;
 
     virtual ~DataProcessor() {};
 

@@ -24,8 +24,8 @@ void Sniffer::on_connection_close(const Tins::TCPIP::Stream &stream) {
             std::string(stream.client_payload().begin(), stream.client_payload().end())
     );
 
-    DataProcessor processor;
-    processor.process(*((CollectedData *) smtp_data));
+    cs::smtp::DataProcessor processor;
+    processor.process((CollectedData *) smtp_data);
 
 
     delete smtp_data;

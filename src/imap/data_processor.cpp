@@ -9,9 +9,9 @@
 namespace cs {
 namespace imap {
 
-int DataProcessor::process(const cs::base::CollectedData& sniffer_data_arg) {
+int DataProcessor::process(cs::base::CollectedData* sniffer_data_ptr) {
 
-    const cs::imap::CollectedData& sniffer_data = (const CollectedData&)sniffer_data_arg;
+    const cs::imap::CollectedData& sniffer_data = *dynamic_cast<CollectedData*>(sniffer_data_ptr);
     std::string data = sniffer_data.get_data();
 
     std::cout << "stat process imap data" << std::endl;

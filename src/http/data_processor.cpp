@@ -10,10 +10,10 @@
 namespace cs {
 namespace http {
 
-int DataProcessor::process(const cs::base::CollectedData &sniffer_data_arg) {
+int DataProcessor::process(cs::base::CollectedData* sniffer_data_ptr) {
     LOG_DEBUG << "Start HTTP data process.";
 
-    const CollectedData &sniffer_data = (const CollectedData &) sniffer_data_arg;
+    CollectedData &sniffer_data = *dynamic_cast<CollectedData*>(sniffer_data_ptr);
     const std::string& data = sniffer_data.get_data();
 
     std::vector<std::string> str_vec;

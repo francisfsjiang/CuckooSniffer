@@ -1,16 +1,21 @@
 #include "samba/collected_data.hpp"
 
+#include "util/file.hpp"
+
 namespace cs {
 namespace samba {
 
 CollectedData::CollectedData(
-        std::string &&data) :
+        cs::util::File* file) :
         cs::base::CollectedData(DataType::SAMBA) {
-    data_ = std::move(data);
+    file_ = file;
 }
 
-const std::string &CollectedData::get_data() const {
-    return data_;
+cs::util::File* CollectedData::get_data() const {
+    return file_;
+}
+CollectedData::~CollectedData() {
+    delete file_;
 }
 
 }

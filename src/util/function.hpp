@@ -17,6 +17,8 @@ std::vector<std::string> split_str(const std::string, const std::string);
 
 std::string stream_identifier(const Tins::TCPIP::Stream &stream);
 
+std::string md5(const char*, size_t);
+
 }
 }
 
