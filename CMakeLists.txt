@@ -9,7 +9,7 @@ set(INCLUDE_DIRS
 
 set(LIB_DIRS)
 
-set(LIBS tins crypto)
+set(LIBS tins)
 
 set(BOOST_LIBS
     boost_log
@@ -25,14 +25,21 @@ if (WIN32)
         D:/libs/WpdPack/Include
         D:/libs/libtins64-debug/include
         D:/libs/boost64
+        D:/libs/OpenSSL-Win64/include
     )
     set(LIB_DIRS        ${LIB_DIRS}
         D:/libs/WpdPack/Lib/x64
         D:/libs/libtins64-debug/lib
         D:/libs/boost64/lib64-msvc-14.0
+        D:/libs/OpenSSL-Win64/lib
     )
 
-    set(LIBS ${LIBS} wpcap Ws2_32 Iphlpapi)
+    set(LIBS ${LIBS}
+        wpcap
+        Ws2_32
+        Iphlpapi
+        libeay32  #libcrypto on windows
+    )
 
 elseif (APPLE)
 
@@ -49,7 +56,7 @@ elseif (APPLE)
         /usr/local/opt/openssl/lib
     )
 
-    set(LIBS ${LIBS} ${BOOST_LIBS} pcap)
+    set(LIBS ${LIBS} ${BOOST_LIBS} pcap crypto)
 
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} --std=c++14")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pedantic")
