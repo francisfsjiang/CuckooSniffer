@@ -14,46 +14,84 @@
 namespace cs {
 namespace samba {
 
-void Sniffer::on_client_payload(const Tins::TCPIP::Stream &stream) {
-    if (stream.client_payload().size() <= 0) {
-        return;
+void Sniffer::on_client_payload(const Tins::TCPIP::Stream& stream) {
+    std::vector<uint8_t> vec = std::vector<uint8_t>(stream.client_payload());
+    while (vec.size() > 0) {
+        vec = handle_client_NB_block(vec);
     }
-    std::vector<uint8_t> vec = std::vector<uint8_t>(
-            stream.client_payload().begin(),
-            stream.client_payload().end()
-    );
-    uint64_t total_length = 0;
-    if(vec[0] == 0) {
-        total_length = (vec[1] << 16) + (vec[2] << 8) + vec[3];
-        LOG_TRACE << "SAMBA client req len " << total_length;
+}
+
+std::vector<uint8_t> Sniffer::handle_client_NB_block(const std::vector<uint8_t>& vec) {
+    uint64_t payload_len = vec.size();
+    if (client_NB_block_remain_ <=0) {
+        uint64_t block_size = (vec[1] << 16) + (vec[2] << 8) + vec[3];
+        if (block_size <= payload_len) {
+            handle_client_req(std::vector<uint8_t>(
+                    vec.begin() + 4,
+                    vec.begin() + 4 + block_size
+            ));
+            return std::vector<uint8_t>(
+                    vec.begin() + 4 + block_size,
+                    vec.end()
+            );
+        }
+        else {
+            client_NB_block_remain_ = block_size - (payload_len - 4);
+            client_NB_block_.insert(
+                    client_NB_block_.end(),
+                    vec.begin() + 4,
+                    vec.end()
+            );
+            return std::vector<uint8_t>();
+        }
     }
     else {
-        return;
-    }
+        if (client_NB_block_remain_ <= payload_len) {
+            client_NB_block_.insert(
+                    client_NB_block_.end(),
+                    vec.begin(),
+                    vec.begin() + client_NB_block_remain_
+            );
+            handle_client_req(client_NB_block_);
+            client_NB_block_.clear();
+            uint64_t tmp = client_NB_block_remain_;
+            client_NB_block_remain_ = 0;
+            return std::vector<uint8_t>(
+                    vec.begin() + tmp,
+                    vec.end()
+            );
+        }
+        else {
+            client_NB_block_.insert(
+                    client_NB_block_.end(),
+                    vec.begin(),
+                    vec.begin() + payload_len
+            );
+            client_NB_block_remain_ -= payload_len;
+            return std::vector<uint8_t>();
+        }
 
-    uint64_t header_length = vec[8] + (vec[9] << 8);
-    uint64_t command = vec[16] + (vec[17] << 8);
-    uint64_t flags = get_number(vec, 20, 4);
-//    for (int i = 0, carry = 0; i < 4; ++i, carry += 8) {
-//        flags += vec[20+i] << carry;
-//    }
+    }
+}
+
+void Sniffer::handle_client_req(const std::vector<uint8_t>& vec) {
+
+    uint64_t header_length = vec[4] + (vec[5] << 8);
+    uint64_t command = vec[12] + (vec[13] << 8);
+    uint64_t flags = get_number(vec, 16, 4);
 
     bool resp_flag = static_cast<bool>(flags & 1); // 1 Response 0 Request
     bool DFS_op_flag = static_cast<bool>(flags & 1<<28);
 
-    uint64_t msg_id = get_number(vec, 28, 8);
-//    for (int i = 0, carry = 0; i < 8; ++i, carry += 8) {
-//        msg_id += vec[28+i] << carry;
-//    }
+    uint64_t msg_id = get_number(vec, 24, 8);
 
     if (resp_flag || DFS_op_flag) {
         return;
     }
 
-    //find create request
+    //create request
     if (command == CREATE){
-
-        uint64_t create_req_offset = header_length + 4;
+        uint64_t create_req_offset = header_length;
         //check file_attributes
         if (vec[create_req_offset + 28] != 0x80) {
             return;
@@ -65,26 +103,34 @@ void Sniffer::on_client_payload(const Tins::TCPIP::Stream &stream) {
 
         uint64_t file_name_offset = vec[create_req_offset + 44] + (vec[create_req_offset + 45] << 8);
         uint64_t file_name_len = vec[create_req_offset+ 46] + (vec[create_req_offset + 47] << 8);
-        std::string file_name = get_file_name(vec, file_name_offset + 4, file_name_len);
+        std::string file_name = get_file_name(vec, file_name_offset, file_name_len);
         if (file_name.find(':') != std::string::npos) {
             return;
         }
-        create_req_map_.insert(std::make_pair(msg_id, file_name));
+        create_req_file_name_.insert(
+                std::make_pair(
+                        msg_id,
+                        file_name
+                )
+        );
         LOG_TRACE << "SAMBA client create req, id " << msg_id;
         LOG_TRACE << "SAMBA client create req, file name " << file_name;
     }
-    //find read request
+    //read request
     else if (command == READ ) {
-        uint64_t read_req_offset = header_length + 4;
+        uint64_t read_req_offset = header_length;
         uint64_t read_length = get_number(vec, read_req_offset + 4, 4);
-//        for (int i = 0, carry = 0; i < 4; ++i, carry += 8) {
-//            read_length += vec[read_req_offset + 4 + i] << carry;
-//        }
         uint64_t read_offset = get_number(vec, read_req_offset + 8, 8);
-//        for (int i = 0, carry = 1; i < 8; ++i, carry += 8) {
-//            read_offset += vec[read_req_offset + 8 + i] << carry;
-//        }
         std::string file_id = get_file_handle(vec, read_req_offset + 16);
+
+        read_req_map_.insert(std::make_pair(
+                msg_id,
+                std::make_tuple(
+                        file_id,
+                        read_length,
+                        read_offset
+                )
+        ));
 
         LOG_TRACE << "SAMBA client read req, id " << msg_id;
         LOG_TRACE << "SAMBA client read req, read length " << read_length;
@@ -92,69 +138,129 @@ void Sniffer::on_client_payload(const Tins::TCPIP::Stream &stream) {
         LOG_TRACE << "SAMBA client read req, read file id " << file_id;
 
     }
+        //write request
+    else if (command == WRITE) {
+
+        uint64_t write_req_offset = header_length;
+        uint64_t data_offset = get_number(vec, write_req_offset + 2, 2);
+        uint64_t write_len = get_number(vec, write_req_offset + 4, 4);
+        uint64_t write_offset = get_number(vec, write_req_offset + 8, 8);
+        std::string file_id = get_file_handle(vec, write_req_offset + 16);
+
+        char *p_data = new char[write_len];
+        memcpy(
+                p_data,
+                reinterpret_cast<const char *>(vec.data() + data_offset),
+                sizeof(char) * write_len
+        );
+
+        write_req_map_.insert(std::make_pair(
+                msg_id,
+                std::make_tuple(
+                        file_id,
+                        write_len,
+                        write_offset,
+                        p_data
+                )
+        ));
+
+        LOG_TRACE << "SAMBA client write req, id " << msg_id;
+        LOG_TRACE << "SAMBA client write req, read length " << write_len;
+        LOG_TRACE << "SAMBA client write req, read offset " << write_offset;
+        LOG_TRACE << "SAMBA client write req, read file id " << file_id;
+    }
+    //close request
+    else if (command == CLOSE) {
+        uint64_t close_req_offset = header_length;
+        std::string file_id = get_file_handle(vec, close_req_offset + 8);
+        LOG_TRACE << "SAMBA client close req, id " << msg_id;
+        LOG_TRACE << "SAMBA client close req, file id " << file_id;
+        close_msg_.insert(std::make_pair(
+                msg_id,
+                file_id
+        ));
+    }
 }
 
-
 void Sniffer::on_server_payload(const Tins::TCPIP::Stream &stream) {
-    if (stream.server_payload().size() <= 0) {
-        return;
+    std::vector<uint8_t> vec = std::vector<uint8_t>(stream.server_payload());
+    while (vec.size() > 0) {
+        vec = handle_server_NB_block(vec);
     }
+}
 
-    LOG_TRACE << "SAMBA server payload len " << stream.server_payload().size();
-    uint64_t payload_len = stream.server_payload().size();
-
-    if (server_payload_remain_ > 0) {
-        server_resp_file_ -> write(
-                reinterpret_cast<const char*>(stream.server_payload().data()),
-                payload_len
-        );
-        server_payload_remain_ -= payload_len;
-        LOG_TRACE << "SAMBA server read resp, file remain " << server_payload_remain_;
-        LOG_TRACE << "SAMBA server read resp, file size " << server_resp_file_ -> get_size();
-
-        if (server_payload_remain_ == 0) {
-            CollectedData* collected_data = new CollectedData(server_resp_file_);
-            DATA_QUEUE.enqueue(collected_data);
-            server_resp_file_ = nullptr;
+std::vector<uint8_t> Sniffer::handle_server_NB_block(const std::vector<uint8_t>& vec) {
+    uint64_t payload_len = vec.size();
+    if (server_NB_block_remain_ <=0) {
+        uint64_t block_size = (vec[1] << 16) + (vec[2] << 8) + vec[3];
+        if (block_size <= payload_len) {
+            handle_server_resp(std::vector<uint8_t>(
+                    vec.begin() + 4,
+                    vec.begin() + 4 + block_size
+            ));
+            return std::vector<uint8_t>(
+                    vec.begin() + 4 + block_size,
+                    vec.end()
+            );
         }
-
-        return;
-    }
-
-
-    //find read response
-    std::vector<uint8_t> vec = std::vector<uint8_t>(
-            stream.server_payload().begin(),
-            stream.server_payload().end()
-    );
-    uint64_t total_length = 0;
-    if(vec[0] == 0) {
-        total_length = (vec[1] << 16) + (vec[2] << 8) + vec[3];
-        LOG_TRACE << "SAMBA server resp len " << total_length;
+        else {
+            server_NB_block_remain_ = block_size - (payload_len - 4);
+            server_NB_block_.insert(
+                    server_NB_block_.end(),
+                    vec.begin() + 4,
+                    vec.end()
+            );
+            return std::vector<uint8_t>();
+        }
     }
     else {
-        return;
+        if (server_NB_block_remain_ <= payload_len) {
+            server_NB_block_.insert(
+                    server_NB_block_.end(),
+                    vec.begin(),
+                    vec.begin() + server_NB_block_remain_
+            );
+            handle_server_resp(server_NB_block_);
+            server_NB_block_.clear();
+            uint64_t tmp = server_NB_block_remain_;
+            server_NB_block_remain_ = 0;
+            return std::vector<uint8_t>(
+                    vec.begin() + tmp,
+                    vec.end()
+            );
+        }
+        else {
+            server_NB_block_.insert(
+                    server_NB_block_.end(),
+                    vec.begin(),
+                    vec.begin() + payload_len
+            );
+            server_NB_block_remain_ -= payload_len;
+            return std::vector<uint8_t>();
+        }
     }
+}
 
-    uint64_t header_length = vec[8] + (vec[9] << 8);
-    uint64_t command = vec[16] + (vec[17] << 8);
-    uint64_t flags = get_number(vec, 20, 4);
+void Sniffer::handle_server_resp(const std::vector<uint8_t>& vec) {
+
+    uint64_t header_length = vec[4] + (vec[5] << 8);
+    uint64_t command = vec[12] + (vec[13] << 8);
+    uint64_t flags = get_number(vec, 16, 4);
 
     bool resp_flag = static_cast<bool>(flags & 1); // 1 Response 0 Request
     bool DFS_op_flag = static_cast<bool>(flags & 1<<28);
 
-    uint64_t msg_id = get_number(vec, 28, 8);
-    LOG_TRACE << "SAMBA server msg id" << msg_id;
+    uint64_t msg_id = get_number(vec, 24, 8);
 
     if (!resp_flag || DFS_op_flag) {
         return;
     }
-    //find create response
+    //create response
     if (command == CREATE){
-        if (create_req_map_.find(msg_id) == create_req_map_.end()) {
+        if (create_req_file_name_.find(msg_id) == create_req_file_name_.end()) {
             return;
         }
-        uint64_t create_resp_offset = header_length + 4;
+        uint64_t create_resp_offset = header_length;
         uint64_t struct_size = get_number(vec, create_resp_offset, 2);
         if (struct_size < 80) {
             return;
@@ -166,35 +272,62 @@ void Sniffer::on_server_payload(const Tins::TCPIP::Stream &stream) {
             return;
         }
 
-
         uint64_t file_allocation_size = get_number(vec, create_resp_offset + 40, 8);
         uint64_t file_eof = get_number(vec, create_resp_offset + 48, 8);
 
         std::string file_id = get_file_handle(vec, create_resp_offset + 64);
+
+        file_info_.insert(
+                std::make_pair(
+                        file_id,
+                        std::make_pair(
+                                create_req_file_name_[msg_id],
+                                file_eof
+                        )
+                )
+        );
 
         LOG_TRACE << "SAMBA server create resp, id " << msg_id;
         LOG_TRACE << "SAMBA server create resp, file allloc size " << file_allocation_size;
         LOG_TRACE << "SAMBA server create resp, file eof " << file_eof;
         LOG_TRACE << "SAMBA server create resp, file id " << file_id;
     }
-        //find read response
+        //read response
     else if (command == READ ) {
-        uint64_t read_resp_offset = header_length + 4;
+        uint64_t read_resp_offset = header_length;
         uint64_t data_offset = vec[read_resp_offset + 2] + (vec[read_resp_offset + 3] << 8);
         uint64_t read_len = get_number(vec, read_resp_offset + 4, 4);
         uint64_t read_remain = get_number(vec, read_resp_offset + 8, 8);
 
-        char *p_data = reinterpret_cast<char *>(vec.data() + data_offset + 4);
+        char *p_data = new char[read_len];
+        memcpy(
+                p_data,
+                reinterpret_cast<const char *>(vec.data() + data_offset),
+                sizeof(char) * read_len
+        );
 
         LOG_TRACE << "SAMBA server read resp, id " << msg_id;
         LOG_TRACE << "SAMBA server read resp, read length " << read_len;
-        LOG_TRACE << "SAMBA server read resp, read remain " << read_remain;
 
-        server_resp_file_ = new cs::util::File();
-        server_payload_remain_ = read_len - (payload_len - data_offset - 4);
-        server_resp_file_->write(p_data, payload_len - data_offset - 4);
-        LOG_TRACE << "SAMBA server read resp, file remain " << server_payload_remain_;
-        LOG_TRACE << "SAMBA server read resp, file size " << server_resp_file_ -> get_size();
+        auto iter = read_req_map_.find(msg_id);
+        auto tuple = iter -> second;
+        read_req_map_.erase(iter);
+        read_result_map_.insert(std::make_pair(
+                std::get<0>(tuple),
+                std::make_tuple(
+                        std::get<1>(tuple),
+                        std::get<2>(tuple),
+                        p_data
+                )
+        ));
+    }
+    else if (command == WRITE) {
+
+    }
+        //close response
+    else if (command == CLOSE) {
+        LOG_TRACE << "SAMBA server close resp, id " << msg_id;
+
     }
 
 }
@@ -225,8 +358,6 @@ void Sniffer::on_connection_terminated(
 }
 
 Sniffer::Sniffer(Tins::TCPIP::Stream &stream) : TCPSniffer(stream) {
-
-    server_payload_remain_ = 0;
 
     stream.client_data_callback(
             [this](const Tins::TCPIP::Stream &tcp_stream) {
