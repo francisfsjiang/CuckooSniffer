@@ -147,6 +147,10 @@ void Sniffer::handle_client_req(const std::vector<uint8_t>& vec) {
         uint64_t write_offset = get_number(vec, write_req_offset + 8, 8);
         std::string file_id = get_file_handle(vec, write_req_offset + 16);
 
+        if (file_info_.find(file_id) == file_info_.end()) {
+            return;
+        }
+
         char *p_data = new char[write_len];
         memcpy(
                 p_data,
@@ -311,22 +315,86 @@ void Sniffer::handle_server_resp(const std::vector<uint8_t>& vec) {
 
         auto iter = read_req_map_.find(msg_id);
         auto tuple = iter -> second;
-        read_req_map_.erase(iter);
-        read_result_map_.insert(std::make_pair(
-                std::get<0>(tuple),
+        rw_result_map_.insert(std::make_pair(
+                std::get<0>(tuple),  //file id
                 std::make_tuple(
-                        std::get<1>(tuple),
-                        std::get<2>(tuple),
+                        std::get<1>(tuple),  //len
+                        std::get<2>(tuple),  //offset
                         p_data
                 )
         ));
+        read_req_map_.erase(iter);
     }
+        //write response
     else if (command == WRITE) {
-
+        uint64_t nt_success = get_number(vec, 8, 4);
+        if (nt_success != 0) {
+            return;
+        }
+        auto iter = write_req_map_.find(msg_id);
+        if (iter == write_req_map_.end()) {
+            return;
+        }
+        LOG_TRACE << "SAMBA server write resp, id " << msg_id;
+        auto tuple = iter -> second;
+        rw_result_map_.insert(std::make_pair(
+                std::get<0>(tuple),  //file id
+                std::make_tuple(
+                        std::get<1>(tuple),  //len
+                        std::get<2>(tuple),  //offset
+                        std::get<3>(tuple)
+                )
+        ));
+        write_req_map_.erase(iter);
     }
         //close response
     else if (command == CLOSE) {
         LOG_TRACE << "SAMBA server close resp, id " << msg_id;
+        uint64_t nt_success = get_number(vec, 8, 4);
+        LOG_TRACE << "SAMBA server close resp, nt success " << nt_success;
+        if (nt_success != 0) {
+            return;
+        }
+
+        auto iter = close_msg_.find(msg_id);
+        std::string file_id = iter -> second;
+        close_msg_.erase(iter);
+
+//        LOG_TRACE << "SAMBA server close resp, file id " << file_id;
+//        for (auto i: rw_result_map_) {
+//            LOG_TRACE << i.first;
+//        }
+
+        auto range = rw_result_map_.equal_range(file_id);
+        if (range.first == rw_result_map_.end()) {
+            LOG_TRACE << "SAMBA server close resp, result_map is empty.";
+            return;
+        }
+        std::pair<std::string, uint64_t>& i_file_info = file_info_[file_id];
+        std::string file_name = i_file_info.first;
+
+        uint64_t file_size = 0;
+        for (auto i = range.first; i != range.second; ++i) {
+            file_size += std::get<0>(i -> second);
+        }
+        char* file_data = new char[file_size];
+
+        LOG_TRACE << "Copying " << file_name << ",size " << file_size;
+        for (auto i = range.first; i != range.second; ++i) {
+            uint64_t len = std::get<0>(i -> second);
+            uint64_t offset = std::get<1>(i -> second);
+            char* p_data = std::get<2>(i -> second);
+            LOG_TRACE << "Offset " << offset << ", len " << len;
+            memcpy(file_data + offset, p_data, len);
+            delete[] p_data;
+
+        }
+
+
+
+        delete[] file_data;
+        file_info_.erase(file_id);
+        rw_result_map_.erase(file_id);
 
     }
 

@@ -47,10 +47,10 @@ private:
     std::map<std::string, std::pair<std::string, uint64_t> > file_info_;
 
     std::map<uint64_t, std::tuple<std::string, uint64_t, uint64_t> > read_req_map_;
-    std::multimap<std::string, std::tuple<uint64_t, uint64_t, char*> > read_result_map_;
 
     std::map<uint64_t, std::tuple<std::string, uint64_t, uint64_t, char*> > write_req_map_;
 
+    std::multimap<std::string, std::tuple<uint64_t, uint64_t, char*> > rw_result_map_;
 
     uint64_t server_NB_block_remain_ = 0;
     std::vector<uint8_t> server_NB_block_;
