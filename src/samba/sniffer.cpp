@@ -4,6 +4,7 @@
 #include <sstream>
 #include <iomanip>
 #include <codecvt>
+#include <set>
 
 #include "cuckoo_sniffer.hpp"
 #include "sniffer_manager.hpp"
@@ -364,56 +365,63 @@ void Sniffer::handle_server_resp(const std::vector<uint8_t>& vec) {
 //        for (auto i: rw_result_map_) {
 //            LOG_TRACE << i.first;
 //        }
+        combine_data(file_id);
 
-        auto range = rw_result_map_.equal_range(file_id);
-        if (range.first == rw_result_map_.end()) {
-            LOG_TRACE << "SAMBA server close resp, result_map is empty.";
-            return;
-        }
-        std::pair<std::string, uint64_t>& i_file_info = file_info_[file_id];
-        std::string file_name = i_file_info.first;
+    }
+}
 
-        uint64_t file_size = 0;
-        for (auto i = range.first; i != range.second; ++i) {
-            file_size += std::get<0>(i -> second);
-        }
-        char* file_data = new char[file_size];
+void Sniffer::combine_data(const std::string& file_id) {
+
+    auto range = rw_result_map_.equal_range(file_id);
+    if (range.first == rw_result_map_.end()) {
+        LOG_TRACE << "SAMBA server close resp, result_map is empty.";
+        return;
+    }
+    std::pair<std::string, uint64_t>& i_file_info = file_info_[file_id];
+    std::string file_name = i_file_info.first;
+
+    uint64_t file_size = 0;
+    for (auto i = range.first; i != range.second; ++i) {
+        file_size += std::get<0>(i -> second);
+    }
+    if (file_size > 0) {
 
         LOG_TRACE << "Copying " << file_name << ",size " << file_size;
+        cs::util::File* file = new cs::util::File();
+        file -> set_name(file_name);
+        file -> set_size(file_size);
+
         for (auto i = range.first; i != range.second; ++i) {
             uint64_t len = std::get<0>(i -> second);
             uint64_t offset = std::get<1>(i -> second);
             char* p_data = std::get<2>(i -> second);
             LOG_TRACE << "Offset " << offset << ", len " << len;
-            memcpy(file_data + offset, p_data, len);
+            file -> write_to_pos(p_data, len, offset);
             delete[] p_data;
-
         }
 
-
-
-        delete[] file_data;
-        file_info_.erase(file_id);
-        rw_result_map_.erase(file_id);
+        DATA_QUEUE.enqueue(new CollectedData(
+                file
+        ));
 
     }
-
+    rw_result_map_.erase(file_id);
 }
-
 
 
 void Sniffer::on_connection_close(const Tins::TCPIP::Stream &stream) {
     LOG_DEBUG << "SAMBA onnection Close";
 
-//    CollectedData *samba_data = new CollectedData(
-//            std::string(stream.client_payload().begin(), stream.client_payload().end())
-//    );
-//
-//    DataProcessor processor;
-//    processor.process(*((CollectedData *) samba_data));
-//
-//
-//    delete samba_data;
+    std::set<std::string> s;
+    for (auto& iter: rw_result_map_) {
+        s.insert(
+                iter.first
+        );
+    }
+    for (auto &iter: s) {
+        combine_data(iter);
+    }
+
     SNIFFER_MANAGER.erase_sniffer(id_);
 }
 

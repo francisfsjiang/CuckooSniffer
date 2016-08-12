@@ -56,9 +56,9 @@ std::string md5(const char* data, size_t size) {
     unsigned char md[16];
     std::ostringstream os;
     MD5(reinterpret_cast<const unsigned char*>(data), size, md);
-    os << std::hex << std::uppercase;
+    os << std::setw(2) << std::setfill('0') << std::hex << std::uppercase;
     for (int i = 0; i < 16; ++i) {
-        os << static_cast<int>(md[i]);
+        os << std::setw(2) << static_cast<int>(md[i]);
     }
     return os.str();
 }

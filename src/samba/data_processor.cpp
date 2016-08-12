@@ -16,7 +16,9 @@ int DataProcessor::process(cs::base::CollectedData* sniffer_data_ptr) {
     CollectedData& sniffer_data = *dynamic_cast<CollectedData*>(sniffer_data_ptr);
     cs::util::File* file = sniffer_data.get_data();
 
-    LOG_TRACE << file -> get_md5();
+    LOG_INFO << "SAMBA file name " << file -> get_name();
+    LOG_INFO << "SAMBA file size " << file -> get_size();
+    LOG_INFO << "SAMBA file md5 " << file -> get_md5();
 
 
     return 1;

@@ -41,6 +41,8 @@ private:
     std::string get_file_name(const std::vector<uint8_t>&, uint64_t, uint64_t);
     uint64_t get_number(const std::vector<uint8_t>&, uint64_t, uint64_t);
 
+    void combine_data(const std::string&);
+
     std::map<uint64_t, std::string> create_req_file_name_;
     std::map<uint64_t, std::string> close_msg_;
 

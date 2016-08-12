@@ -13,9 +13,11 @@ public:
 
     File();
 
-    void write(const char *, size_t);
+    bool write(const char*, uint64_t);
+    bool write_to_pos(const char*, uint64_t, uint64_t);
 
-    long long int get_size();
+    bool set_size(uint64_t);
+    uint64_t get_size();
 
     std::string get_md5();
 
@@ -31,8 +33,12 @@ public:
     bool get_encoding_status() const;
     void set_encoding_status(bool);
 
+    ~File();
+
 private:
-    std::stringstream content_;
+    char* buffer_;
+    uint64_t buffer_end_;
+    uint64_t buffer_size_;
 
     std::string mime_type_;
     std::string name_;
