@@ -52,7 +52,6 @@ std::string stream_identifier(const Tins::TCPIP::Stream &stream) {
 }
 
 std::string md5(const char* data, size_t size) {
-    int i;
     unsigned char md[16];
     std::ostringstream os;
     MD5(reinterpret_cast<const unsigned char*>(data), size, md);
