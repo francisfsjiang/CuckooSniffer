@@ -3,8 +3,11 @@
 #include <vector>
 #include <sstream>
 #include <iomanip>
+#include <cstring>
+#include <locale>
 #include <codecvt>
 #include <set>
+
 
 #include "cuckoo_sniffer.hpp"
 #include "sniffer_manager.hpp"

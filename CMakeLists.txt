@@ -1,6 +1,8 @@
 cmake_minimum_required(VERSION 2.8)
 project(CuckooSniffer)
 
+set(CMAKE_CXX_COMPILER "g++-5")
+
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DTINS_STATIC")
 set(CMAKE_CXX_LINKER_FLAGS "-static")
 
@@ -22,16 +24,16 @@ set(BOOST_LIBS
 if (WIN32)
 
     set(INCLUDE_DIRS    ${INCLUDE_DIRS}
-        D:/libs/WpdPack/Include
-        D:/libs/libtins64-debug/include
-        D:/libs/boost64
-        D:/libs/OpenSSL-Win64/include
+        C:/libs/WpdPack/Include
+        C:/libs/libtins64-debug/include
+        C:/libs/boost64
+        C:/libs/OpenSSL-Win64/include
     )
     set(LIB_DIRS        ${LIB_DIRS}
-        D:/libs/WpdPack/Lib/x64
-        D:/libs/libtins64-debug/lib
-        D:/libs/boost64/lib64-msvc-14.0
-        D:/libs/OpenSSL-Win64/lib
+        C:/libs/WpdPack/Lib/x64
+        C:/libs/libtins64-debug/lib
+        C:/libs/boost64/lib64-msvc-14.0
+        C:/libs/OpenSSL-Win64/lib
     )
 
     set(LIBS ${LIBS}
