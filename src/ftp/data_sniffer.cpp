@@ -50,7 +50,6 @@ DataSniffer::DataSniffer(Tins::TCPIP::Stream &stream) : TCPSniffer(stream) {
     LOG_DEBUG << "Get FTP data connection " << id_;
 
     file_ = new cs::util::File();
-    file_ -> set_encoding_status(true);
 
     stream.ignore_client_data();
     stream.server_data_callback(

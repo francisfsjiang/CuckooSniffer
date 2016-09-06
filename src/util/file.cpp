@@ -11,7 +11,6 @@ namespace cs {
 namespace util {
 
 File::File() {
-    encoded_ = false;
     buffer_ = nullptr;
     buffer_end_ = 0;
     buffer_size_ = 0;
@@ -50,7 +49,7 @@ bool File::set_size(uint64_t size) {
     return false;
 }
 
-uint64_t File::get_size() {
+uint64_t File::get_size() const {
     return buffer_end_;
 }
 
@@ -74,25 +73,14 @@ void File::set_name(const std::string& name) {
     name_ = name;
 }
 
-const std::string& File::get_encoding() const {
-    return encoding_;
-}
-
-void File::set_encoding(const std::string& encoding) {
-    encoding_ = encoding;
-}
-
-bool File::get_encoding_status() const {
-    return encoded_;
-}
-
-void File::set_encoding_status(bool flag) {
-    encoded_ = flag;
-}
 
 File::~File() {
     if (buffer_ != nullptr)
         delete[] buffer_;
+}
+
+const char* File::get_buffer() const {
+    return buffer_;
 }
 
 }

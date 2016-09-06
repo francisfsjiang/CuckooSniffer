@@ -3,10 +3,13 @@
 #include <sstream>
 
 #include <openssl/md5.h>
+#include <curl/curl.h>
 
 #include "tins/tcp_ip/stream_follower.h"
 #include "tins/ip_address.h"
 #include "tins/ipv6_address.h"
+
+#include "util/file.hpp"
 
 namespace cs {
 namespace util {
@@ -62,6 +65,61 @@ std::string md5(const char* data, size_t size) {
     return os.str();
 }
 
+
+
+int submit_file(const File& f, const char* url)
+{
+
+    CURL *curl;
+    CURLcode res;
+    struct curl_httppost *formpost=NULL;
+    struct curl_httppost *lastptr=NULL;
+
+    /* In windows, this will init the winsock stuff */
+    curl_global_init(CURL_GLOBAL_ALL);
+
+    /* get a curl handle */
+    curl = curl_easy_init();
+    if(curl) {
+        /* First set the URL that is about to receive our POST. This URL can
+        just as well be a https:// URL if that is what should receive the
+        data. */
+        curl_easy_setopt(curl, CURLOPT_URL, url);
+        /* Now specify the POST data */
+//        curl_easy_setopt(curl, CURLOPT_POSTFIELDS, "file=daniel&project=curl");
+
+        const std::string& name = f.get_name();
+        const std::string& mime_type = f.get_mime_type();
+
+
+        curl_formadd(
+                &formpost,
+                &lastptr,
+                CURLFORM_COPYNAME, "file",
+                CURLFORM_BUFFER, name.c_str(),
+                CURLFORM_BUFFERPTR, f.get_buffer(),
+                CURLFORM_BUFFERLENGTH, f.get_size(),
+                CURLFORM_CONTENTTYPE, mime_type.c_str(),
+                CURLFORM_END
+        );
+
+        curl_easy_setopt(curl, CURLOPT_HTTPPOST, formpost);
+
+
+        /* Perform the request, res will get the return code */
+        res = curl_easy_perform(curl);
+        /* Check for errors */
+        if(res != CURLE_OK)
+        fprintf(stderr, "curl_easy_perform() failed: %s\n",
+        curl_easy_strerror(res));
+
+        /* always cleanup */
+        curl_easy_cleanup(curl);
+    }
+    curl_global_cleanup();
+    return 0;
+
+}
 
 }
 }

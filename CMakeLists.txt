@@ -9,52 +9,55 @@ set(INCLUDE_DIRS
 
 set(LIB_DIRS)
 
-set(LIBS tins)
+set(LIBS tins curl)
 
 set(BOOST_LIBS
-    boost_log
-    boost_log_setup
-    boost_thread
-    boost_system
-    boost_date_time
-)
+        boost_log
+        boost_log_setup
+        boost_thread
+        boost_system
+        boost_date_time
+        )
 
 if (WIN32)
 
     set(INCLUDE_DIRS    ${INCLUDE_DIRS}
-        C:/libs/WpdPack/Include
-        C:/libs/libtins64-debug/include
-        C:/libs/boost64
-        C:/libs/OpenSSL-Win64/include
-    )
+            C:/libs/WpdPack/Include
+            C:/libs/libtins64-debug/include
+            C:/libs/boost64
+            C:/libs/OpenSSL-Win64/include
+            )
     set(LIB_DIRS        ${LIB_DIRS}
-        C:/libs/WpdPack/Lib/x64
-        C:/libs/libtins64-debug/lib
-        C:/libs/boost64/lib64-msvc-14.0
-        C:/libs/OpenSSL-Win64/lib
-    )
+            C:/libs/WpdPack/Lib/x64
+            C:/libs/libtins64-debug/lib
+            C:/libs/boost64/lib64-msvc-14.0
+            C:/libs/OpenSSL-Win64/lib
+            )
 
     set(LIBS ${LIBS}
-        wpcap
-        Ws2_32
-        Iphlpapi
-        libeay32  #libcrypto on windows
-    )
+            wpcap
+            Ws2_32
+            Iphlpapi
+            libeay32  #libcrypto on windows
+            )
 
 elseif (APPLE)
 
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DBOOST_LOG_DYN_LINK")
 
     set(INCLUDE_DIRS    ${INCLUDE_DIRS}
-        /usr/local/include
-        /usr/local/boost/include
-        /usr/local/opt/openssl/include
-    )
+            /usr/local/include
+            /usr/local/boost/include
+            /usr/local/opt/openssl/include
+            /usr/local/opt/curl/include
+
+            )
     set(LIB_DIRS        ${LIB_DIRS}
-        /usr/local/lib
-        /usr/local/boost/lib
-        /usr/local/opt/openssl/lib
-    )
+            /usr/local/lib
+            /usr/local/boost/lib
+            /usr/local/opt/openssl/lib
+            /usr/local/opt/curl/lib
+            )
 
     set(LIBS ${LIBS} ${BOOST_LIBS} pcap crypto)
 
@@ -66,13 +69,13 @@ elseif (UNIX)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DBOOST_LOG_DYN_LINK")
 
     set(INCLUDE_DIRS    ${INCLUDE_DIRS}
-          /usr/local/include
-          /usr/local/libtins/include
-        )
+            /usr/local/include
+            /usr/local/libtins/include
+            )
     set(LIB_DIRS        ${LIB_DIRS}
-          /usr/local/lib
-          /usr/local/libtins/lib
-        )
+            /usr/local/lib
+            /usr/local/libtins/lib
+            )
 
     set(LIBS ${LIBS} ${BOOST_LIBS} pcap pthread crypto)
 
