@@ -4,8 +4,10 @@ project(CuckooSniffer)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DTINS_STATIC")
 set(CMAKE_CXX_LINKER_FLAGS "-static")
 
-set(INCLUDE_DIRS
-        ${PROJECT_SOURCE_DIR}/src)
+set(INCLUDE_DIRS            ${PROJECT_SOURCE_DIR}/src)
+
+set(LIBRARY_OUTPUT_PATH     ${PROJECT_SOURCE_DIR}/lib)
+set(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/bin)
 
 set(LIB_DIRS)
 
@@ -90,7 +92,6 @@ endif()
 include_directories(${INCLUDE_DIRS})
 link_directories(${LIB_DIRS})
 
-set(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/bin)
 
 set(SRC_FILES
         src/cuckoo_sniffer.cpp
