@@ -14,11 +14,7 @@ set(LIB_DIRS)
 set(LIBS tins)
 
 set(BOOST_LIBS
-        boost_log
-        boost_log_setup
-        boost_thread
-        boost_system
-        boost_date_time
+
         )
 
 if (WIN32)
@@ -46,43 +42,34 @@ if (WIN32)
             libeay32  #libcrypto on windows
             )
 
-elseif (APPLE)
-
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DBOOST_LOG_DYN_LINK")
-
-    set(INCLUDE_DIRS    ${INCLUDE_DIRS}
-            /usr/local/include
-            /usr/local/boost/include
-            /usr/local/opt/openssl/include
-            /usr/local/opt/curl/include
-
-            )
-    set(LIB_DIRS        ${LIB_DIRS}
-            /usr/local/lib
-            /usr/local/boost/lib
-            /usr/local/opt/openssl/lib
-            /usr/local/opt/curl/lib
-            )
-
-    set(LIBS ${LIBS} ${BOOST_LIBS} pcap crypto curl)
-
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} --std=c++11")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pedantic")
-
 elseif (UNIX)
 
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DBOOST_LOG_DYN_LINK")
 
     set(INCLUDE_DIRS    ${INCLUDE_DIRS}
             /usr/local/include
-            /usr/local/libtins/include
+            $ENV{BOOST_INCLUDE}
+            $ENV{OPENSSL_INCLUDE}
+            $ENV{CURL_INCLUDE}
             )
     set(LIB_DIRS        ${LIB_DIRS}
             /usr/local/lib
-            /usr/local/libtins/lib
+            $ENV{BOOST_LIB}
+            $ENV{OPENSSL_LIB}
+            $ENV{CURL_LIB}
             )
 
-    set(LIBS ${LIBS} ${BOOST_LIBS} pcap pthread crypto curl)
+    set(LIBS ${LIBS} ${BOOST_LIBS}
+        boost_log_setup
+        boost_log
+        boost_thread
+        boost_system
+        boost_date_time
+        pcap
+        crypto
+        curl
+        pthread
+    )
 
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} --std=c++11")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pedantic")
