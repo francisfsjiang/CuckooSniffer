@@ -13,10 +13,6 @@ set(LIB_DIRS)
 
 set(LIBS tins)
 
-set(BOOST_LIBS
-
-        )
-
 if (WIN32)
 
     set(INCLUDE_DIRS    ${INCLUDE_DIRS}
@@ -51,12 +47,14 @@ elseif (UNIX)
             $ENV{BOOST_INCLUDE}
             $ENV{OPENSSL_INCLUDE}
             $ENV{CURL_INCLUDE}
+            $ENV{TINS_INCLUDE}
             )
     set(LIB_DIRS        ${LIB_DIRS}
             /usr/local/lib
             $ENV{BOOST_LIB}
             $ENV{OPENSSL_LIB}
             $ENV{CURL_LIB}
+            $ENV{TINS_LIB}
             )
 
     set(LIBS ${LIBS} ${BOOST_LIBS}
@@ -106,7 +104,9 @@ set(SRC_FILES
         src/samba/data_processor.cpp
         src/threads/thread.cpp
         src/threads/data_queue.cpp
-        src/base/data_processor.cpp src/list_devs.cpp)
+        src/base/data_processor.cpp
+        src/util/option_parser.cpp
+        )
 
 add_library(libcuckoo_sniffer STATIC ${SRC_FILES})
 
