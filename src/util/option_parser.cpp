@@ -1,5 +1,7 @@
 #include "option_parser.hpp"
 
+#include <fstream>
+
 #include <boost/program_options.hpp>
 #include <boost/filesystem.hpp>
 
