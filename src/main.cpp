@@ -15,6 +15,7 @@
 #include "http/sniffer.hpp"
 #include "samba/sniffer.hpp"
 #include "util/function.hpp"
+#include "util/option_parser.hpp"
 
 void on_new_connection(Tins::TCPIP::Stream& stream) {
     cs::base::TCPSniffer* tcp_sniffer = nullptr;
@@ -61,23 +62,32 @@ void on_connection_terminated(Tins::TCPIP::Stream& stream, Tins::TCPIP::StreamFo
 }
 
 
-int main(int argc, char* argv[]) {
-    if (argc < 2) {
-        std::cout << "Usage: CuckooSniffer <device name>" << std::endl;
-        return 0;
-    }
+int main(int argc, const char* argv[]) {
     try {
+        std::map<std::string, std::string> parsed_cfg;
+        int ret = cs::util::parse_cfg(argc, argv, parsed_cfg);
+        if (ret < 0) {
+            std::cerr << "Parse config failed." << std::endl;
+            return ret;
+        }
 
         cs::init_log();
+
+        LOG_INFO << "Config:";
+        for(const auto& cfg: parsed_cfg) {
+            LOG_INFO << cfg.first << " = " << cfg.second;
+        }
+
+        std::string interface_name = parsed_cfg["interface"];
 
         cs::threads::start_threads(2);
 
         Tins::SnifferConfiguration config;
         config.set_filter("(tcp port 445)");
         config.set_promisc_mode(true);
-        Tins::Sniffer sniffer(argv[1], config);
+        Tins::Sniffer sniffer(interface_name, config);
 
-        LOG_INFO << "Start sniffer on " << argv[1];
+        LOG_INFO << "Start sniffer on " << interface_name;
 
         Tins::TCPIP::StreamFollower follower;
         follower.new_stream_callback(&on_new_connection);

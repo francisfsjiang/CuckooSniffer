@@ -62,7 +62,9 @@ elseif (UNIX)
         boost_log
         boost_thread
         boost_system
+        boost_filesystem
         boost_date_time
+        boost_program_options
         pcap
         crypto
         curl
