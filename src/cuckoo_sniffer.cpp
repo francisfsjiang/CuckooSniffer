@@ -80,7 +80,7 @@ void init_log() {
 
     init_log_in_thread();
 
-    LOG_INFO << "Logger start.";
+    LOG_DEBUG << "Logger start.";
 }
 
 

@@ -60,7 +60,7 @@ elseif (UNIX)
     set(LIBS ${LIBS} ${BOOST_LIBS}
         boost_log_setup
         boost_log
-        boost_thread
+        boost_thread-mt
         boost_system
         boost_filesystem
         boost_date_time
