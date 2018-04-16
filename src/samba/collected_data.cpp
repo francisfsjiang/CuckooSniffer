@@ -2,21 +2,15 @@
 
 #include "util/file.hpp"
 
-namespace cs {
-namespace samba {
+namespace cs::samba {
 
-CollectedData::CollectedData(
-        cs::util::File* file) :
-        cs::base::CollectedData(DataType::SAMBA) {
-    file_ = file;
-}
+    using namespace cs::base;
 
-cs::util::File* CollectedData::get_data() const {
-    return file_;
-}
-CollectedData::~CollectedData() {
-    delete file_;
-}
+    CollectedData::CollectedData(
+            cs::util::File* file) :
+            cs::base::CollectedData(DataType::SMTP),
+            file_(file)
+    {
+    }
 
-}
 }

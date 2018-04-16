@@ -1,16 +1,14 @@
 #include "ftp/collected_data.hpp"
 
-namespace cs {
-namespace ftp {
+namespace cs::ftp {
 
-CollectedData::CollectedData( const std::string& data) :
-        cs::base::CollectedData(DataType::FTP) {
-    data_ = std::move(data);
-}
+    using namespace cs::base;
 
-const std::string &CollectedData::get_data() const {
-    return data_;
-}
+    CollectedData::CollectedData(
+            cs::util::Buffer* server_buffer) :
+            cs::base::CollectedData(DataType::SMTP),
+            server_buffer_(server_buffer)
+    {
+    }
 
-}
 }

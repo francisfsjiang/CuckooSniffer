@@ -11,14 +11,9 @@ namespace ftp {
 class CollectedData: public base::CollectedData {
 
 public:
+    CollectedData(cs::util::Buffer*);
 
-    CollectedData(const std::string&);
-
-    const std::string& get_data() const;
-
-private:
-
-    std::string data_;
+    cs::util::Buffer* server_buffer_;
 
 };
 

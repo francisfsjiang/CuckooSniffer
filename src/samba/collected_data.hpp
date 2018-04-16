@@ -5,15 +5,12 @@
 #include <string>
 #include "base/collected_data.hpp"
 
-namespace cs {
 
-namespace util {
-
-class File;
-
+namespace cs::util {
+    class File;
 }
 
-namespace samba {
+namespace cs::samba {
 
 class CollectedData: public cs::base::CollectedData {
 
@@ -21,17 +18,9 @@ public:
 
     CollectedData(cs::util::File*);
 
-    cs::util::File* get_data() const;
-
-    virtual ~CollectedData();
-
-private:
-
     cs::util::File* file_;
-
 };
 
-}
 }
 
 

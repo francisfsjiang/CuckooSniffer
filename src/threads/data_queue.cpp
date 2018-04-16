@@ -2,43 +2,43 @@
 
 #include "cuckoo_sniffer.hpp"
 
-namespace cs {
-namespace threads {
+namespace cs::threads {
+    using namespace cs::util;
+    using namespace cs::base;
 
-DataQueue::DataQueue()
-        : queue_()
-        , mutex()
-        , condition_var_()
-{}
+    DataQueue::DataQueue()
+            : queue_()
+            , mutex()
+            , condition_var_()
+    {}
 
-DataQueue::~DataQueue()
-{}
+    DataQueue::~DataQueue()
+    {}
 
-void DataQueue::enqueue(cs::base::CollectedData* t)
-{
-    std::lock_guard<std::mutex> lock(mutex);
-    queue_.push(t);
-    LOG_TRACE << "Data_queue size: " << queue_.size();
-    condition_var_.notify_one();
-}
-
-cs::base::CollectedData* DataQueue::dequeue()
-{
-    std::unique_lock<std::mutex> lock(mutex);
-    while(queue_.empty())
+    void DataQueue::enqueue(CollectedData* data)
     {
-        condition_var_.wait(lock);
-    }
-    if (!queue_.empty()) {
-        cs::base::CollectedData* val = queue_.front();
-        queue_.pop();
+        std::lock_guard<std::mutex> lock(mutex);
+        queue_.push(data);
         LOG_TRACE << "Data_queue size: " << queue_.size();
-        return val;
+        condition_var_.notify_one();
     }
-    else {
-        return nullptr;
-    }
-}
 
-}
+    CollectedData* DataQueue::dequeue()
+    {
+        std::unique_lock<std::mutex> lock(mutex);
+        while(queue_.empty())
+        {
+            condition_var_.wait(lock);
+        }
+        if (!queue_.empty()) {
+            CollectedData* data = queue_.front();
+            queue_.pop();
+            LOG_TRACE << "Data_queue size: " << queue_.size();
+            return data;
+        }
+        else {
+            return {};
+        }
+    }
+
 }

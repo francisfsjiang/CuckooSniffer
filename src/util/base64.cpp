@@ -2,8 +2,7 @@
 
 #include <iostream>
 
-namespace cs {
-namespace util {
+namespace cs::util {
 
 static const std::string base64_chars =
         "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
@@ -99,5 +98,4 @@ std::string base64_decode(std::string const &encoded_string) {
     return ret;
 }
 
-}
 }

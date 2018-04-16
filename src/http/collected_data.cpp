@@ -1,16 +1,16 @@
 #include "http/collected_data.hpp"
 
-namespace cs {
-namespace http {
+namespace cs::http {
 
-CollectedData::CollectedData( const std::string &data) :
-        cs::base::CollectedData(DataType::HTTP) {
-    data_ = data;
-}
+    using namespace cs::base;
 
-const std::string &CollectedData::get_data() const {
-    return data_;
-}
+    CollectedData::CollectedData(
+            cs::util::Buffer* client_buffer,
+            cs::util::Buffer* server_buffer) :
+            cs::base::CollectedData(DataType::SMTP),
+            client_buffer_(client_buffer),
+            server_buffer_(server_buffer)
+    {
+    }
 
-}
 }

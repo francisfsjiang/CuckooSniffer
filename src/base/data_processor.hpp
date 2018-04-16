@@ -1,26 +1,24 @@
 #ifndef CUCKOOSNIFFER_BASE_DATA_PROCESSOR_HPP
 #define CUCKOOSNIFFER_BASE_DATA_PROCESSOR_HPP
 
-#include "collected_data.hpp"
+#include <functional>
+#include <vector>
+#include <map>
 
-namespace cs {
-namespace base {
-
-class CollectedData;
-
-class DataProcessor {
-
-public:
-
-    virtual int process(CollectedData*) = 0;
-
-    virtual ~DataProcessor() {};
-
-};
-
-DataProcessor* get_data_processor_by_data_type(const CollectedData::DataType&);
-
+namespace cs::util {
+    class Buffer;
+    class File;
 }
+
+namespace cs::base {
+
+    class CollectedData;
+
+    enum class DataType;
+
+    typedef std::function<std::vector<cs::util::File*>(cs::base::CollectedData* collected_data)> ProcessorFunc;
+
+    extern std::map<DataType, ProcessorFunc> ProcessorRouter;
 }
 
 #endif //CUCKOOCOLLECTED_DATA_PROCESSOR_HPP

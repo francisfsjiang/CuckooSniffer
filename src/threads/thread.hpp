@@ -1,12 +1,11 @@
 #ifndef CUCKOOSNIFFER_THREADS_THREAD_HPP
 #define CUCKOOSNIFFER_THREADS_THREAD_HPP
 
-namespace cs {
-namespace threads{
+namespace cs::threads{
 
 void start_threads(int);
 
-}
+
 }
 
 

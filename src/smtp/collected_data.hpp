@@ -3,26 +3,20 @@
 
 
 #include <string>
+#include <util/buffer.hpp>
 #include "base/collected_data.hpp"
 
-namespace cs {
-namespace smtp {
+namespace cs::smtp {
 
 class CollectedData: public cs::base::CollectedData {
 
 public:
 
-    CollectedData(std::string&&);
+    CollectedData(cs::util::Buffer*);
 
-    const std::string& get_data() const;
-
-private:
-
-    std::string data_;
-
+    cs::util::Buffer* client_buffer_;
 };
 
-}
 }
 
 

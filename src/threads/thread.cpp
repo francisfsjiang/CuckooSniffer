@@ -3,61 +3,63 @@
 #include <thread>
 
 #include "cuckoo_sniffer.hpp"
-#include "base/collected_data.hpp"
 #include "base/data_processor.hpp"
-
+#include "base/collected_data.hpp"
+#include "util/file.hpp"
 #include "threads/data_queue.hpp"
 
-namespace cs {
-namespace threads{
+namespace cs::threads{
+
+    using namespace cs::base;
+    using namespace cs::util;
 
 
+    void thread_init() {
+        init_log_in_thread();
+    }
 
-void thread_init() {
-    init_log_in_thread();
-}
-
-void thread_process() {
-    try {
-        cs::base::CollectedData* collected_data = DATA_QUEUE.dequeue();
+    int thread_process() {
+        try {
+            CollectedData* data = DATA_QUEUE.dequeue();
 
 //        LOG_DEBUG << "Thread get collected data.";
 
-        cs::base::DataProcessor* processor =
-                cs::base::get_data_processor_by_data_type(
-                        collected_data->get_data_type()
-                );
+            ProcessorFunc f = ProcessorRouter[data->get_data_type()];
 
-        processor -> process(collected_data);
+            std::vector<cs::util::File*> v = f(data);
 
-        delete collected_data;
+            return 1;
+        }
+        catch(std::exception& e) {
+            LOG_ERROR << "Thread got exception";
+            return 0;
+        }
     }
-    catch(std::exception(e)) {
-//        LOG_ERROR << "Thread got exception";
-    }
-}
 
-void thread_loop() {
-    thread_init();
+    void thread_loop() {
+        thread_init();
 //    LOG_INFO << "Thread loop start.";
-    while(1) {
-        thread_process();
+        int ret;
+        while(1) {
+            ret = thread_process();
+            if(!ret)  {
+                break;
+            }
+        }
+
     }
 
-}
+    std::vector<std::thread> threads_vec;
 
-std::vector<std::thread> threads_vec;
+    void start_threads(int threads_num) {
 
-void start_threads(int threads_num) {
+        for (int i = 0; i < threads_num; ++i) {
+            threads_vec.push_back(
+                    std::thread(thread_loop)
+            );
+        }
 
-    for (int i = 0; i < threads_num; ++i) {
-        threads_vec.push_back(
-                std::thread(thread_loop)
-        );
+
     }
 
-
-}
-
-}
 }

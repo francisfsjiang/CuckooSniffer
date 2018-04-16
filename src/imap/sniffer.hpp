@@ -2,10 +2,11 @@
 #define CUCKOOSNIFFER_IMAP_SNIFFER_HPP
 
 #include "base/sniffer.hpp"
-#include "imap/collected_data.hpp"
+namespace cs::util {
+    class Buffer;
+}
 
-namespace cs {
-namespace imap {
+namespace cs::imap {
 
 class Sniffer : public cs::base::TCPSniffer {
 
@@ -35,11 +36,10 @@ private:
 
     Status status_ = Status::NONE;
 
-    CollectedData *sniffer_data_ = nullptr;
+    cs::util::Buffer* sniffer_data_ = nullptr;
 
 };
 
-}
 }
 
 #endif //CUCKOOSNIFFER_IMAP_SNIFFER_HPP

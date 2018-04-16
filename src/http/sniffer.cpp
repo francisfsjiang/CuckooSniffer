@@ -2,62 +2,79 @@
 
 #include "cuckoo_sniffer.hpp"
 #include "sniffer_manager.hpp"
-#include "http/collected_data.hpp"
 #include "http/data_processor.hpp"
+#include "http/collected_data.hpp"
+#include "util/buffer.hpp"
 
-namespace cs {
-namespace http {
+namespace cs::http {
 
-void Sniffer::on_client_payload(const Tins::TCPIP::Stream &stream) {
-    data_ += std::string(
-            stream.client_payload().begin(),
-            stream.client_payload().end()
-    );
-}
+    using namespace cs::util;
 
-void Sniffer::on_server_payload(const Tins::TCPIP::Stream &stream) {
-}
+    void Sniffer::on_client_payload(const Tins::TCPIP::Stream &stream) {
+        auto& pay_load = stream.client_payload();
+        client_buffer_->write(
+                reinterpret_cast<const char *>(pay_load.data()),
+//                (const char *)client_pay_load.data(),
+                pay_load.size()
+        );
+    }
 
-void Sniffer::on_connection_close(const Tins::TCPIP::Stream &stream) {
-    LOG_DEBUG << "HTTP data size: " << data_.size();
+    void Sniffer::on_server_payload(const Tins::TCPIP::Stream &stream) {
+        auto& pay_load = stream.client_payload();
+        server_buffer_->write(
+                reinterpret_cast<const char *>(pay_load.data()),
+//                (const char *)client_pay_load.data(),
+                pay_load.size()
+        );
+    }
 
-    CollectedData *http_data = new CollectedData(
-            data_
-    );
-    cs::DATA_QUEUE.enqueue(http_data);
+    void Sniffer::on_connection_close(const Tins::TCPIP::Stream &stream) {
+        LOG_DEBUG << "HTTP server data size: " << server_buffer_->size();
+        LOG_DEBUG << "HTTP client data size: " << client_buffer_->size();
 
-    SNIFFER_MANAGER.erase_sniffer(id_);
-}
+        cs::DATA_QUEUE.enqueue(
+                new cs::http::CollectedData(
+                        client_buffer_,
+                        server_buffer_
+                )
+        );
+        client_buffer_ = nullptr;
+        server_buffer_ = nullptr;
 
-void Sniffer::on_connection_terminated(
-        Tins::TCPIP::Stream &,
-        Tins::TCPIP::StreamFollower::TerminationReason) {
+        SNIFFER_MANAGER.erase_sniffer(id_);
+    }
 
-    LOG_DEBUG << id_ << " HTTP connection terminated.";
-    cs::SNIFFER_MANAGER.erase_sniffer(id_);
-}
+    void Sniffer::on_connection_terminated(
+            Tins::TCPIP::Stream &,
+            Tins::TCPIP::StreamFollower::TerminationReason) {
 
-Sniffer::Sniffer(Tins::TCPIP::Stream &stream) : TCPSniffer(stream) {
+        LOG_DEBUG << id_ << " HTTP connection terminated.";
+        cs::SNIFFER_MANAGER.erase_sniffer(id_);
+    }
 
-    stream.ignore_server_data();
-    stream.auto_cleanup_client_data(true);
-    stream.client_data_callback(
-            [this](const Tins::TCPIP::Stream &tcp_stream) {
-                this->on_client_payload(tcp_stream);
-            }
-    );
+    Sniffer::Sniffer(Tins::TCPIP::Stream &stream) : TCPSniffer(stream) {
 
-    stream.stream_closed_callback(
-            [this](const Tins::TCPIP::Stream &tcp_stream) {
-                this->on_connection_close(tcp_stream);
-            }
-    );
+        stream.ignore_server_data();
+        stream.auto_cleanup_client_data(true);
+        stream.client_data_callback(
+                [this](const Tins::TCPIP::Stream &tcp_stream) {
+                    this->on_client_payload(tcp_stream);
+                }
+        );
 
-}
+        stream.stream_closed_callback(
+                [this](const Tins::TCPIP::Stream &tcp_stream) {
+                    this->on_connection_close(tcp_stream);
+                }
+        );
 
-Sniffer::~Sniffer() {
+        server_buffer_ = new Buffer();
+        client_buffer_ = new Buffer();
 
-}
+    }
 
-}
+    Sniffer::~Sniffer() {
+
+    }
+
 }

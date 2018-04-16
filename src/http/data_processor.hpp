@@ -4,22 +4,10 @@
 #include <regex>
 
 #include "base/data_processor.hpp"
-#include "base/collected_data.hpp"
 
-namespace cs {
-namespace http {
+namespace cs::http {
 
-class DataProcessor : public cs::base::DataProcessor {
-
-public:
-
-    virtual int process(cs::base::CollectedData*);
-
-    virtual ~DataProcessor();
-
-};
-
-}
+    std::vector<cs::util::File*> processor(cs::base::CollectedData* collected_data);
 }
 
 

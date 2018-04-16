@@ -12,11 +12,10 @@
 #include "cuckoo_sniffer.hpp"
 #include "sniffer_manager.hpp"
 #include "util/file.hpp"
-#include "samba/collected_data.hpp"
 #include "samba/data_processor.hpp"
+#include "samba/collected_data.hpp"
 
-namespace cs {
-namespace samba {
+namespace cs::samba {
 
 void Sniffer::on_client_payload(const Tins::TCPIP::Stream& stream) {
     std::vector<uint8_t> vec = std::vector<uint8_t>(stream.client_payload());
@@ -403,7 +402,7 @@ void Sniffer::combine_data(const std::string& file_id) {
             delete[] p_data;
         }
 
-        DATA_QUEUE.enqueue(new CollectedData(
+        DATA_QUEUE.enqueue(new cs::samba::CollectedData(
                 file
         ));
 
@@ -507,5 +506,4 @@ uint64_t Sniffer::get_number(const std::vector<uint8_t>& vec, uint64_t offset, u
 }
 
 
-}
 }

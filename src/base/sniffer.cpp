@@ -4,8 +4,7 @@
 #include "sniffer_manager.hpp"
 #include "util/function.hpp"
 
-namespace cs {
-namespace base {
+namespace cs::base {
 
 Sniffer::~Sniffer() {
     LOG_TRACE << "sniffer deconstructor invoked ";
@@ -19,5 +18,4 @@ TCPSniffer::TCPSniffer(Tins::TCPIP::Stream& stream) {
     id_ = cs::util::stream_identifier(stream);
 }
 
-}
 }

@@ -2,9 +2,11 @@
 #define CUCKOOSNIFFER_HTTP_SNIFFER_HPP
 
 #include "base/sniffer.hpp"
+namespace cs::util {
+    class Buffer;
+}
 
-namespace cs {
-namespace http {
+namespace cs::http {
 
 class Sniffer : public cs::base::TCPSniffer {
 
@@ -26,10 +28,11 @@ public:
 
 private:
 
-    std::string data_;
+    cs::util::Buffer* client_buffer_;
+    cs::util::Buffer* server_buffer_;
+
 };
 
-}
 }
 
 

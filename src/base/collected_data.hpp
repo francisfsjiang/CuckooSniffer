@@ -1,23 +1,24 @@
 #ifndef CUCKOOSNIFFER_BASE_COLLECTED_DATA_HPP
 #define CUCKOOSNIFFER_BASE_COLLECTED_DATA_HPP
 
-namespace cs {
-namespace base {
+namespace cs::util {
+    class Buffer;
+}
 
+namespace cs::base {
+
+    enum class DataType: int {
+        FTP = 0,
+        HTTP = 1,
+        SAMBA = 2,
+        IMAP = 3,
+        SMTP = 4,
+    };
 class CollectedData {
 
 public:
 
-    enum DataType {
-        SMTP,
-        IMAP,
-        FTP,
-        HTTP,
-        SAMBA
-    };
-
     CollectedData() = delete;
-
 
     virtual ~CollectedData() {};
 
@@ -33,7 +34,6 @@ protected:
 
 };
 
-}
 }
 
 #endif //CUCKOOSNIFFER_SNIFFER_CONTENT_HPP

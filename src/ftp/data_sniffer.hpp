@@ -3,17 +3,15 @@
 
 #include "base/sniffer.hpp"
 
-namespace cs{ namespace util {
+namespace cs::util {
 
-class File;
+class Buffer;
 
 }
-}
 
 
 
-namespace cs {
-namespace ftp {
+namespace cs::ftp {
 
 class DataSniffer : public cs::base::TCPSniffer {
 
@@ -35,12 +33,10 @@ public:
 
 private:
 
-    cs::util::File* file_;
-    std::string payload_;
+    cs::util::Buffer* buffer_;
 
 };
 
-}
 }
 
 

@@ -9,8 +9,7 @@
 #include "cuckoo_sniffer.hpp"
 
 
-namespace cs {
-namespace util {
+namespace cs::util {
 
 
 const int k_HELP_DESC_NUM = 4;
@@ -95,5 +94,4 @@ int parse_cfg(int& argc, const char** &argv, std::map<std::string, std::string>&
 }
 
 
-}
 }

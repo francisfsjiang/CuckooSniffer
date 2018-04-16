@@ -13,21 +13,23 @@ set(LIB_DIRS)
 
 set(LIBS tins)
 
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} --std=c++1z")
+
 if (WIN32)
 
     set(INCLUDE_DIRS    ${INCLUDE_DIRS}
             C:/libs/WpdPack/Include
             C:/libs/libtins64-debug/include
-            C:/libs/boost64
-            C:/libs/OpenSSL-Win64/include
-            C:/libs/curl-7.46.0-win64/include
+#            C:/libs/boost64
+#            C:/libs/OpenSSL-Win64/include
+#            C:/libs/curl-7.46.0-win64/include
             )
     set(LIB_DIRS        ${LIB_DIRS}
             C:/libs/WpdPack/Lib/x64
             C:/libs/libtins64-debug/lib
-            C:/libs/boost64/lib64-msvc-14.0
-            C:/libs/OpenSSL-Win64/lib
-            C:/libs/curl-7.46.0-win64/lib
+#            C:/libs/boost64/lib64-msvc-14.0
+#            C:/libs/OpenSSL-Win64/lib
+#            C:/libs/curl-7.46.0-win64/lib
             )
 
     set(LIBS ${LIBS}
@@ -44,37 +46,43 @@ elseif (UNIX)
 
     set(INCLUDE_DIRS    ${INCLUDE_DIRS}
             /usr/local/include
-            $ENV{BOOST_INCLUDE}
-            $ENV{OPENSSL_INCLUDE}
-            $ENV{CURL_INCLUDE}
             $ENV{TINS_INCLUDE}
             )
     set(LIB_DIRS        ${LIB_DIRS}
             /usr/local/lib
-            $ENV{BOOST_LIB}
-            $ENV{OPENSSL_LIB}
-            $ENV{CURL_LIB}
             $ENV{TINS_LIB}
             )
 
     set(LIBS ${LIBS} ${BOOST_LIBS}
-        boost_log_setup
-        boost_log
+        boost_log_setup-mt
+        boost_log-mt
         boost_thread-mt
-        boost_system
-        boost_filesystem
-        boost_date_time
-        boost_program_options
+        boost_system-mt
+        boost_filesystem-mt
+        boost_date_time-mt
+        boost_program_options-mt
         pcap
         crypto
         curl
         pthread
     )
 
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} --std=c++11")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pedantic")
 
 endif()
+
+find_package(Boost REQUIRED COMPONENTS context coroutine)
+find_package(CURL REQUIRED)
+find_package(OpenSSL REQUIRED)
+
+
+link_directories(${Boost_LIBRARY_DIRS})
+set(${LIBS} ${LIBS} ${CURL_LIBRARIES} ${OPENSSL_LIBRARIES})
+
+include_directories(${Boost_INCLUDE_DIRS})
+include_directories(${CURL_INCLUDE_DIRS})
+include_directories(${OPENSSL_INCLUDE_DIR})
+
 
 include_directories(${INCLUDE_DIRS})
 link_directories(${LIB_DIRS})
@@ -84,30 +92,31 @@ set(SRC_FILES
         src/cuckoo_sniffer.cpp
         src/sniffer_manager.cpp
         src/base/sniffer.cpp
+        src/base/data_processor.cpp
         src/util/base64.cpp
+        src/util/buffer.cpp
         src/util/file.cpp
         src/util/function.cpp
         src/util/mail_process.cpp
+        src/util/option_parser.cpp
         src/smtp/sniffer.cpp
-        src/smtp/collected_data.cpp
         src/smtp/data_processor.cpp
+        src/smtp/collected_data.cpp
         src/imap/sniffer.cpp
-        src/imap/collected_data.cpp
         src/imap/data_processor.cpp
+        src/imap/collected_data.cpp
         src/ftp/data_sniffer.cpp
-        src/ftp/collected_data.cpp
         src/ftp/data_processor.cpp
         src/ftp/command_sniffer.cpp
+        src/ftp/collected_data.cpp
         src/http/sniffer.cpp
-        src/http/collected_data.cpp
         src/http/data_processor.cpp
+        src/http/collected_data.cpp
         src/samba/sniffer.cpp
-        src/samba/collected_data.cpp
         src/samba/data_processor.cpp
+        src/samba/collected_data.cpp
         src/threads/thread.cpp
         src/threads/data_queue.cpp
-        src/base/data_processor.cpp
-        src/util/option_parser.cpp
         )
 
 add_library(libcuckoo_sniffer STATIC ${SRC_FILES})

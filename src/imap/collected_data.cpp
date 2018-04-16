@@ -1,18 +1,15 @@
 #include "imap/collected_data.hpp"
 
-namespace cs {
-namespace imap {
+namespace cs::imap {
 
-CollectedData::CollectedData() : cs::base::CollectedData(DataType::IMAP) {
-}
+    using namespace cs::base;
 
-void CollectedData::append(const std::string &data) {
-    data_ += data;
-}
 
-const std::string &CollectedData::get_data() const {
-    return data_;
-}
+    CollectedData::CollectedData(
+            cs::util::Buffer* client_buffer) :
+            cs::base::CollectedData(DataType::SMTP),
+            client_buffer_(client_buffer)
+    {
+    }
 
-}
 }

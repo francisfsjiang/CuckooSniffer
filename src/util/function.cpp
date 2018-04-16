@@ -1,6 +1,7 @@
 #include "function.hpp"
 
 #include <sstream>
+#include <iomanip>
 
 #include <openssl/md5.h>
 #include <curl/curl.h>
@@ -11,8 +12,7 @@
 
 #include "util/file.hpp"
 
-namespace cs {
-namespace util {
+namespace cs::util {
 
 std::vector<std::string> split_str(const std::string str, const std::string split) {
     std::string::size_type last_pos = 0, new_pos;
@@ -121,5 +121,4 @@ int submit_file(const File& f, const char* url)
 
 }
 
-}
 }

@@ -11,16 +11,9 @@ class CollectedData : public cs::base::CollectedData {
 
 public:
 
-    CollectedData();
+    CollectedData(cs::util::Buffer*);
 
-    void append(const std::string &);
-
-    const std::string &get_data() const;
-
-private:
-
-    std::string data_;
-
+    cs::util::Buffer* client_buffer_;
 };
 
 }

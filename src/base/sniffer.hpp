@@ -5,45 +5,43 @@
 #include "tins/ip_address.h"
 #include "tins/ipv6_address.h"
 
-namespace cs {
-namespace base {
+namespace cs::base {
 
-class Sniffer {
+    class Sniffer {
 
-public:
+    public:
 
-    virtual ~Sniffer();
+        virtual ~Sniffer();
 
-    const std::string &get_id();
+        const std::string &get_id();
 
-protected:
+    protected:
 
-    std::string id_;
+        std::string id_;
 
-};
+    };
 
 
-class TCPSniffer : public Sniffer {
+    class TCPSniffer : public Sniffer {
 
-public:
+    public:
 
-    virtual void on_client_payload(const Tins::TCPIP::Stream &) = 0;
+        virtual void on_client_payload(const Tins::TCPIP::Stream &) = 0;
 
-    virtual void on_server_payload(const Tins::TCPIP::Stream &) = 0;
+        virtual void on_server_payload(const Tins::TCPIP::Stream &) = 0;
 
-    virtual void on_connection_close(const Tins::TCPIP::Stream &) = 0;
+        virtual void on_connection_close(const Tins::TCPIP::Stream &) = 0;
 
-    virtual void on_connection_terminated(
-            Tins::TCPIP::Stream &,
-            Tins::TCPIP::StreamFollower::TerminationReason) = 0;
+        virtual void on_connection_terminated(
+                Tins::TCPIP::Stream &,
+                Tins::TCPIP::StreamFollower::TerminationReason) = 0;
 
-    TCPSniffer() = delete;
+        TCPSniffer() = delete;
 
-    TCPSniffer(Tins::TCPIP::Stream&);
+        TCPSniffer(Tins::TCPIP::Stream&);
 
-    virtual ~TCPSniffer() {};
-};
+        virtual ~TCPSniffer() {};
+    };
 
-}
 }
 #endif //CUCKOOSNIFFER_BASE_SNIFFER_HPP

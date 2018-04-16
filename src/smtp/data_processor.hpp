@@ -4,22 +4,11 @@
 #include <regex>
 
 #include "base/data_processor.hpp"
-#include "base/collected_data.hpp"
 
-namespace cs {
-namespace smtp {
+namespace cs::smtp {
 
-class DataProcessor : public cs::base::DataProcessor {
+    std::vector<cs::util::File*> processor(cs::base::CollectedData* collected_data);
 
-public:
-
-    virtual int process(cs::base::CollectedData*);
-
-    virtual ~DataProcessor();
-
-};
-
-}
 }
 
 

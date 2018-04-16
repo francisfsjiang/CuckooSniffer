@@ -1,15 +1,14 @@
 #include "ftp/command_sniffer.hpp"
 
 #include <regex>
+#include <iostream>
 
 #include "cuckoo_sniffer.hpp"
 #include "sniffer_manager.hpp"
-#include "ftp/collected_data.hpp"
 #include "ftp/data_processor.hpp"
 #include "util/function.hpp"
 
-namespace cs {
-namespace ftp {
+namespace cs::ftp {
 
 std::map<unsigned short, std::string> CommandSniffer::data_connection_pool_ =
         std::map<unsigned short, std::string>();
@@ -110,5 +109,4 @@ std::map<unsigned short, std::string>& CommandSniffer::get_data_connection_pool(
 CommandSniffer::~CommandSniffer() {
 }
 
-}
 }

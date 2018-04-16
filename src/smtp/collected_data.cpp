@@ -1,17 +1,14 @@
 #include "smtp/collected_data.hpp"
 
-namespace cs {
-namespace smtp {
+namespace cs::smtp {
 
-CollectedData::CollectedData(
-        std::string &&data) :
-        cs::base::CollectedData(DataType::SMTP) {
-    data_ = std::move(data);
-}
+    using namespace cs::base;
 
-const std::string &CollectedData::get_data() const {
-    return data_;
-}
+    CollectedData::CollectedData(
+            cs::util::Buffer* client_buffer) :
+            cs::base::CollectedData(DataType::SMTP),
+            client_buffer_(client_buffer)
+    {
+    }
 
-}
 }
