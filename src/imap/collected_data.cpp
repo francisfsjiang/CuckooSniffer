@@ -7,7 +7,7 @@ namespace cs::imap {
 
     CollectedData::CollectedData(
             cs::util::Buffer* client_buffer) :
-            cs::base::CollectedData(DataType::SMTP),
+            cs::base::CollectedData(DataType::IMAP),
             client_buffer_(client_buffer)
     {
     }

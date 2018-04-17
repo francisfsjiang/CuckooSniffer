@@ -22,9 +22,11 @@ namespace cs::threads{
         try {
             CollectedData* data = DATA_QUEUE.dequeue();
 
-//        LOG_DEBUG << "Thread get collected data.";
+            LOG_DEBUG << "Thread " << std::this_thread::get_id() <<" get collected data.";
 
             ProcessorFunc f = ProcessorRouter[data->get_data_type()];
+
+            LOG_DEBUG << (int)(ProcessorRouter.find(data->get_data_type()) != ProcessorRouter.end());
 
             std::vector<cs::util::File*> v = f(data);
 

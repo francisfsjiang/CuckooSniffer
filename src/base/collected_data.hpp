@@ -14,25 +14,26 @@ namespace cs::base {
         IMAP = 3,
         SMTP = 4,
     };
-class CollectedData {
 
-public:
+    class CollectedData {
 
-    CollectedData() = delete;
+    public:
 
-    virtual ~CollectedData() {};
+        CollectedData() = delete;
 
-    inline virtual DataType get_data_type() {
-        return data_type_;
+        virtual ~CollectedData() {};
+
+        inline virtual DataType get_data_type() {
+            return data_type_;
+        };
+
+    protected:
+
+        DataType data_type_;
+
+        CollectedData(DataType data_type) : data_type_(data_type) {}
+
     };
-
-protected:
-
-    DataType data_type_;
-
-    CollectedData(DataType data_type) : data_type_(data_type) {}
-
-};
 
 }
 

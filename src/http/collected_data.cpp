@@ -7,7 +7,7 @@ namespace cs::http {
     CollectedData::CollectedData(
             cs::util::Buffer* client_buffer,
             cs::util::Buffer* server_buffer) :
-            cs::base::CollectedData(DataType::SMTP),
+            cs::base::CollectedData(DataType::HTTP),
             client_buffer_(client_buffer),
             server_buffer_(server_buffer)
     {

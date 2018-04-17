@@ -32,12 +32,18 @@ namespace cs::http {
         LOG_DEBUG << "HTTP server data size: " << server_buffer_->size();
         LOG_DEBUG << "HTTP client data size: " << client_buffer_->size();
 
-        cs::DATA_QUEUE.enqueue(
-                new cs::http::CollectedData(
-                        client_buffer_,
-                        server_buffer_
-                )
-        );
+        if (client_buffer_->size() == 0 && server_buffer_->size() == 0) {
+            delete client_buffer_;
+            delete server_buffer_;
+        }
+        else {
+            cs::DATA_QUEUE.enqueue(
+                    new cs::http::CollectedData(
+                            client_buffer_,
+                            server_buffer_
+                    )
+            );
+        }
         client_buffer_ = nullptr;
         server_buffer_ = nullptr;
 
@@ -54,7 +60,7 @@ namespace cs::http {
 
     Sniffer::Sniffer(Tins::TCPIP::Stream &stream) : TCPSniffer(stream) {
 
-        stream.ignore_server_data();
+        stream.auto_cleanup_server_data(true);
         stream.auto_cleanup_client_data(true);
         stream.client_data_callback(
                 [this](const Tins::TCPIP::Stream &tcp_stream) {

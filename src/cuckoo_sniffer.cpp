@@ -63,13 +63,21 @@ void init_log() {
             << " " << boost::log::expressions::smessage
     );
 
-
-
-
     boost::log::core::get()->add_global_attribute("TimeStamp", boost::log::attributes::local_clock());
 //    boost::log::core::get()->add_global_attribute("ThreadID",  boost::log::attributes::current_thread_id());
 
     core->add_sink(sink);
+
+    boost::shared_ptr< boost::log::sinks::text_ostream_backend > cout_backend =
+            boost::make_shared< boost::log::sinks::text_ostream_backend >();
+    cout_backend->add_stream(
+            boost::shared_ptr< std::ostream >(&std::cout));
+    cout_backend->auto_flush(true);
+    core->add_sink(boost::shared_ptr<
+            boost::log::sinks::synchronous_sink< boost::log::sinks::text_ostream_backend >
+                   >(
+                           new boost::log::sinks::synchronous_sink< boost::log::sinks::text_ostream_backend >(cout_backend))
+    );
 
     boost::log::core::get()->set_filter
             (

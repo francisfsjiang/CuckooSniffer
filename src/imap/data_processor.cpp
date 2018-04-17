@@ -5,12 +5,15 @@
 #include "util/file.hpp"
 #include "util/buffer.hpp"
 #include "util/mail_process.hpp"
+#include "collected_data.hpp"
 
 namespace cs::imap {
 
 
-	std::vector<cs::util::File*> processor(util::Buffer* , util::Buffer* server_data) {
-		std::string data = std::string(server_data->data_to_read(), server_data->size());
+	std::vector<cs::util::File*> processor(cs::base::CollectedData* collected_data) {
+
+		auto cdata = dynamic_cast<cs::imap::CollectedData*>(collected_data);
+		std::string data = std::string(cdata->client_buffer_->data_to_read(), cdata->client_buffer_->size());
 
 		std::cout << "stat process imap data" << std::endl;
 		//std::cout << data << std::endl << std::endl;

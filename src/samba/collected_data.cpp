@@ -8,7 +8,7 @@ namespace cs::samba {
 
     CollectedData::CollectedData(
             cs::util::File* file) :
-            cs::base::CollectedData(DataType::SMTP),
+            cs::base::CollectedData(DataType::SAMBA),
             file_(file)
     {
     }

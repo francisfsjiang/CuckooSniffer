@@ -112,6 +112,9 @@ set(SRC_FILES
         src/http/sniffer.cpp
         src/http/data_processor.cpp
         src/http/collected_data.cpp
+        src/http/data.cpp
+        src/http/parser.cpp
+        src/http/parser/http_parser.c
         src/samba/sniffer.cpp
         src/samba/data_processor.cpp
         src/samba/collected_data.cpp
@@ -126,6 +129,10 @@ target_link_libraries(CuckooSniffer libcuckoo_sniffer ${LIBS})
 
 add_executable(Test src/test.cpp)
 target_link_libraries(Test libcuckoo_sniffer ${LIBS})
+
+add_executable(HTTPTest src/test_http.cpp)
+target_link_libraries(HTTPTest libcuckoo_sniffer ${LIBS} boost_regex-mt)
+
 
 add_executable(ListDevs src/list_devs.cpp)
 target_link_libraries(ListDevs libcuckoo_sniffer ${LIBS})

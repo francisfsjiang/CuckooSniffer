@@ -11,7 +11,10 @@ namespace cs::base {
 
     std::map<DataType, ProcessorFunc> ProcessorRouter = {
             {DataType::HTTP, cs::http::processor},
-            {DataType::FTP,  cs::ftp::processor}
+            {DataType::FTP,  cs::ftp::processor},
+            {DataType::IMAP, cs::imap::processor},
+            {DataType::SMTP, cs::smtp::processor},
+            {DataType::SAMBA,cs::samba::processor}
     };
 
 }

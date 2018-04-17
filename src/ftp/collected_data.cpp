@@ -6,7 +6,7 @@ namespace cs::ftp {
 
     CollectedData::CollectedData(
             cs::util::Buffer* server_buffer) :
-            cs::base::CollectedData(DataType::SMTP),
+            cs::base::CollectedData(DataType::FTP),
             server_buffer_(server_buffer)
     {
     }
