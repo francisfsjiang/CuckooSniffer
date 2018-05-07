@@ -189,7 +189,7 @@ void Sniffer::handle_client_req(const std::vector<uint8_t>& vec) {
     }
 }
 
-void Sniffer::on_server_payload(const Tins::TCPIP::Stream &stream) {
+void Sniffer::on_server_payload(const cs::base::payload_type& payload) {
     std::vector<uint8_t> vec = std::vector<uint8_t>(stream.server_payload());
     while (vec.size() > 0) {
         vec = handle_server_NB_block(vec);
@@ -411,7 +411,7 @@ void Sniffer::combine_data(const std::string& file_id) {
 }
 
 
-void Sniffer::on_connection_close(const Tins::TCPIP::Stream &stream) {
+void Sniffer::on_connection_close() {
     LOG_DEBUG << "SAMBA onnection Close";
 
     std::set<std::string> s;
@@ -435,7 +435,7 @@ void Sniffer::on_connection_terminated(
     SNIFFER_MANAGER.erase_sniffer(id_);
 }
 
-Sniffer::Sniffer(Tins::TCPIP::Stream &stream) : TCPSniffer(stream) {
+Sniffer::Sniffer(const std::string& stream_id) : TCPSniffer(stream_id) {
 
     stream.client_data_callback(
             [this](const Tins::TCPIP::Stream &tcp_stream) {

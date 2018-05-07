@@ -1,11 +1,13 @@
 #include <iostream>
 #include <sstream>
+#include <unordered_map>
 
 #include "cuckoo_sniffer.hpp"
 
 #include "tins/tcp_ip/stream_follower.h"
 #include "tins/sniffer.h"
 
+#include "threads/data_queue.hpp"
 #include "sniffer_manager.hpp"
 #include "threads/thread.hpp"
 #include "smtp/sniffer.hpp"
@@ -78,50 +80,109 @@ std::map<int, const char*> pdu_type_to_str = {
 };
 
 
+int CURRENT_THREAD_ID = 0;
+
+
+void data_callback(std::shared_ptr<cs::base::TCPSniffer> sniffer_ptr, int thread_id, const Tins::TCPIP::Stream &tcp_stream, cs::threads::DataType type) {
+
+    cs::base::payload_type* payload_ptr = nullptr;
+
+    if (type == cs::threads::DataType::CLIENT_PAYLOAD) {
+        payload_ptr = new cs::base::payload_type(tcp_stream.client_payload());
+    }
+    else if (type == cs::threads::DataType::SERVER_PAYLOAD) {
+        payload_ptr = new cs::base::payload_type(tcp_stream.server_payload());
+    }
+    else {
+        payload_ptr = nullptr;
+    }
+
+    auto de = new cs::threads::DataEvent(
+            sniffer_ptr, type, payload_ptr
+    );
+
+    cs::threads::DATA_QUEUES[thread_id]->enqueue(de);
+}
+
+
 void on_new_connection(Tins::TCPIP::Stream& stream) {
-    cs::base::TCPSniffer* tcp_sniffer = nullptr;
     uint16_t port = stream.server_port();
     LOG_TRACE << cs::util::stream_identifier(stream) << " Get tcp stream." ;
-    switch (stream.server_port()) {
-        case 25:        //SMTP
-            tcp_sniffer = new cs::smtp::Sniffer(stream);
-            break;
-        case 143:       //IMAP
-            tcp_sniffer = new cs::imap::Sniffer(stream);
-            break;
-        case 21:        //FTP
-            tcp_sniffer = new cs::ftp::CommandSniffer(stream);
-            break;
-        case 80:        //HTTP
-            tcp_sniffer = new cs::http::Sniffer(stream);
-            break;
+
+    std::string stream_id = cs::util::stream_identifier(stream);
+
+    cs::base::TCPSniffer* tcp_sniffer = nullptr;
+
+    switch (port) {
+//        case 25:        //SMTP
+//            tcp_sniffer = new cs::smtp::Sniffer(stream);
+//            break;
+//        case 143:       //IMAP
+//            tcp_sniffer = new cs::imap::Sniffer(stream);
+//            break;
+//        case 21:        //FTP
+//            tcp_sniffer = new cs::ftp::CommandSniffer(stream);
+//            break;
+//        case 80:        //HTTP
+//            tcp_sniffer = new cs::http::Sniffer(stream_id);
+//            break;
         case 63343:        //HTTP
-            tcp_sniffer = new cs::http::Sniffer(stream);
+            tcp_sniffer = new cs::http::Sniffer(stream_id);
             break;
 //        case 445:       //SAMBA
 //            tcp_sniffer = new cs::samba::Sniffer(stream);
 //            break;
         default:
-            const auto& ftp_data_connection = cs::ftp::CommandSniffer::get_data_connection_pool();
-            if (ftp_data_connection.find(port) != ftp_data_connection.end()) {
-                tcp_sniffer = new cs::ftp::DataSniffer(stream);
-            }
-            else {
-                stream.auto_cleanup_payloads(true);
-                return;
-            }
+//            const auto& ftp_data_connection = cs::ftp::CommandSniffer::get_data_connection_pool();
+//            if (ftp_data_connection.find(port) != ftp_data_connection.end()) {
+//                tcp_sniffer = new cs::ftp::DataSniffer(stream);
+//            }
+//            else {
+//                stream.auto_cleanup_payloads(true);
+//                return;
+//            }
             break;
     }
 
-    cs::SNIFFER_MANAGER.append_sniffer(tcp_sniffer -> get_id(), (cs::base::Sniffer*)tcp_sniffer);
+    if (!tcp_sniffer) {
+        stream.auto_cleanup_payloads(true);
+        return;
+    }
+
+    std::shared_ptr<cs::base::TCPSniffer> sniffer_ptr = std::shared_ptr<cs::base::TCPSniffer>(tcp_sniffer);
+
+    int thread_id = CURRENT_THREAD_ID++;
+    if(CURRENT_THREAD_ID >= cs::threads::THREADS_NUM) {
+        CURRENT_THREAD_ID = 0;
+    }
+
+
+    stream.client_data_callback(
+            std::bind(&data_callback, sniffer_ptr, thread_id, std::placeholders::_1, cs::threads::DataType::CLIENT_PAYLOAD)
+    );
+
+    stream.server_data_callback(
+            std::bind(&data_callback, sniffer_ptr, thread_id, std::placeholders::_1, cs::threads::DataType::SERVER_PAYLOAD)
+    );
+
+    stream.stream_closed_callback(
+            std::bind(&data_callback, sniffer_ptr, thread_id, std::placeholders::_1, cs::threads::DataType::CLOSE)
+    );
+
+    cs::SNIFFER_MANAGER.append_sniffer(sniffer_ptr -> get_id(), sniffer_ptr, thread_id);
+//    cs::SNIFFER_MANAGER.append_sniffer(tcp_sniffer -> get_id(), (cs::base::Sniffer*)tcp_sniffer);
 
 }
 
 
-void on_connection_terminated(Tins::TCPIP::Stream& stream, Tins::TCPIP::StreamFollower::TerminationReason reason) {
+void on_connection_terminated(Tins::TCPIP::Stream& stream, Tins::TCPIP::StreamFollower::TerminationReason _) {
     std::string stream_id = cs::util::stream_identifier(stream);
     LOG_INFO << "Connection terminated " << stream_id;
-    ((cs::base::TCPSniffer*)cs::SNIFFER_MANAGER.get_sniffer(stream_id)) ->on_connection_terminated(stream, reason);
+    auto sniffer = cs::SNIFFER_MANAGER.get_sniffer_info(stream_id);
+
+    data_callback(std::dynamic_pointer_cast<cs::base::TCPSniffer>(sniffer.first),  sniffer.second, stream, cs::threads::DataType::TEMINATATION);
+
+
     cs::SNIFFER_MANAGER.erase_sniffer(stream_id);
 }
 
@@ -145,6 +206,7 @@ int main(int argc, const char* argv[]) {
         std::string interface_name = parsed_cfg["interface"];
 
         cs::threads::start_threads(2);
+        CURRENT_THREAD_ID = 0;
 
         Tins::SnifferConfiguration config;
 //        config.set_filter("ip6 host 2001:da8:215:1660:bbb2:3d41:d32b:dc53");

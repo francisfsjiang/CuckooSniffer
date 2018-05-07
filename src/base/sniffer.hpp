@@ -7,13 +7,21 @@
 
 namespace cs::base {
 
+    typedef Tins::TCPIP::Stream::payload_type payload_type;
+    typedef Tins::TCPIP::StreamFollower::TerminationReason termination_reason;
     class Sniffer {
 
     public:
 
+        Sniffer(const std::string&);
+
         virtual ~Sniffer();
 
         const std::string &get_id();
+
+        virtual void on_client_payload(const payload_type&) = 0;
+
+        virtual void on_server_payload(const payload_type&) = 0;
 
     protected:
 
@@ -26,19 +34,17 @@ namespace cs::base {
 
     public:
 
-        virtual void on_client_payload(const Tins::TCPIP::Stream &) = 0;
+        virtual void on_client_payload(const payload_type&) = 0;
 
-        virtual void on_server_payload(const Tins::TCPIP::Stream &) = 0;
+        virtual void on_server_payload(const payload_type&) = 0;
 
-        virtual void on_connection_close(const Tins::TCPIP::Stream &) = 0;
+        virtual void on_connection_close() = 0;
 
-        virtual void on_connection_terminated(
-                Tins::TCPIP::Stream &,
-                Tins::TCPIP::StreamFollower::TerminationReason) = 0;
+        virtual void on_connection_terminated(termination_reason) = 0;
 
         TCPSniffer() = delete;
 
-        TCPSniffer(Tins::TCPIP::Stream&);
+        TCPSniffer(const std::string&);
 
         virtual ~TCPSniffer() {};
     };

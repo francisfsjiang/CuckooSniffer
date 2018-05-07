@@ -6,16 +6,21 @@
 
 namespace cs::base {
 
-Sniffer::~Sniffer() {
-    LOG_TRACE << "sniffer deconstructor invoked ";
-}
+    Sniffer::~Sniffer() {
+        LOG_TRACE << "sniffer deconstructor invoked ";
+    }
 
-const std::string& Sniffer::get_id() {
-    return id_;
-}
+    const std::string& Sniffer::get_id() {
+        return id_;
+    }
 
-TCPSniffer::TCPSniffer(Tins::TCPIP::Stream& stream) {
-    id_ = cs::util::stream_identifier(stream);
-}
+    Sniffer::Sniffer(const std::string& id) {
+        id_ = id;
+    }
+
+    TCPSniffer::TCPSniffer(const std::string& id):
+            Sniffer::Sniffer(id)
+    {
+    }
 
 }

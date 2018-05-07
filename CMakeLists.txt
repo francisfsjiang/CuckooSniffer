@@ -92,32 +92,21 @@ set(SRC_FILES
         src/cuckoo_sniffer.cpp
         src/sniffer_manager.cpp
         src/base/sniffer.cpp
-        src/base/data_processor.cpp
         src/util/base64.cpp
         src/util/buffer.cpp
         src/util/file.cpp
         src/util/function.cpp
         src/util/mail_process.cpp
         src/util/option_parser.cpp
-        src/smtp/sniffer.cpp
-        src/smtp/data_processor.cpp
-        src/smtp/collected_data.cpp
-        src/imap/sniffer.cpp
-        src/imap/data_processor.cpp
-        src/imap/collected_data.cpp
-        src/ftp/data_sniffer.cpp
-        src/ftp/data_processor.cpp
-        src/ftp/command_sniffer.cpp
-        src/ftp/collected_data.cpp
+#        src/smtp/sniffer.cpp
+#        src/imap/sniffer.cpp
+#        src/ftp/data_sniffer.cpp
+#        src/ftp/command_sniffer.cpp
         src/http/sniffer.cpp
-        src/http/data_processor.cpp
-        src/http/collected_data.cpp
         src/http/data.cpp
         src/http/parser.cpp
         src/http/parser/http_parser.c
-        src/samba/sniffer.cpp
-        src/samba/data_processor.cpp
-        src/samba/collected_data.cpp
+#        src/samba/sniffer.cpp
         src/threads/thread.cpp
         src/threads/data_queue.cpp
         )

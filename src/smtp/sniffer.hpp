@@ -9,17 +9,15 @@ class Sniffer : public cs::base::TCPSniffer {
 
 public:
 
-    virtual void on_client_payload(const Tins::TCPIP::Stream &);
+    virtual void on_client_payload(const cs::base::payload_type&);
 
-    virtual void on_server_payload(const Tins::TCPIP::Stream &);
+    virtual void on_server_payload(const cs::base::payload_type&);
 
-    virtual void on_connection_close(const Tins::TCPIP::Stream &);
+    virtual void on_connection_close();
 
-    virtual void on_connection_terminated(
-            Tins::TCPIP::Stream &,
-            Tins::TCPIP::StreamFollower::TerminationReason);
+    virtual void on_connection_terminated(cs::base::termination_reason);
 
-    Sniffer(Tins::TCPIP::Stream &);
+    Sniffer(const std::string&);
 
     virtual ~Sniffer();
 

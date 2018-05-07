@@ -19,9 +19,6 @@ namespace cs {
 
 boost::log::sources::severity_logger <boost::log::trivial::severity_level> lg;
 
-threads::DataQueue* DATA_QUEUE_PTR = new threads::DataQueue();
-
-threads::DataQueue& DATA_QUEUE = *DATA_QUEUE_PTR;
 
 void init_log_in_thread() {
     BOOST_LOG_SCOPED_THREAD_TAG("ThreadID", boost::this_thread::get_id());

@@ -10,25 +10,23 @@ namespace cs::http {
 
     using namespace cs::util;
 
-    void Sniffer::on_client_payload(const Tins::TCPIP::Stream &stream) {
-        auto& pay_load = stream.client_payload();
+    void Sniffer::on_client_payload(const cs::base::payload_type& payload) {
         client_buffer_->write(
-                reinterpret_cast<const char *>(pay_load.data()),
+                reinterpret_cast<const char *>(payload.data()),
 //                (const char *)client_pay_load.data(),
-                pay_load.size()
+                payload.size()
         );
     }
 
-    void Sniffer::on_server_payload(const Tins::TCPIP::Stream &stream) {
-        auto& pay_load = stream.client_payload();
+    void Sniffer::on_server_payload(const cs::base::payload_type& payload) {
         server_buffer_->write(
-                reinterpret_cast<const char *>(pay_load.data()),
+                reinterpret_cast<const char *>(payload.data()),
 //                (const char *)client_pay_load.data(),
-                pay_load.size()
+                payload.size()
         );
     }
 
-    void Sniffer::on_connection_close(const Tins::TCPIP::Stream &stream) {
+    void Sniffer::on_connection_close() {
         LOG_DEBUG << "HTTP server data size: " << server_buffer_->size();
         LOG_DEBUG << "HTTP client data size: " << client_buffer_->size();
 
@@ -37,12 +35,6 @@ namespace cs::http {
             delete server_buffer_;
         }
         else {
-            cs::DATA_QUEUE.enqueue(
-                    new cs::http::CollectedData(
-                            client_buffer_,
-                            server_buffer_
-                    )
-            );
         }
         client_buffer_ = nullptr;
         server_buffer_ = nullptr;
@@ -51,28 +43,27 @@ namespace cs::http {
     }
 
     void Sniffer::on_connection_terminated(
-            Tins::TCPIP::Stream &,
             Tins::TCPIP::StreamFollower::TerminationReason) {
 
         LOG_DEBUG << id_ << " HTTP connection terminated.";
         cs::SNIFFER_MANAGER.erase_sniffer(id_);
     }
 
-    Sniffer::Sniffer(Tins::TCPIP::Stream &stream) : TCPSniffer(stream) {
+    Sniffer::Sniffer(const std::string& stream_id) : TCPSniffer(stream_id) {
 
-        stream.auto_cleanup_server_data(true);
-        stream.auto_cleanup_client_data(true);
-        stream.client_data_callback(
-                [this](const Tins::TCPIP::Stream &tcp_stream) {
-                    this->on_client_payload(tcp_stream);
-                }
-        );
-
-        stream.stream_closed_callback(
-                [this](const Tins::TCPIP::Stream &tcp_stream) {
-                    this->on_connection_close(tcp_stream);
-                }
-        );
+//        stream.auto_cleanup_server_data(true);
+//        stream.auto_cleanup_client_data(true);
+//        stream.client_data_callback(
+//                [this](const Tins::TCPIP::Stream &tcp_stream) {
+//                    this->on_client_payload(tcp_stream);
+//                }
+//        );
+//
+//        stream.stream_closed_callback(
+//                [this](const Tins::TCPIP::Stream &tcp_stream) {
+//                    this->on_connection_close(tcp_stream);
+//                }
+//        );
 
         server_buffer_ = new Buffer();
         client_buffer_ = new Buffer();

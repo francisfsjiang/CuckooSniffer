@@ -15,11 +15,11 @@ namespace cs::ftp {
 
     using namespace cs::util;
 
-    void DataSniffer::on_client_payload(const Tins::TCPIP::Stream &stream) {
+    void DataSniffer::on_client_payload(const cs::base::payload_type& payload) {
 
     }
 
-    void DataSniffer::on_server_payload(const Tins::TCPIP::Stream &stream) {
+    void DataSniffer::on_server_payload(const cs::base::payload_type& payload) {
         auto& pay_load = stream.server_payload();
         buffer_->write(
                 reinterpret_cast<const char*>(pay_load.data()),
@@ -27,7 +27,7 @@ namespace cs::ftp {
         );
     }
 
-    void DataSniffer::on_connection_close(const Tins::TCPIP::Stream &stream) {
+    void DataSniffer::on_connection_close() {
         LOG_DEBUG << "FTP data size: " << buffer_->size();
         auto buffer = new Buffer();
         cs::DATA_QUEUE.enqueue(new cs::ftp::CollectedData(buffer));
@@ -45,28 +45,17 @@ namespace cs::ftp {
         cs::SNIFFER_MANAGER.erase_sniffer(id_);
     }
 
-    DataSniffer::DataSniffer(Tins::TCPIP::Stream &stream) : TCPSniffer(stream) {
+    DataSniffer::DataSniffer(const std::string& id) : TCPSniffer(id) {
         LOG_DEBUG << "Get FTP data connection " << id_;
 
         buffer_ = new Buffer();
-
-        stream.ignore_client_data();
-        stream.server_data_callback(
-                [this](const Tins::TCPIP::Stream& tcp_stream) {
-                    this -> on_server_payload(tcp_stream);
-                }
-        );
-
-        stream.stream_closed_callback(
-                [this](const Tins::TCPIP::Stream &tcp_stream) {
-                    this -> on_connection_close(tcp_stream);
-                }
-        );
 
     }
 
 
     DataSniffer::~DataSniffer() {
+
+        delete buffer_;
     }
 
 }

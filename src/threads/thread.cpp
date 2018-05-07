@@ -5,6 +5,7 @@
 #include "cuckoo_sniffer.hpp"
 #include "base/data_processor.hpp"
 #include "base/collected_data.hpp"
+#include "base/sniffer.hpp"
 #include "util/file.hpp"
 #include "threads/data_queue.hpp"
 
@@ -13,37 +14,39 @@ namespace cs::threads{
     using namespace cs::base;
     using namespace cs::util;
 
+    int THREADS_NUM = -1;
 
     void thread_init() {
         init_log_in_thread();
     }
 
-    int thread_process() {
-        try {
-            CollectedData* data = DATA_QUEUE.dequeue();
+    int thread_process(DataQueue* queue) {
+//        try {
+            DataEvent* data = queue->dequeue();
 
             LOG_DEBUG << "Thread " << std::this_thread::get_id() <<" get collected data.";
 
-            ProcessorFunc f = ProcessorRouter[data->get_data_type()];
-
-            LOG_DEBUG << (int)(ProcessorRouter.find(data->get_data_type()) != ProcessorRouter.end());
-
-            std::vector<cs::util::File*> v = f(data);
+            if (data->type_ == DataType::CLIENT_PAYLOAD) {
+                data->sniffer_->on_client_payload(*data->payload_);
+            }
+            else {
+                data->sniffer_->on_server_payload(*data->payload_);
+            }
 
             return 1;
-        }
-        catch(std::exception& e) {
-            LOG_ERROR << "Thread got exception";
-            return 0;
-        }
+//        }
+//        catch(std::exception& e) {
+//            LOG_ERROR << "Thread got exception";
+//            return 0;
+//        }
     }
 
-    void thread_loop() {
+    void thread_loop(DataQueue* queue) {
         thread_init();
 //    LOG_INFO << "Thread loop start.";
         int ret;
         while(1) {
-            ret = thread_process();
+            ret = thread_process(queue);
             if(!ret)  {
                 break;
             }
@@ -51,13 +54,20 @@ namespace cs::threads{
 
     }
 
-    std::vector<std::thread> threads_vec;
+    std::vector<std::thread> THREADS_POOL;
 
     void start_threads(int threads_num) {
+        THREADS_POOL.clear();
+        THREADS_NUM = threads_num;
 
         for (int i = 0; i < threads_num; ++i) {
-            threads_vec.push_back(
-                    std::thread(thread_loop)
+            auto p = new DataQueue();
+            THREADS_POOL.emplace_back(
+                    std::thread(thread_loop, p)
+            );
+
+            DATA_QUEUES.push_back(
+                    p
             );
         }
 

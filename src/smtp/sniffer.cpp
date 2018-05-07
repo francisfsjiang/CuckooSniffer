@@ -12,14 +12,14 @@ namespace cs::smtp {
     using namespace cs::util;
     using namespace cs::base;
 
-    void Sniffer::on_client_payload(const Tins::TCPIP::Stream &stream) {
-        LOG_TRACE << "SMTP data size :" << stream.client_payload().size();
+    void Sniffer::on_client_payload(const cs::base::payload_type& payload) {
+        LOG_TRACE << "SMTP data size :" << payload.size();
     }
 
-    void Sniffer::on_server_payload(const Tins::TCPIP::Stream &stream) {
+    void Sniffer::on_server_payload(const cs::base::payload_type& payload) {
     }
 
-    void Sniffer::on_connection_close(const Tins::TCPIP::Stream &stream) {
+    void Sniffer::on_connection_close() {
         LOG_TRACE << "SMTP data size :" << stream.client_payload().size();
         LOG_DEBUG << id_ << " " << "SMTP Connection Close" << std::endl;
 
@@ -32,7 +32,7 @@ namespace cs::smtp {
                 client_pay_load.size()
         );
 
-        cs::DATA_QUEUE.enqueue(new cs::smtp::CollectedData(client_buffer));
+//        cs::DATA_QUEUE.enqueue(new cs::smtp::CollectedData(client_buffer));
 
         cs::SNIFFER_MANAGER.erase_sniffer(id_);
     }
@@ -44,7 +44,7 @@ namespace cs::smtp {
         cs::SNIFFER_MANAGER.erase_sniffer(id_);
     }
 
-    Sniffer::Sniffer(Tins::TCPIP::Stream &stream) : TCPSniffer(stream) {
+    Sniffer::Sniffer(const string& id) : TCPSniffer(id) {
 
         stream.ignore_server_data();
         stream.auto_cleanup_client_data(false);

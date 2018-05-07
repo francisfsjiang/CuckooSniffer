@@ -4,34 +4,52 @@
 #include <queue>
 #include <mutex>
 #include <condition_variable>
-#include <base/data_processor.hpp>
+
+#include "cuckoo_sniffer.hpp"
 
 namespace cs::base {
-    enum class DataType;
 
-    class CollectedData;
+    class Sniffer;
 
 }
 namespace cs::threads {
 
 
-    class DataQueue
-    {
+    enum class DataType: int {
+        SERVER_PAYLOAD,
+        CLIENT_PAYLOAD,
+        CLOSE,
+        TEMINATATION
+    };
+
+    class DataEvent {
+    public:
+        DataEvent(std::shared_ptr<cs::base::Sniffer>, DataType, cs::base::payload_type*);
+        std::shared_ptr<cs::base::Sniffer> sniffer_;
+        DataType type_;
+        cs::base::payload_type* payload_;
+
+    };
+
+
+    class DataQueue {
     public:
         DataQueue();
 
         ~DataQueue();
 
-        void enqueue(base::CollectedData*);
+        void enqueue(DataEvent*);
 
-        base::CollectedData* dequeue();
+        DataEvent* dequeue();
 
     private:
-        std::queue<base::CollectedData*> queue_;
+        std::queue<DataEvent*> queue_;
         mutable std::mutex mutex;
         std::condition_variable condition_var_;
     };
 
+
+    extern std::vector<DataQueue*> DATA_QUEUES;
 
 }
 

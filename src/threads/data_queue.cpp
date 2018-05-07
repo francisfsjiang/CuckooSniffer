@@ -3,8 +3,15 @@
 #include "cuckoo_sniffer.hpp"
 
 namespace cs::threads {
-    using namespace cs::util;
     using namespace cs::base;
+
+    std::vector<DataQueue*> DATA_QUEUES;
+
+    DataEvent::DataEvent(std::shared_ptr<cs::base::Sniffer> sniffer, DataType type, cs::base::payload_type* payload)
+            :sniffer_(sniffer), type_(type), payload_(payload)
+    {
+
+    }
 
     DataQueue::DataQueue()
             : queue_()
@@ -15,7 +22,7 @@ namespace cs::threads {
     DataQueue::~DataQueue()
     {}
 
-    void DataQueue::enqueue(CollectedData* data)
+    void DataQueue::enqueue(DataEvent* data)
     {
         std::lock_guard<std::mutex> lock(mutex);
         queue_.push(data);
@@ -23,7 +30,7 @@ namespace cs::threads {
         condition_var_.notify_one();
     }
 
-    CollectedData* DataQueue::dequeue()
+    DataEvent* DataQueue::dequeue()
     {
         std::unique_lock<std::mutex> lock(mutex);
         while(queue_.empty())
@@ -31,7 +38,7 @@ namespace cs::threads {
             condition_var_.wait(lock);
         }
         if (!queue_.empty()) {
-            CollectedData* data = queue_.front();
+            DataEvent* data = queue_.front();
             queue_.pop();
             LOG_TRACE << "Data_queue size: " << queue_.size();
             return data;

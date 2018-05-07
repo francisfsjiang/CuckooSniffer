@@ -13,7 +13,7 @@ namespace cs::ftp {
 std::map<unsigned short, std::string> CommandSniffer::data_connection_pool_ =
         std::map<unsigned short, std::string>();
 
-void CommandSniffer::on_client_payload(const Tins::TCPIP::Stream &stream) {
+void CommandSniffer::on_client_payload(const cs::base::payload_type& payload) {
     std::string command = std::string(
             stream.client_payload().begin(),
             stream.client_payload().end()
@@ -35,7 +35,7 @@ void CommandSniffer::on_client_payload(const Tins::TCPIP::Stream &stream) {
 
 }
 
-void CommandSniffer::on_server_payload(const Tins::TCPIP::Stream &stream) {
+void CommandSniffer::on_server_payload(const cs::base::payload_type& payload) {
     std::string command = std::string(
             stream.server_payload().begin(),
             stream.server_payload().end()
@@ -65,7 +65,7 @@ void CommandSniffer::on_server_payload(const Tins::TCPIP::Stream &stream) {
     }
 }
 
-void CommandSniffer::on_connection_close(const Tins::TCPIP::Stream &stream) {
+void CommandSniffer::on_connection_close() {
     LOG_DEBUG << id_ << " FTP connection close.";
     cs::SNIFFER_MANAGER.erase_sniffer(id_);
 }

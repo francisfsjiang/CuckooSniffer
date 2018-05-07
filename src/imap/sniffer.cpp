@@ -13,7 +13,7 @@ namespace cs::imap {
     using namespace cs::util;
     using namespace cs::base;
 
-    void Sniffer::on_client_payload(const Tins::TCPIP::Stream &stream) {
+    void Sniffer::on_client_payload(const cs::base::payload_type& payload) {
         if (status_ != Status::NONE) {
 
             cs::DATA_QUEUE.enqueue(new cs::imap::CollectedData(sniffer_data_));
@@ -32,8 +32,8 @@ namespace cs::imap {
         std::string command, caught_str;
 
         command = std::string(
-                stream.client_payload().begin(),
-                stream.client_payload().end()
+                payload.begin(),
+                payload.end()
         );
         try
         {
@@ -70,22 +70,21 @@ namespace cs::imap {
 
     }
 
-    void Sniffer::on_server_payload(const Tins::TCPIP::Stream &stream) {
-        auto& pay_load = stream.server_payload();
+    void Sniffer::on_server_payload(const cs::base::payload_type& payload) {
         switch (status_) {
             case Status::NONE:
                 break;
             case Status::MULTI:
 //        std::cout << "server payload " << std::endl << data << std::endl;
                 sniffer_data_->write(
-                        reinterpret_cast<const char*>(pay_load.data()),
-                        pay_load.size()
+                        reinterpret_cast<const char*>(payload.data()),
+                        payload.size()
                 );
                 break;
             case Status::PART:
                 sniffer_data_->write(
-                        reinterpret_cast<const char*>(pay_load.data()),
-                        pay_load.size()
+                        reinterpret_cast<const char*>(payload.data()),
+                        payload.size()
                 );
                 break;
             default:
@@ -93,7 +92,7 @@ namespace cs::imap {
         }
     }
 
-    void Sniffer::on_connection_close(const Tins::TCPIP::Stream &stream) {
+    void Sniffer::on_connection_close() {
         std::cout << "Connection Close" << std::endl;
         cs::SNIFFER_MANAGER.erase_sniffer(id_);
     }
@@ -105,7 +104,7 @@ namespace cs::imap {
         cs::SNIFFER_MANAGER.erase_sniffer(id_);
     }
 
-    Sniffer::Sniffer(Tins::TCPIP::Stream &stream) : TCPSniffer(stream) {
+    Sniffer::Sniffer(const std::string& stream_id) : TCPSniffer(stream_id) {
         std::cout << "get 143 connection" << std::endl;
         stream.auto_cleanup_client_data(true);
         stream.auto_cleanup_server_data(true);

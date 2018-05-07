@@ -19,15 +19,15 @@ public:
 
     static SnifferManager &get_instance();
 
-    void append_sniffer(std::string, cs::base::Sniffer *);
+    void append_sniffer(std::string, std::shared_ptr<cs::base::Sniffer>, int);
 
-    cs::base::Sniffer *get_sniffer(std::string);
+    std::pair<std::shared_ptr<cs::base::Sniffer>, int> get_sniffer_info(std::string);
 
     void erase_sniffer(std::string);
 
 private:
 
-    std::map<std::string, cs::base::Sniffer *> sniffer_container;
+    std::map<std::string, std::pair<std::shared_ptr<cs::base::Sniffer>, int>> sniffer_container;
 
     SnifferManager();
 
