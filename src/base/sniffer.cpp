@@ -7,7 +7,7 @@
 namespace cs::base {
 
     Sniffer::~Sniffer() {
-        LOG_TRACE << "sniffer deconstructor invoked ";
+        LOG_TRACE << "Sniffer deconstructor invoked ";
     }
 
     const std::string& Sniffer::get_id() {
@@ -15,6 +15,7 @@ namespace cs::base {
     }
 
     Sniffer::Sniffer(const std::string& id) {
+        LOG_TRACE << "Sniffer constructor invoked ";
         id_ = id;
     }
 

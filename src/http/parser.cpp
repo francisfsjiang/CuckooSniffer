@@ -42,8 +42,7 @@ namespace cs::http {
 
 
     HTTPParser::HTTPParser(HTTP_TYPE type) {
-        LOG_DEBUG << "http-parser version: " << http_parser_version();
-
+//        LOG_DEBUG << "http-parser version: " << http_parser_version();
         parser_ = new http_parser();
         type_ = type;
         http_parser_init(parser_, http_parser_convertor(type));
@@ -65,7 +64,7 @@ namespace cs::http {
 
 
     size_t HTTPParser::perform_parsing(const Buffer& buffer) {
-        LOG_TRACE << buffer.data_to_read();
+//        LOG_TRACE << buffer.data_to_read();
         size_t ret = http_parser_execute(parser_, parser_settings_, buffer.data_to_read(), buffer.size());
         LOG_TRACE << http_errno_name(http_errno(parser_->http_errno));
         LOG_TRACE << http_errno_description(http_errno(parser_->http_errno));
@@ -73,7 +72,7 @@ namespace cs::http {
     }
 
     int HTTPParser::on_message_begin(http_parser* parser) {
-        LOG_TRACE << "on_message_begin";
+//        LOG_TRACE << "on_message_begin";
         auto p = static_cast<HTTPParser*>(parser->data);
 
 
@@ -91,7 +90,7 @@ namespace cs::http {
     }
 
     int HTTPParser::on_url(http_parser* parser, const char* data, size_t size) {
-        LOG_TRACE << "on_url";
+//        LOG_TRACE << "on_url";
         auto req = static_cast<HTTPRequestParser*>(parser->data);
         req->current_request()->url_ += std::string(data, size);
         return 0;
@@ -99,10 +98,10 @@ namespace cs::http {
     }
 
     int HTTPParser::on_status(http_parser* parser, const char* data, size_t size) {
-        LOG_TRACE << "on_status";
+//        LOG_TRACE << "on_status";
         auto resp = static_cast<HTTPResponseParser*>(parser->data);
-
-        int code = std::stoi(std::string(data, size));
+        std::string status_code(data, size);
+        int code = parser->status_code;
         resp->current_response()->set_status_code(HTTPStatus(code));
 
         return 0;
@@ -110,7 +109,7 @@ namespace cs::http {
     }
 
     int HTTPParser::on_header_field(http_parser* parser, const char* data, size_t size) {
-        LOG_TRACE << "on_header_field";
+//        LOG_TRACE << "on_header_field";
         auto p = static_cast<HTTPParser*>(parser->data);
         p->last_field_ += std::string(data, size);
         return 0;
@@ -118,7 +117,7 @@ namespace cs::http {
     }
 
     int HTTPParser::on_header_value(http_parser* parser, const char* data, size_t size) {
-        LOG_TRACE << "on_header_value";
+//        LOG_TRACE << "on_header_value";
         auto p = static_cast<HTTPParser*>(parser->data);
         auto iter = p->current_data_->header_->find(p->last_field_);
         if (iter != p->current_data_->header_->end()) {
@@ -133,7 +132,7 @@ namespace cs::http {
     }
 
     int HTTPParser::on_header_complete(http_parser* parser) {
-        LOG_TRACE << "on_header_complete";
+//        LOG_TRACE << "on_header_complete";
         auto p = static_cast<HTTPParser*>(parser->data);
         p->header_complete_ = true;
         return 0;
@@ -141,7 +140,7 @@ namespace cs::http {
     }
 
     int HTTPParser::on_body(http_parser* parser, const char* data, size_t size) {
-        LOG_TRACE << "on_body";
+//        LOG_TRACE << "on_body";
         auto p = static_cast<HTTPParser*>(parser->data);
         p->current_data_->body_->write(data, size);
         return 0;
@@ -149,7 +148,7 @@ namespace cs::http {
     }
 
     int HTTPParser::on_message_complete(http_parser* parser) {
-        LOG_TRACE << "on_message_complete";
+//        LOG_TRACE << "on_message_complete";
         auto p = static_cast<HTTPParser*>(parser->data);
 
         HTTPVersion version;
@@ -172,13 +171,13 @@ namespace cs::http {
     }
 
     int HTTPParser::on_chunk_header(http_parser* parser) {
-        LOG_TRACE << "on_chunk_header";
+//        LOG_TRACE << "on_chunk_header";
         return 0;
 
     }
 
     int HTTPParser::on_chunk_complete(http_parser* parser) {
-        LOG_TRACE << "on_chunk_complete";
+//        LOG_TRACE << "on_chunk_complete";
         return 0;
     }
 

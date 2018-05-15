@@ -19,6 +19,7 @@ namespace cs {
     }
 
     std::pair<std::shared_ptr<cs::base::Sniffer>, int> SnifferManager::get_sniffer_info(std::string sniffer_id) {
+        std::lock_guard<std::mutex> lock(lock_);
         auto search = sniffer_container.find(sniffer_id);
         if (search != sniffer_container.end()) {
             return search -> second;
@@ -29,10 +30,11 @@ namespace cs {
     }
 
     void SnifferManager::erase_sniffer(std::string sniffer_id) {
+        std::lock_guard<std::mutex> lock(lock_);
         auto search = sniffer_container.find(sniffer_id);
         if (search != sniffer_container.end()) {
             sniffer_container.erase(sniffer_id);
-            LOG_DEBUG << "Erase sniffer " << sniffer_id << ", total: " << sniffer_container.size();
+            LOG_DEBUG << "Erasing sniffer " << sniffer_id << ", total: " << sniffer_container.size();
         }
     }
 

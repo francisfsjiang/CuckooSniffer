@@ -16,9 +16,9 @@ const int k_HELP_DESC_NUM = 4;
 
 const char* k_HELP_DESC[k_HELP_DESC_NUM][2] = {
         {"help,h",                      "help message"                  },
-        {"config-file,c",               "set compression level"         },
-        {"interface",                   "set client's ip bind address"  },
-        {"submit_url",                  "set client's ip bind address"  },
+        {"interface",                   "set the interfaec to listen"   },
+        {"submit_url",                  "set cuckoo API url"            },
+        {"config-file,c",               "set config file"               },
 };
 
 void parse_variables_to_map(std::map<std::string, std::string>& m, const boost::program_options::variables_map& vm) {
@@ -39,7 +39,8 @@ int parse_cfg(int& argc, const char** &argv, std::map<std::string, std::string>&
             (k_HELP_DESC[3 ][0], boost::program_options::value<std::string>(), k_HELP_DESC[3 ][1]);
 
     boost::program_options::positional_options_description p;
-    p.add("interface", -1);
+    p.add("interface", 1);
+    p.add("submit_url", -1);
 
     try {
         boost::program_options::variables_map vm;

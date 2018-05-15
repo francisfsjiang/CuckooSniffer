@@ -15,11 +15,11 @@ namespace cs::ftp {
 
     using namespace cs::util;
 
-    void DataSniffer::on_client_payload(const cs::base::payload_type& payload) {
+    void DataSniffer::on_client_payload(const cs::base::PayloadType& payload) {
 
     }
 
-    void DataSniffer::on_server_payload(const cs::base::payload_type& payload) {
+    void DataSniffer::on_server_payload(const cs::base::PayloadType& payload) {
         auto& pay_load = stream.server_payload();
         buffer_->write(
                 reinterpret_cast<const char*>(pay_load.data()),

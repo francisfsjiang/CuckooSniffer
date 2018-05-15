@@ -46,6 +46,8 @@ namespace cs::util {
 
         int read(size_t, size_t, char*) const;
         int shrink();
+        int shrink(size_t pos);
+
 
     };
 }

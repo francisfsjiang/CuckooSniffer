@@ -1,6 +1,7 @@
 #ifndef CUCKOOSNIFFER_CUCKOO_SNIFFER_HPP
 #define CUCKOOSNIFFER_CUCKOO_SNIFFER_HPP
 
+#include <map>
 #include <boost/log/trivial.hpp>
 #include <tins/tcp_ip/stream_identifier.h>
 
@@ -14,12 +15,12 @@
 namespace cs {
 
     namespace base {
-        class CollectedData;
-        typedef std::vector<uint8_t> payload_type;
+        typedef std::vector<uint8_t> PayloadType;
     }
 
     extern boost::log::sources::severity_logger <boost::log::trivial::severity_level> lg;
 
+    extern std::map<std::string, std::string> CONFIG;
 
     void init_log();
 

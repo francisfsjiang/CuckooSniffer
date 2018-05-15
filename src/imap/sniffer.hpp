@@ -12,13 +12,13 @@ class Sniffer : public cs::base::TCPSniffer {
 
 public:
 
-    virtual void on_client_payload(const cs::base::payload_type&);
+    virtual void on_client_payload(const cs::base::PayloadType&);
 
-    virtual void on_server_payload(const cs::base::payload_type&);
+    virtual void on_server_payload(const cs::base::PayloadType&);
 
     virtual void on_connection_close();
 
-    virtual void on_connection_terminated(cs::base::termination_reason);
+    virtual void on_connection_terminated(cs::base::TerminationReason);
 
     Sniffer(const std::string&);
 

@@ -8,28 +8,34 @@ namespace cs::util {
 
 namespace cs::http {
 
-class Sniffer : public cs::base::TCPSniffer {
+    class HTTPRequestParser;
+    class HTTPResponseParser;
 
-public:
+    class Sniffer : public cs::base::TCPSniffer {
 
-    virtual void on_client_payload(const cs::base::payload_type&);
+    public:
 
-    virtual void on_server_payload(const cs::base::payload_type&);
+        virtual void on_client_payload(const cs::base::PayloadType&);
 
-    virtual void on_connection_close();
+        virtual void on_server_payload(const cs::base::PayloadType&);
 
-    virtual void on_connection_terminated(cs::base::termination_reason);
+        virtual void on_connection_close();
 
-    Sniffer(const std::string&);
+        virtual void on_connection_terminated(cs::base::TerminationReason);
 
-    virtual ~Sniffer();
+        Sniffer(const std::string&);
 
-private:
+        virtual ~Sniffer();
 
-    cs::util::Buffer* client_buffer_;
-    cs::util::Buffer* server_buffer_;
+    private:
 
-};
+        cs::util::Buffer* client_buffer_;
+        HTTPRequestParser* client_parser_;
+        cs::util::Buffer* server_buffer_;
+        HTTPResponseParser* server_parser_;
+
+
+    };
 
 }
 

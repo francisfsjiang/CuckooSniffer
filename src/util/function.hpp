@@ -3,6 +3,9 @@
 
 #include <vector>
 #include <string>
+#include <set>
+
+#include "tins/tcp.h"
 
 namespace Tins::TCPIP {
 
@@ -18,9 +21,16 @@ namespace cs::util {
 
     std::string stream_identifier(const Tins::TCPIP::Stream &stream);
 
+    bool is_ignore_stream(
+            const Tins::TCPIP::Stream&,
+            const std::set<Tins::IPv4Address>&,
+            const std::set<Tins::IPv6Address>&
+    );
+
     std::string md5(const char*, size_t);
 
-    int submit_file(const File&, const char* url);
+    int submit_files(const std::vector<File*>& );
+    int submit_files(const File&, const std::string& url);
 
 }
 

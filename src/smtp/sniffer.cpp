@@ -12,11 +12,11 @@ namespace cs::smtp {
     using namespace cs::util;
     using namespace cs::base;
 
-    void Sniffer::on_client_payload(const cs::base::payload_type& payload) {
+    void Sniffer::on_client_payload(const cs::base::PayloadType& payload) {
         LOG_TRACE << "SMTP data size :" << payload.size();
     }
 
-    void Sniffer::on_server_payload(const cs::base::payload_type& payload) {
+    void Sniffer::on_server_payload(const cs::base::PayloadType& payload) {
     }
 
     void Sniffer::on_connection_close() {

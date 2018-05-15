@@ -22,23 +22,28 @@ namespace cs::threads{
 
     int thread_process(DataQueue* queue) {
 //        try {
-            DataEvent* data = queue->dequeue();
+        DataEvent *data = queue->dequeue();
 
-            LOG_DEBUG << "Thread " << std::this_thread::get_id() <<" get collected data.";
+        LOG_DEBUG << "Thread " << std::this_thread::get_id() << " get collected data.";
 
-            if (data->type_ == DataType::CLIENT_PAYLOAD) {
-                data->sniffer_->on_client_payload(*data->payload_);
-            }
-            else {
-                data->sniffer_->on_server_payload(*data->payload_);
-            }
+        auto sniffer = std::dynamic_pointer_cast<TCPSniffer>(data->sniffer_);
 
-            return 1;
-//        }
-//        catch(std::exception& e) {
-//            LOG_ERROR << "Thread got exception";
-//            return 0;
-//        }
+        switch (data->type_) {
+            case DataType::CLIENT_PAYLOAD:
+                sniffer->on_client_payload(*data->payload_);
+                break;
+            case DataType::SERVER_PAYLOAD:
+                sniffer->on_server_payload(*data->payload_);
+                break;
+            case DataType::CLOSE:
+                sniffer->on_connection_close();
+                break;
+            case DataType::TEMINATATION:
+                sniffer->on_connection_terminated(0);
+                break;
+        }
+        delete data;
+        return 1;
     }
 
     void thread_loop(DataQueue* queue) {

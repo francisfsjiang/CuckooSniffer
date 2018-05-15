@@ -13,7 +13,7 @@ namespace cs::ftp {
 std::map<unsigned short, std::string> CommandSniffer::data_connection_pool_ =
         std::map<unsigned short, std::string>();
 
-void CommandSniffer::on_client_payload(const cs::base::payload_type& payload) {
+void CommandSniffer::on_client_payload(const cs::base::PayloadType& payload) {
     std::string command = std::string(
             stream.client_payload().begin(),
             stream.client_payload().end()
@@ -35,7 +35,7 @@ void CommandSniffer::on_client_payload(const cs::base::payload_type& payload) {
 
 }
 
-void CommandSniffer::on_server_payload(const cs::base::payload_type& payload) {
+void CommandSniffer::on_server_payload(const cs::base::PayloadType& payload) {
     std::string command = std::string(
             stream.server_payload().begin(),
             stream.server_payload().end()

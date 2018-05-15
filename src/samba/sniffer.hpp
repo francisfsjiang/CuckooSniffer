@@ -17,17 +17,17 @@ class Sniffer : public cs::base::TCPSniffer {
 
 public:
 
-    virtual void on_client_payload(const cs::base::payload_type&);
+    virtual void on_client_payload(const cs::base::PayloadType&);
     std::vector<uint8_t> handle_client_NB_block(const std::vector<uint8_t>&);
     void handle_client_req(const std::vector<uint8_t>&);
 
-    virtual void on_server_payload(const cs::base::payload_type&);
+    virtual void on_server_payload(const cs::base::PayloadType&);
     std::vector<uint8_t> handle_server_NB_block(const std::vector<uint8_t>&);
     void handle_server_resp(const std::vector<uint8_t>&);
 
     virtual void on_connection_close();
 
-    virtual void on_connection_terminated(cs::base::termination_reason);
+    virtual void on_connection_terminated(cs::base::TerminationReason);
 
     Sniffer(const std::string&);
 

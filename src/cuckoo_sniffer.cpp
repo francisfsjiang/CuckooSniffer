@@ -17,30 +17,32 @@
 
 namespace cs {
 
-boost::log::sources::severity_logger <boost::log::trivial::severity_level> lg;
+    std::map<std::string, std::string> CONFIG;
+
+    boost::log::sources::severity_logger <boost::log::trivial::severity_level> lg;
 
 
-void init_log_in_thread() {
-    BOOST_LOG_SCOPED_THREAD_TAG("ThreadID", boost::this_thread::get_id());
-}
+    void init_log_in_thread() {
+        BOOST_LOG_SCOPED_THREAD_TAG("ThreadID", boost::this_thread::get_id());
+    }
 
-void init_log() {
+    void init_log() {
 
-    boost::shared_ptr <boost::log::core> core = boost::log::core::get();
+        boost::shared_ptr <boost::log::core> core = boost::log::core::get();
 
-    boost::shared_ptr <boost::log::sinks::text_file_backend> backend =
-            boost::make_shared<boost::log::sinks::text_file_backend>(
-                    boost::log::keywords::file_name = "cs_%Y%m%d_%H%M%S_%5N.log",
-                    boost::log::keywords::rotation_size = 5 * 1024 * 1024,
-                    boost::log::keywords::time_based_rotation =
-                            boost::log::sinks::file::rotation_at_time_point(0, 0, 0)
-            );
-    backend->auto_flush(true);
+        boost::shared_ptr <boost::log::sinks::text_file_backend> backend =
+                boost::make_shared<boost::log::sinks::text_file_backend>(
+                        boost::log::keywords::file_name = "cs_%Y%m%d_%H%M%S_%5N.log",
+                        boost::log::keywords::rotation_size = 5 * 1024 * 1024,
+                        boost::log::keywords::time_based_rotation =
+                                boost::log::sinks::file::rotation_at_time_point(0, 0, 0)
+                );
+        backend->auto_flush(true);
 
-    // Wrap it into the frontend and register in the core.
-    // The backend requires synchronization in the frontend.
-    typedef boost::log::sinks::synchronous_sink <boost::log::sinks::text_file_backend> sink_t;
-    boost::shared_ptr <sink_t> sink(new sink_t(backend));
+        // Wrap it into the frontend and register in the core.
+        // The backend requires synchronization in the frontend.
+        typedef boost::log::sinks::synchronous_sink <boost::log::sinks::text_file_backend> sink_t;
+        boost::shared_ptr <sink_t> sink(new sink_t(backend));
 
 
 //    sink->set_formatter(
@@ -51,42 +53,42 @@ void init_log() {
 //            % boost::log::trivial::severity
 //            % boost::log::expressions::smessage
 //    );
-    sink->set_formatter(
-            boost::log::expressions::stream
-            << boost::log::expressions::format_date_time<boost::posix_time::ptime>
-                    ("TimeStamp", "%Y-%m-%d %H:%M:%S.%f")
-//            << " " << boost::log::expressions::attr<boost::log::attributes::current_thread_id::value_type>("ThreadID")
-            << " " << std::setw(7) << std::left << boost::log::trivial::severity
-            << " " << boost::log::expressions::smessage
-    );
+        sink->set_formatter(
+                boost::log::expressions::stream
+                        << boost::log::expressions::format_date_time<boost::posix_time::ptime>
+                                ("TimeStamp", "%Y-%m-%d %H:%M:%S.%f")
+                        //            << " " << boost::log::expressions::attr<boost::log::attributes::current_thread_id::value_type>("ThreadID")
+                        << " " << std::setw(7) << std::left << boost::log::trivial::severity
+                        << " " << boost::log::expressions::smessage
+        );
 
-    boost::log::core::get()->add_global_attribute("TimeStamp", boost::log::attributes::local_clock());
+        boost::log::core::get()->add_global_attribute("TimeStamp", boost::log::attributes::local_clock());
 //    boost::log::core::get()->add_global_attribute("ThreadID",  boost::log::attributes::current_thread_id());
 
-    core->add_sink(sink);
+        core->add_sink(sink);
 
-    boost::shared_ptr< boost::log::sinks::text_ostream_backend > cout_backend =
-            boost::make_shared< boost::log::sinks::text_ostream_backend >();
-    cout_backend->add_stream(
-            boost::shared_ptr< std::ostream >(&std::cout));
-    cout_backend->auto_flush(true);
-    core->add_sink(boost::shared_ptr<
-            boost::log::sinks::synchronous_sink< boost::log::sinks::text_ostream_backend >
-                   >(
-                           new boost::log::sinks::synchronous_sink< boost::log::sinks::text_ostream_backend >(cout_backend))
-    );
+        boost::shared_ptr< boost::log::sinks::text_ostream_backend > cout_backend =
+                boost::make_shared< boost::log::sinks::text_ostream_backend >();
+        cout_backend->add_stream(
+                boost::shared_ptr< std::ostream >(&std::cout));
+        cout_backend->auto_flush(true);
+        core->add_sink(boost::shared_ptr<
+                               boost::log::sinks::synchronous_sink< boost::log::sinks::text_ostream_backend >
+                       >(
+                new boost::log::sinks::synchronous_sink< boost::log::sinks::text_ostream_backend >(cout_backend))
+        );
 
-    boost::log::core::get()->set_filter
-            (
-                    boost::log::trivial::severity >= boost::log::trivial::trace
-            );
+        boost::log::core::get()->set_filter
+                (
+                        boost::log::trivial::severity >= boost::log::trivial::trace
+                );
 
-    boost::log::add_common_attributes();
+        boost::log::add_common_attributes();
 
-    init_log_in_thread();
+        init_log_in_thread();
 
-    LOG_DEBUG << "Logger start.";
-}
+        LOG_DEBUG << "Logger start.";
+    }
 
 
 }

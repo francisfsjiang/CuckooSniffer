@@ -24,10 +24,10 @@ namespace cs::threads {
 
     class DataEvent {
     public:
-        DataEvent(std::shared_ptr<cs::base::Sniffer>, DataType, cs::base::payload_type*);
+        DataEvent(std::shared_ptr<cs::base::Sniffer>, DataType, cs::base::PayloadType*);
         std::shared_ptr<cs::base::Sniffer> sniffer_;
         DataType type_;
-        cs::base::payload_type* payload_;
+        cs::base::PayloadType* payload_;
 
     };
 

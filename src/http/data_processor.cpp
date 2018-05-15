@@ -18,11 +18,6 @@ namespace cs::http {
 
         auto data = dynamic_cast<cs::http::CollectedData*>(collected_data);
 
-        HTTPRequestParser parser;
-
-        parser.perform_parsing(*data->client_buffer_);
-
-        HTTPRequest* req = parser.get_request();
 
         std::vector<cs::util::File*> ret;
         return ret;

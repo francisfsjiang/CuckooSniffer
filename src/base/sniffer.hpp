@@ -7,8 +7,9 @@
 
 namespace cs::base {
 
-    typedef Tins::TCPIP::Stream::payload_type payload_type;
-    typedef Tins::TCPIP::StreamFollower::TerminationReason termination_reason;
+    typedef Tins::TCPIP::Stream::payload_type PayloadType;
+    typedef int TerminationReason;
+
     class Sniffer {
 
     public:
@@ -19,9 +20,9 @@ namespace cs::base {
 
         const std::string &get_id();
 
-        virtual void on_client_payload(const payload_type&) = 0;
+        virtual void on_client_payload(const PayloadType&) = 0;
 
-        virtual void on_server_payload(const payload_type&) = 0;
+        virtual void on_server_payload(const PayloadType&) = 0;
 
     protected:
 
@@ -34,13 +35,13 @@ namespace cs::base {
 
     public:
 
-        virtual void on_client_payload(const payload_type&) = 0;
+        virtual void on_client_payload(const PayloadType&) = 0;
 
-        virtual void on_server_payload(const payload_type&) = 0;
+        virtual void on_server_payload(const PayloadType&) = 0;
 
         virtual void on_connection_close() = 0;
 
-        virtual void on_connection_terminated(termination_reason) = 0;
+        virtual void on_connection_terminated(TerminationReason) = 0;
 
         TCPSniffer() = delete;
 
@@ -50,4 +51,5 @@ namespace cs::base {
     };
 
 }
+
 #endif //CUCKOOSNIFFER_BASE_SNIFFER_HPP

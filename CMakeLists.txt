@@ -106,9 +106,14 @@ set(SRC_FILES
         src/http/data.cpp
         src/http/parser.cpp
         src/http/parser/http_parser.c
+        src/http/multipart_parser.cpp
 #        src/samba/sniffer.cpp
         src/threads/thread.cpp
         src/threads/data_queue.cpp
+        src/mime/Mime.cpp
+        src/mime/MimeChar.cpp
+        src/mime/MimeCode.cpp
+        src/mime/MimeType.cpp
         )
 
 add_library(libcuckoo_sniffer STATIC ${SRC_FILES})
@@ -116,11 +121,14 @@ add_library(libcuckoo_sniffer STATIC ${SRC_FILES})
 add_executable(CuckooSniffer src/main.cpp)
 target_link_libraries(CuckooSniffer libcuckoo_sniffer ${LIBS})
 
-add_executable(Test src/test.cpp)
+add_executable(Test test/test.cpp)
 target_link_libraries(Test libcuckoo_sniffer ${LIBS})
 
-add_executable(HTTPTest src/test_http.cpp)
-target_link_libraries(HTTPTest libcuckoo_sniffer ${LIBS} boost_regex-mt)
+add_executable(TestHTTP test/test_http.cpp)
+target_link_libraries(TestHTTP libcuckoo_sniffer ${LIBS} boost_regex-mt)
+
+add_executable(TestMultipart test/test_multipart_data.cpp)
+target_link_libraries(TestMultipart libcuckoo_sniffer ${LIBS})
 
 
 add_executable(ListDevs src/list_devs.cpp)

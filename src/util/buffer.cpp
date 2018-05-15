@@ -48,7 +48,6 @@ namespace cs::util {
         if(new_capacity < capacity_) {
             return capacity_;
         }
-        shrink();
         auto new_data = new char[new_capacity];
         memcpy(new_data, data_ + reader_pos_, size());
         capacity_ = new_capacity;
@@ -75,7 +74,7 @@ namespace cs::util {
     }
 
     Buffer::~Buffer() {
-        delete data_;
+        delete[] data_;
     }
 
     size_t Buffer::capacity() const {
@@ -134,17 +133,24 @@ namespace cs::util {
         return static_cast<int>(len);
     }
 
-    int Buffer::shrink() {
-        if (reader_pos_ == 0) {
+    int Buffer::shrink(size_t pos) {
+        if (reader_pos_ == pos) {
             return 0;
         }
         size_t content_len = size();
-        char* temp = new char[content_len];
-        memcpy(temp, data_+reader_pos_, content_len);
+        grow(pos + content_len);
 
-        memcpy(data_, temp, content_len);
-        reader_pos_ = 0;
-        writer_pos_ = content_len;
-        return content_len;
+        auto temp = new char[content_len];
+        memcpy(temp, data_+reader_pos_, content_len);
+        memcpy(data_+pos, temp, content_len);
+        delete[] temp;
+
+        reader_pos_ = pos;
+        writer_pos_ = pos+content_len;
+        return (int)content_len;
+    }
+
+    int Buffer::shrink() {
+        return shrink(0);
     }
 }

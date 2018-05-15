@@ -70,8 +70,12 @@ namespace cs::http {
         return body_;
     }
 
-    map<string, string>* HTTPData::get_header() {
-        return new map<string, string>(*header_);
+    string HTTPData::get_header(const std::string& str) {
+        auto iter = header_->find(str);
+        if (iter != header_->end()) {
+            return iter->second;
+        }
+        return "";
     }
 
     void HTTPResponse::set_status_code(HTTPStatus code) {

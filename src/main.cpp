@@ -6,6 +6,7 @@
 
 #include "tins/tcp_ip/stream_follower.h"
 #include "tins/sniffer.h"
+#include "tins/network_interface.h"
 
 #include "threads/data_queue.hpp"
 #include "sniffer_manager.hpp"
@@ -85,13 +86,13 @@ int CURRENT_THREAD_ID = 0;
 
 void data_callback(std::shared_ptr<cs::base::TCPSniffer> sniffer_ptr, int thread_id, const Tins::TCPIP::Stream &tcp_stream, cs::threads::DataType type) {
 
-    cs::base::payload_type* payload_ptr = nullptr;
+    cs::base::PayloadType* payload_ptr = nullptr;
 
     if (type == cs::threads::DataType::CLIENT_PAYLOAD) {
-        payload_ptr = new cs::base::payload_type(tcp_stream.client_payload());
+        payload_ptr = new cs::base::PayloadType(tcp_stream.client_payload());
     }
     else if (type == cs::threads::DataType::SERVER_PAYLOAD) {
-        payload_ptr = new cs::base::payload_type(tcp_stream.server_payload());
+        payload_ptr = new cs::base::PayloadType(tcp_stream.server_payload());
     }
     else {
         payload_ptr = nullptr;
@@ -104,6 +105,14 @@ void data_callback(std::shared_ptr<cs::base::TCPSniffer> sniffer_ptr, int thread
     cs::threads::DATA_QUEUES[thread_id]->enqueue(de);
 }
 
+
+std::set<Tins::IPv4Address> ignore_ipv4_address = {
+        Tins::IPv4Address("127.0.0.1")
+};
+
+std::set<Tins::IPv6Address> ignore_ipv6_address = {
+        Tins::IPv6Address("::1")
+};
 
 void on_new_connection(Tins::TCPIP::Stream& stream) {
     uint16_t port = stream.server_port();
@@ -124,9 +133,11 @@ void on_new_connection(Tins::TCPIP::Stream& stream) {
 //            tcp_sniffer = new cs::ftp::CommandSniffer(stream);
 //            break;
 //        case 80:        //HTTP
-//            tcp_sniffer = new cs::http::Sniffer(stream_id);
-//            break;
-        case 63343:        //HTTP
+        case 8888:        //HTTP
+//            if (cs::util::is_ignore_stream(stream, ignore_ipv4_address, ignore_ipv6_address)) {
+//                LOG_INFO << "Ingoring stream " << stream_id;
+//                return;
+//            }
             tcp_sniffer = new cs::http::Sniffer(stream_id);
             break;
 //        case 445:       //SAMBA
@@ -189,8 +200,7 @@ void on_connection_terminated(Tins::TCPIP::Stream& stream, Tins::TCPIP::StreamFo
 
 int main(int argc, const char* argv[]) {
     try {
-        std::map<std::string, std::string> parsed_cfg;
-        int ret = cs::util::parse_cfg(argc, argv, parsed_cfg);
+        int ret = cs::util::parse_cfg(argc, argv, cs::CONFIG);
         if (ret < 0) {
             std::cerr << "Parse config failed." << std::endl;
             return ret;
@@ -198,19 +208,34 @@ int main(int argc, const char* argv[]) {
 
         cs::init_log();
 
+        std::vector<Tins::NetworkInterface> iface_vec = Tins::NetworkInterface::all();
+        for(auto iface: iface_vec) {
+            auto info = iface.info();
+            ignore_ipv4_address.insert(info.ip_addr);
+            for(auto ipv6_prefix: info.ipv6_addrs) {
+                ignore_ipv6_address.insert(ipv6_prefix.address);
+            }
+        }
+
+        for(auto addr: ignore_ipv4_address)
+            LOG_INFO << "Ignore IPv4 address: " << addr;
+        for(auto addr: ignore_ipv6_address)
+            LOG_INFO << "Ignore IPv6 address: " << addr;
+
+
         LOG_INFO << "Config:";
-        for(const auto& cfg: parsed_cfg) {
+        for(const auto& cfg: cs::CONFIG) {
             LOG_INFO << cfg.first << " = " << cfg.second;
         }
 
-        std::string interface_name = parsed_cfg["interface"];
+        std::string interface_name = cs::CONFIG["interface"];
 
         cs::threads::start_threads(2);
         CURRENT_THREAD_ID = 0;
 
         Tins::SnifferConfiguration config;
 //        config.set_filter("ip6 host 2001:da8:215:1660:bbb2:3d41:d32b:dc53");
-        config.set_filter("tcp port 63343");
+        config.set_filter("tcp port 8888");
 //        config.set_filter("tcp port 80");
         config.set_promisc_mode(true);
         Tins::Sniffer sniffer(interface_name, config);
@@ -225,10 +250,16 @@ int main(int argc, const char* argv[]) {
             Tins::PDU* layer2_pdu = &packet;
             Tins::PDU* layer3_pdu = layer2_pdu->inner_pdu();
             Tins::PDU* layer4_pdu = layer3_pdu->inner_pdu();
-//            std::cout
-//                    << pdu_type_to_str[(int)(layer2_pdu->pdu_type())] << " "
-//                    << pdu_type_to_str[(int)(layer3_pdu->pdu_type())] << " "
-//                    << pdu_type_to_str[(int)(layer4_pdu->pdu_type())] << std::endl;
+//            try {
+//                std::cout
+//                        << pdu_type_to_str[(int)(layer2_pdu->pdu_type())] << " "
+//                        << pdu_type_to_str[(int)(layer3_pdu->pdu_type())] << " "
+//                        << pdu_type_to_str[(int)(layer4_pdu->pdu_type())] << std::endl;
+//            }
+//            catch (std::exception){
+//
+//            }
+
             switch (layer2_pdu->pdu_type()) {
                 case Tins::PDU::LOOPBACK:
                 case Tins::PDU::ETHERNET_II:

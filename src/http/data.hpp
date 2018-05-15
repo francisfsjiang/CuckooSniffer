@@ -23,7 +23,7 @@ namespace cs::http {
         std::map<std::string, std::string>* header_;
 
         void set_header(const std::string&, const std::string&);
-        std::map<std::string, std::string>* get_header();
+        std::string get_header(const std::string&);
         void set_version(HTTPVersion);
         util::Buffer* get_body();
     };

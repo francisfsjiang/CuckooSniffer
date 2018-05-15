@@ -7,7 +7,7 @@ namespace cs::threads {
 
     std::vector<DataQueue*> DATA_QUEUES;
 
-    DataEvent::DataEvent(std::shared_ptr<cs::base::Sniffer> sniffer, DataType type, cs::base::payload_type* payload)
+    DataEvent::DataEvent(std::shared_ptr<cs::base::Sniffer> sniffer, DataType type, cs::base::PayloadType* payload)
             :sniffer_(sniffer), type_(type), payload_(payload)
     {
 

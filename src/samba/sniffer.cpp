@@ -189,7 +189,7 @@ void Sniffer::handle_client_req(const std::vector<uint8_t>& vec) {
     }
 }
 
-void Sniffer::on_server_payload(const cs::base::payload_type& payload) {
+void Sniffer::on_server_payload(const cs::base::PayloadType& payload) {
     std::vector<uint8_t> vec = std::vector<uint8_t>(stream.server_payload());
     while (vec.size() > 0) {
         vec = handle_server_NB_block(vec);

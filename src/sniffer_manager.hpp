@@ -3,6 +3,7 @@
 
 #include <string>
 #include <map>
+#include <thread>
 
 namespace cs {
 
@@ -28,6 +29,8 @@ public:
 private:
 
     std::map<std::string, std::pair<std::shared_ptr<cs::base::Sniffer>, int>> sniffer_container;
+
+    std::mutex lock_;
 
     SnifferManager();
 
