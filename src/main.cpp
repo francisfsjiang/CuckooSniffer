@@ -83,16 +83,20 @@ std::map<int, const char*> pdu_type_to_str = {
 
 int CURRENT_THREAD_ID = 0;
 
+int total_bytes = 0;
 
 void data_callback(std::shared_ptr<cs::base::TCPSniffer> sniffer_ptr, int thread_id, const Tins::TCPIP::Stream &tcp_stream, cs::threads::DataType type) {
+    LOG_TRACE << "Callback: " << (int)type;
 
     cs::base::PayloadType* payload_ptr = nullptr;
-
     if (type == cs::threads::DataType::CLIENT_PAYLOAD) {
         payload_ptr = new cs::base::PayloadType(tcp_stream.client_payload());
     }
     else if (type == cs::threads::DataType::SERVER_PAYLOAD) {
         payload_ptr = new cs::base::PayloadType(tcp_stream.server_payload());
+        total_bytes += tcp_stream.server_payload().size();
+        LOG_TRACE << std::string((char*)tcp_stream.server_payload().data(), tcp_stream.server_payload().size());
+        LOG_TRACE << "Total server bytes: " << total_bytes;
     }
     else {
         payload_ptr = nullptr;
@@ -179,6 +183,9 @@ void on_new_connection(Tins::TCPIP::Stream& stream) {
     stream.stream_closed_callback(
             std::bind(&data_callback, sniffer_ptr, thread_id, std::placeholders::_1, cs::threads::DataType::CLOSE)
     );
+    stream.auto_cleanup_client_data(true);
+    stream.auto_cleanup_payloads(true);
+    stream.auto_cleanup_server_data(true);
 
     cs::SNIFFER_MANAGER.append_sniffer(sniffer_ptr -> get_id(), sniffer_ptr, thread_id);
 //    cs::SNIFFER_MANAGER.append_sniffer(tcp_sniffer -> get_id(), (cs::base::Sniffer*)tcp_sniffer);

@@ -26,6 +26,10 @@ namespace cs::util {
         return buffer_->write(data ,size);
     }
 
+    size_t File::write(const Buffer& buffer) {
+        return buffer_->write(buffer.data_to_read(), buffer.size());
+    }
+
     bool File::set_size(uint64_t size) {
         buffer_->resize(size);
         return false;
@@ -57,8 +61,7 @@ namespace cs::util {
 
 
     File::~File() {
-        if (buffer_ != nullptr)
-            delete buffer_;
+        delete buffer_;
     }
 
     Buffer* File::get_buffer() const {

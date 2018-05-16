@@ -34,6 +34,8 @@ namespace cs::http {
         cs::util::Buffer* server_buffer_;
         HTTPResponseParser* server_parser_;
 
+        std::string request_url_;
+
 
     };
 

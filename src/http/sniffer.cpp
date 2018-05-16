@@ -9,11 +9,23 @@
 #include "http/multipart_parser.hpp"
 #include "util/buffer.hpp"
 #include "util/function.hpp"
+#include "util/file.hpp"
 
 namespace cs::http {
 
+
     using namespace cs::util;
     using namespace std;
+
+    set<string> suspicious_type = {
+            "application/octet-stream",
+            "application/zip",
+            "text/x-python",
+            "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+            "application/vnd.openxmlformats-officedocument.presentationml.presentation",
+
+
+    };
 
     void Sniffer::on_client_payload(const cs::base::PayloadType& payload) {
         client_buffer_->write(
@@ -33,11 +45,11 @@ namespace cs::http {
         while (true) {
             HTTPRequest* req = client_parser_->get_request();
             if (req) {
+                request_url_ = req->get_header("Host") + req->get_url();
 //                LOG_DEBUG << req->get_body()->size();
                 if (req->get_body()->size() > 0) {
                     auto content_type = req->get_header("Content-Type");
-
-//                    LOG_DEBUG << "Content-Type" << content_type;
+                    LOG_DEBUG << "Content-Type: " << content_type;
                     vector<File*> file_vec;
                     if (boost::starts_with(content_type, "multipart/form-data")) {
                         auto boundary = string(content_type.data()+30, content_type.size()-30);
@@ -45,13 +57,16 @@ namespace cs::http {
                         multipart_parse(*req->get_body(), boundary, content_type, file_vec);
                     }
                     else if (boost::starts_with(content_type, "application/x-www-form-urlencoded")) {
-
+                        auto f = new File();
+                        f->set_name(f->get_md5());
+                        f->write(*req->get_body());
+                        file_vec.push_back(f);
                     }
                     else {
                         LOG_ERROR << "Unsupported Content-Type.";
                     }
 
-//                    cs::util::submit_files(file_vec);
+                    cs::util::submit_files(file_vec);
                 }
                 delete req;
             }
@@ -78,22 +93,23 @@ namespace cs::http {
             HTTPResponse* resp = server_parser_->get_response();
             if (resp) {
                 LOG_DEBUG << resp->get_body()->size();
-//                if (resp->get_body()->size() > 0) {
-//                    auto content_type = resp->get_header("Content-Type");
-//                    vector<File*> file_vec;
-//                    if (boost::starts_with(content_type, "multipart/form-data")) {
-//                        auto boundary = string(content_type.data()+30, content_type.size()-30);
-//                        multipart_parse(*resp->get_body(), boundary, content_type, file_vec);
-//                    }
-//                    else if (boost::starts_with(content_type, "application/x-www-form-urlencoded")) {
-//
-//                    }
-//                    else {
-//                        LOG_ERROR << "Unsupported Content-Type.";
-//                    }
-//
-//                    cs::util::submit_files(file_vec);
-//                }
+                if (resp->get_body()->size() > 0) {
+                    auto content_type = resp->get_header("Content-Type");
+                    LOG_DEBUG << "Content-Type: " << content_type;
+                    vector<File*> file_vec;
+                    if (boost::starts_with(content_type, "multipart/form-data")) {
+                        auto boundary = string(content_type.data()+30, content_type.size()-30);
+                        multipart_parse(*resp->get_body(), boundary, content_type, file_vec);
+                    }
+                    else if (boost::starts_with(content_type, "application/x-www-form-urlencoded")) {
+
+                    }
+                    else {
+                        LOG_ERROR << "Unsupported Content-Type.";
+                    }
+
+                    cs::util::submit_files(file_vec);
+                }
 
 
                 delete resp;

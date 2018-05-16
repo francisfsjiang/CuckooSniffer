@@ -13,6 +13,10 @@ namespace cs::threads {
 
     }
 
+    DataEvent::~DataEvent() {
+        delete payload_;
+    }
+
     DataQueue::DataQueue()
             : queue_()
             , mutex()
@@ -26,7 +30,7 @@ namespace cs::threads {
     {
         std::lock_guard<std::mutex> lock(mutex);
         queue_.push(data);
-        LOG_TRACE << "Data_queue size: " << queue_.size();
+        LOG_TRACE << "Data_queue size after enqueue: " << queue_.size();
         condition_var_.notify_one();
     }
 
@@ -40,7 +44,7 @@ namespace cs::threads {
         if (!queue_.empty()) {
             DataEvent* data = queue_.front();
             queue_.pop();
-            LOG_TRACE << "Data_queue size: " << queue_.size();
+            LOG_TRACE << "Data_queue size after dequeue: " << queue_.size();
             return data;
         }
         else {

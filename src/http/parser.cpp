@@ -140,9 +140,10 @@ namespace cs::http {
     }
 
     int HTTPParser::on_body(http_parser* parser, const char* data, size_t size) {
-//        LOG_TRACE << "on_body";
+        LOG_TRACE << "on_body, " << size;
         auto p = static_cast<HTTPParser*>(parser->data);
         p->current_data_->body_->write(data, size);
+        LOG_TRACE << p->current_data_->body_->size();
         return 0;
 
     }
@@ -171,13 +172,13 @@ namespace cs::http {
     }
 
     int HTTPParser::on_chunk_header(http_parser* parser) {
-//        LOG_TRACE << "on_chunk_header";
+        LOG_TRACE << "on_chunk_header";
         return 0;
 
     }
 
     int HTTPParser::on_chunk_complete(http_parser* parser) {
-//        LOG_TRACE << "on_chunk_complete";
+        LOG_TRACE << "on_chunk_complete";
         return 0;
     }
 

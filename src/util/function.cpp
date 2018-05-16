@@ -119,7 +119,7 @@ namespace cs::util {
             curl_formadd(
                     &formpost,
                     &lastptr,
-                    CURLFORM_COPYNAME, "file",
+                    CURLFORM_COPYNAME, file.get_name().data(),
                     CURLFORM_BUFFER, name.c_str(),
                     CURLFORM_BUFFERPTR, file.get_buffer()->data_to_read(),
                     CURLFORM_BUFFERLENGTH, file.get_size(),

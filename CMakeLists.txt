@@ -14,6 +14,7 @@ set(LIB_DIRS)
 set(LIBS tins)
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} --std=c++1z")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3")
 
 if (WIN32)
 
@@ -46,11 +47,13 @@ elseif (UNIX)
 
     set(INCLUDE_DIRS    ${INCLUDE_DIRS}
             /usr/local/include
-            $ENV{TINS_INCLUDE}
+#            $ENV{TINS_INCLUDE}
+            /Users/never/program/CuckooSniffer/deps/libtins/include
             )
     set(LIB_DIRS        ${LIB_DIRS}
             /usr/local/lib
-            $ENV{TINS_LIB}
+#            $ENV{TINS_LIB}
+            /Users/never/program/CuckooSniffer/deps/libtins/build/lib
             )
 
     set(LIBS ${LIBS} ${BOOST_LIBS}
@@ -126,6 +129,9 @@ target_link_libraries(Test libcuckoo_sniffer ${LIBS})
 
 add_executable(TestHTTP test/test_http.cpp)
 target_link_libraries(TestHTTP libcuckoo_sniffer ${LIBS} boost_regex-mt)
+
+add_executable(TestLIBTins test/test_libtins.cpp)
+target_link_libraries(TestLIBTins libcuckoo_sniffer ${LIBS} boost_regex-mt)
 
 add_executable(TestMultipart test/test_multipart_data.cpp)
 target_link_libraries(TestMultipart libcuckoo_sniffer ${LIBS})
