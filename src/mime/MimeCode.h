@@ -4,6 +4,7 @@
 
 #include <utility>
 #include <string>
+#include <cstring>
 #include <list>
 using namespace std;
 
@@ -137,7 +138,7 @@ protected:
 	virtual int Encode(unsigned char* pbOutput, int nMaxSize) const
 	{
 		int nSize = min(nMaxSize, m_nInputSize);
-		::memcpy(pbOutput, m_pbInput, nSize);
+        std::memcpy(pbOutput, m_pbInput, nSize);
 		return nSize;
 	}
 	virtual int Decode(unsigned char* pbOutput, int nMaxSize)

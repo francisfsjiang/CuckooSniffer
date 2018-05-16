@@ -3,6 +3,8 @@
 #include "Mime.h"
 #include <stdlib.h>
 #include <time.h>
+#include <cstring>
+#include <stdlib.h>
 
 #ifdef _DEBUG
 #undef THIS_FILE

@@ -15,9 +15,65 @@ set(LIBS tins)
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} --std=c++1z")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3")
+if (${CMAKE_HOST_SYSTEM_NAME} MATCHES "Linux")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DBOOST_LOG_DYN_LINK")
 
-if (WIN32)
+    set(INCLUDE_DIRS    ${INCLUDE_DIRS}
+            /usr/local/include
+#            $ENV{TINS_INCLUDE}
+            ${PROJECT_SOURCE_DIR}/deps/libtins/include
+            )
+    set(LIB_DIRS        ${LIB_DIRS}
+            /usr/local/lib
+#            $ENV{TINS_LIB}
+            ${PROJECT_SOURCE_DIR}/deps/libtins/build/lib
+            )
 
+    set(LIBS ${LIBS} ${BOOST_LIBS}
+        boost_log_setup
+        boost_regex
+        boost_log
+        boost_thread
+        boost_system
+        boost_filesystem
+        boost_date_time
+        boost_program_options
+        pcap
+        crypto
+        curl
+        pthread
+    )
+
+ELSEIF (${CMAKE_HOST_SYSTEM_NAME} MATCHES "Darwin")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DBOOST_LOG_DYN_LINK")
+
+    set(INCLUDE_DIRS    ${INCLUDE_DIRS}
+            /usr/local/include
+#            $ENV{TINS_INCLUDE}
+            ${PROJECT_SOURCE_DIR}/deps/libtins/include
+            )
+    set(LIB_DIRS        ${LIB_DIRS}
+            /usr/local/lib
+#            $ENV{TINS_LIB}
+            ${PROJECT_SOURCE_DIR}/deps/libtins/build/lib
+            )
+
+    set(LIBS ${LIBS} ${BOOST_LIBS}
+        boost_log_setup-mt
+        boost_regex-mt
+        boost_log-mt
+        boost_thread-mt
+        boost_system-mt
+        boost_filesystem-mt
+        boost_date_time-mt
+        boost_program_options-mt
+        pcap
+        crypto
+        curl
+        pthread
+    )
+
+ELSEIF (${CMAKE_HOST_SYSTEM_NAME} MATCHES "Windows")
     set(INCLUDE_DIRS    ${INCLUDE_DIRS}
             C:/libs/WpdPack/Include
             C:/libs/libtins64-debug/include
@@ -32,7 +88,6 @@ if (WIN32)
 #            C:/libs/OpenSSL-Win64/lib
 #            C:/libs/curl-7.46.0-win64/lib
             )
-
     set(LIBS ${LIBS}
             wpcap
             Ws2_32
@@ -40,39 +95,7 @@ if (WIN32)
             libcurl
             libeay32  #libcrypto on windows
             )
-
-elseif (UNIX)
-
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DBOOST_LOG_DYN_LINK")
-
-    set(INCLUDE_DIRS    ${INCLUDE_DIRS}
-            /usr/local/include
-#            $ENV{TINS_INCLUDE}
-            /Users/never/program/CuckooSniffer/deps/libtins/include
-            )
-    set(LIB_DIRS        ${LIB_DIRS}
-            /usr/local/lib
-#            $ENV{TINS_LIB}
-            /Users/never/program/CuckooSniffer/deps/libtins/build/lib
-            )
-
-    set(LIBS ${LIBS} ${BOOST_LIBS}
-        boost_log_setup-mt
-        boost_log-mt
-        boost_thread-mt
-        boost_system-mt
-        boost_filesystem-mt
-        boost_date_time-mt
-        boost_program_options-mt
-        pcap
-        crypto
-        curl
-        pthread
-    )
-
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pedantic")
-
-endif()
+endif ()
 
 find_package(Boost REQUIRED COMPONENTS context coroutine)
 find_package(CURL REQUIRED)
@@ -128,10 +151,10 @@ add_executable(Test test/test.cpp)
 target_link_libraries(Test libcuckoo_sniffer ${LIBS})
 
 add_executable(TestHTTP test/test_http.cpp)
-target_link_libraries(TestHTTP libcuckoo_sniffer ${LIBS} boost_regex-mt)
+target_link_libraries(TestHTTP libcuckoo_sniffer ${LIBS})
 
 add_executable(TestLIBTins test/test_libtins.cpp)
-target_link_libraries(TestLIBTins libcuckoo_sniffer ${LIBS} boost_regex-mt)
+target_link_libraries(TestLIBTins libcuckoo_sniffer ${LIBS})
 
 add_executable(TestMultipart test/test_multipart_data.cpp)
 target_link_libraries(TestMultipart libcuckoo_sniffer ${LIBS})

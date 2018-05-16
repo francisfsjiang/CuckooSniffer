@@ -4,6 +4,7 @@
 #include <string>
 #include <map>
 #include <thread>
+#include <mutex>
 
 namespace cs {
 
