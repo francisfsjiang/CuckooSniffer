@@ -253,19 +253,19 @@ int main(int argc, const char* argv[]) {
         follower.new_stream_callback(&on_new_connection);
         follower.stream_termination_callback(on_connection_terminated);
 
+        int num = 0;
         sniffer.sniff_loop([&](Tins::PDU& packet) {
+            ++num;
             Tins::PDU* layer2_pdu = &packet;
             Tins::PDU* layer3_pdu = layer2_pdu->inner_pdu();
             Tins::PDU* layer4_pdu = layer3_pdu->inner_pdu();
-//            try {
-//                std::cout
-//                        << pdu_type_to_str[(int)(layer2_pdu->pdu_type())] << " "
-//                        << pdu_type_to_str[(int)(layer3_pdu->pdu_type())] << " "
-//                        << pdu_type_to_str[(int)(layer4_pdu->pdu_type())] << std::endl;
-//            }
-//            catch (std::exception){
-//
-//            }
+            try {
+                LOG_TRACE << "Packet " << packet.size() << " receiving. " << num << " , " << pdu_type_to_str[(int)(layer3_pdu->pdu_type())] << pdu_type_to_str[(int)(layer4_pdu->pdu_type())];
+            }
+            catch (std::exception){
+                LOG_ERROR << "No layer 4 ";
+
+            }
 
             switch (layer2_pdu->pdu_type()) {
                 case Tins::PDU::LOOPBACK:

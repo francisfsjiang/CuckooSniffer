@@ -64,7 +64,7 @@ namespace cs::http {
 
 
     size_t HTTPParser::perform_parsing(const Buffer& buffer) {
-//        LOG_TRACE << buffer.data_to_read();
+        LOG_TRACE << buffer.data_to_read();
         size_t ret = http_parser_execute(parser_, parser_settings_, buffer.data_to_read(), buffer.size());
         LOG_TRACE << http_errno_name(http_errno(parser_->http_errno));
         LOG_TRACE << http_errno_description(http_errno(parser_->http_errno));

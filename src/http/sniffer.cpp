@@ -23,8 +23,6 @@ namespace cs::http {
             "text/x-python",
             "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
             "application/vnd.openxmlformats-officedocument.presentationml.presentation",
-
-
     };
 
     void Sniffer::on_client_payload(const cs::base::PayloadType& payload) {

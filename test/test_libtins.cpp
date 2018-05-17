@@ -25,12 +25,6 @@ using Tins::TCPIP::StreamFollower;
 // to both payloads, extrating some information and printing it.
 
 // Don't buffer more than 3kb of data in either request/response
-const size_t MAX_PAYLOAD = 3 * 1024;
-// The regex to be applied on the request. This will extract the HTTP
-// method being used, the request's path and the Host header value.
-regex request_regex("([\\w]+) ([^ ]+).+\r\nHost: ([\\d\\w\\.-]+)\r\n");
-// The regex to be applied on the response. This finds the response code.
-regex response_regex("HTTP/[^ ]+ ([\\d]+)");
 
 void on_server_data(Stream& stream) {
 }
@@ -53,6 +47,11 @@ void on_new_connection(Stream& stream) {
     // the buffer ourselves and let it grow until we see a full request
     // and response
     stream.auto_cleanup_payloads(false);
+}
+
+void on_connection_termination(Stream& stream, Tins::TCPIP::StreamFollower::TerminationReason reason) {
+
+    std::cout << "Connection termination. " << reason << std::endl;
 }
 
 int main(int argc, char* argv[]) {
@@ -78,11 +77,13 @@ int main(int argc, char* argv[]) {
         // will be executed whenever new data is sent on that stream
         // (see on_new_connection)
         follower.new_stream_callback(&on_new_connection);
+        follower.stream_termination_callback(&on_connection_termination);
         // Now start capturing. Every time there's a new packet, call
         // follower.process_packet
-        int num = 0;
+        int num = 0, size = 0;
         sniffer.sniff_loop([&](Packet& packet) {
-            std::cout << packet.pdu()->size() << ", total num: " << num << std::endl;
+            std::cout << packet.pdu()->size() << ", total num: " << num << ", total size: " << size << std::endl;
+            size += packet.pdu()->size();
             ++num;
             follower.process_packet(packet);
             return true;
