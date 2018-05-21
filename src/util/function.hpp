@@ -5,12 +5,8 @@
 #include <string>
 #include <set>
 
-#include "tins/tcp.h"
-
-namespace Tins::TCPIP {
-
-    class Stream;
-
+namespace cs::base {
+    class StreamIdentifier;
 }
 
 namespace cs::util {
@@ -19,12 +15,9 @@ namespace cs::util {
 
     std::vector<std::string> split_str(const std::string, const std::string);
 
-    std::string stream_identifier(const Tins::TCPIP::Stream &stream);
-
-    bool is_ignore_stream(
-            const Tins::TCPIP::Stream&,
-            const std::set<Tins::IPv4Address>&,
-            const std::set<Tins::IPv6Address>&
+    bool is_ignored_stream(
+            const cs::base::StreamIdentifier&,
+            const std::set<std::string>&
     );
 
     std::string md5(const char*, size_t);

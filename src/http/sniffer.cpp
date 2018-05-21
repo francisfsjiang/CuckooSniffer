@@ -25,7 +25,7 @@ namespace cs::http {
             "application/vnd.openxmlformats-officedocument.presentationml.presentation",
     };
 
-    void Sniffer::on_client_payload(const cs::base::PayloadType& payload) {
+    void Sniffer::on_client_payload(const cs::base::PayloadVector& payload) {
         client_buffer_->write(
                 reinterpret_cast<const char *>(payload.data()),
 //                (const char *)client_pay_load.data(),
@@ -74,7 +74,7 @@ namespace cs::http {
         }
     }
 
-    void Sniffer::on_server_payload(const cs::base::PayloadType& payload) {
+    void Sniffer::on_server_payload(const cs::base::PayloadVector& payload) {
         server_buffer_->write(
                 reinterpret_cast<const char *>(payload.data()),
 //                (const char *)client_pay_load.data(),
@@ -131,17 +131,17 @@ namespace cs::http {
         client_buffer_ = nullptr;
         server_buffer_ = nullptr;
 
-        SNIFFER_MANAGER.erase_sniffer(id_);
+        SNIFFER_MANAGER.erase_sniffer(stream_id_);
     }
 
     void Sniffer::on_connection_terminated(
             cs::base::TerminationReason) {
 
-        LOG_DEBUG << id_ << " HTTP connection terminated.";
-        cs::SNIFFER_MANAGER.erase_sniffer(id_);
+        LOG_DEBUG << stream_id_.to_string() << " HTTP connection terminated.";
+        cs::SNIFFER_MANAGER.erase_sniffer(stream_id_);
     }
 
-    Sniffer::Sniffer(const string& stream_id) : TCPSniffer(stream_id) {
+    Sniffer::Sniffer(const cs::base::StreamIdentifier& stream_id) : TCPSniffer(stream_id) {
 
 //        stream.auto_cleanup_server_data(true);
 //        stream.auto_cleanup_client_data(true);

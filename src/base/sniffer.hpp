@@ -1,32 +1,45 @@
 #ifndef CUCKOOSNIFFER_BASE_SNIFFER_HPP
 #define CUCKOOSNIFFER_BASE_SNIFFER_HPP
 
-#include "tins/tcp_ip/stream_follower.h"
-#include "tins/ip_address.h"
-#include "tins/ipv6_address.h"
+#include <cstdint>
+#include <vector>
+#include <string>
 
 namespace cs::base {
 
-    typedef Tins::TCPIP::Stream::payload_type PayloadType;
+    class StreamIdentifier {
+    public:
+        StreamIdentifier(const std::string&, size_t, const std::string&, size_t);
+        StreamIdentifier(const std::string&, size_t, const std::string&, size_t, uint32_t);
+        std::string src_addr;
+        size_t src_port;
+        std::string dst_addr;
+        size_t dst_port;
+        uint32_t hash_key;
+
+        std::string to_string() const;
+    };
+
+    typedef std::vector<uint8_t> PayloadVector;
     typedef int TerminationReason;
 
     class Sniffer {
 
     public:
 
-        Sniffer(const std::string&);
+        Sniffer(const StreamIdentifier&);
 
         virtual ~Sniffer();
 
-        const std::string &get_id();
+        const StreamIdentifier &get_id();
 
-        virtual void on_client_payload(const PayloadType&) = 0;
+        virtual void on_client_payload(const PayloadVector&) = 0;
 
-        virtual void on_server_payload(const PayloadType&) = 0;
+        virtual void on_server_payload(const PayloadVector&) = 0;
 
     protected:
 
-        std::string id_;
+        StreamIdentifier stream_id_;
 
     };
 
@@ -35,9 +48,9 @@ namespace cs::base {
 
     public:
 
-        virtual void on_client_payload(const PayloadType&) = 0;
+        virtual void on_client_payload(const PayloadVector&) = 0;
 
-        virtual void on_server_payload(const PayloadType&) = 0;
+        virtual void on_server_payload(const PayloadVector&) = 0;
 
         virtual void on_connection_close() = 0;
 
@@ -45,7 +58,7 @@ namespace cs::base {
 
         TCPSniffer() = delete;
 
-        TCPSniffer(const std::string&);
+        TCPSniffer(const StreamIdentifier&);
 
         virtual ~TCPSniffer() {};
     };

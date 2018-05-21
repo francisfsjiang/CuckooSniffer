@@ -6,13 +6,12 @@
 #include <thread>
 #include <mutex>
 
-namespace cs {
-
-namespace base {
-
-class Sniffer;
-
+namespace cs::base {
+    class StreamIdentifier;
+    class Sniffer;
 }
+
+namespace cs {
 
 class SnifferManager {
 
@@ -21,15 +20,18 @@ public:
 
     static SnifferManager &get_instance();
 
-    void append_sniffer(std::string, std::shared_ptr<cs::base::Sniffer>, int);
+    void append_sniffer(const cs::base::StreamIdentifier&, std::shared_ptr<cs::base::Sniffer>, int);
 
-    std::pair<std::shared_ptr<cs::base::Sniffer>, int> get_sniffer_info(std::string);
+    std::pair<std::shared_ptr<cs::base::Sniffer>, int> get_sniffer_info(const cs::base::StreamIdentifier&);
 
-    void erase_sniffer(std::string);
+    void erase_sniffer(const cs::base::StreamIdentifier&);
 
 private:
 
-    std::map<std::string, std::pair<std::shared_ptr<cs::base::Sniffer>, int>> sniffer_container;
+    struct sniffer_container_cmp {
+        bool operator()(const cs::base::StreamIdentifier& lhs, const cs::base::StreamIdentifier& rhs) const;
+    };
+    std::map<cs::base::StreamIdentifier, std::pair<std::shared_ptr<cs::base::Sniffer>, int>, sniffer_container_cmp> sniffer_container;
 
     std::mutex lock_;
 

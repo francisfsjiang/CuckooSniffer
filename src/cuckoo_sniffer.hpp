@@ -3,7 +3,6 @@
 
 #include <map>
 #include <boost/log/trivial.hpp>
-#include <tins/tcp_ip/stream_identifier.h>
 
 #define LOG_TRACE       BOOST_LOG_SEV(cs::lg, boost::log::trivial::trace)
 #define LOG_DEBUG       BOOST_LOG_SEV(cs::lg, boost::log::trivial::debug)
@@ -15,7 +14,7 @@
 namespace cs {
 
     namespace base {
-        typedef std::vector<uint8_t> PayloadType;
+        typedef std::vector<uint8_t> PayloadVector;
     }
 
     extern boost::log::sources::severity_logger <boost::log::trivial::severity_level> lg;
@@ -25,7 +24,6 @@ namespace cs {
     void init_log();
 
     void init_log_in_thread();
-
 
 }
 

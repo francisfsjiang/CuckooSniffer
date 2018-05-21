@@ -8,16 +8,15 @@
 #include <openssl/md5.h>
 #include <curl/curl.h>
 
-#include "tins/tcp_ip/stream_follower.h"
-#include "tins/ip_address.h"
-#include "tins/ipv6_address.h"
 
 #include "util/file.hpp"
 #include "util/buffer.hpp"
+#include "base/sniffer.hpp"
 
 namespace cs::util {
 
     using namespace std;
+    using namespace cs::base;
 
     vector<string> split_str(const string str, const string split) {
         string::size_type last_pos = 0, new_pos;
@@ -36,40 +35,10 @@ namespace cs::util {
     }
 
 
-    string stream_identifier(const Tins::TCPIP::Stream& stream) {
-        ostringstream output;
-        if (stream.is_v6()) {
-            output << stream.client_addr_v6()
-                   << ":"
-                   << stream.client_port()
-                   << "->"
-                   << stream.server_addr_v6()
-                   << ":"
-                   << stream.server_port();
-        }
-        else {
-            output << stream.client_addr_v4()
-                   << ":"
-                   << stream.client_port()
-                   << "->"
-                   << stream.server_addr_v4()
-                   << ":"
-                   << stream.server_port();
-        }
-        return output.str();
-    }
+    bool is_ignored_stream(const StreamIdentifier& stream_id, const std::set<std::string>& ignore_addr_set) {
 
-    bool is_ignore_stream(const Tins::TCPIP::Stream& stream, const std::set<Tins::IPv4Address>& ignore_ipv4_address, const std::set<Tins::IPv6Address>& ignore_ipv6_address) {
-        if (stream.is_v6()) {
-            auto addr = stream.client_addr_v6();
-            auto iter = ignore_ipv6_address.find(addr);
-            return iter != ignore_ipv6_address.end();
-        }
-        else {
-            auto addr = stream.client_addr_v4();
-            auto iter = ignore_ipv4_address.find(addr);
-            return iter != ignore_ipv4_address.end();
-        }
+        auto iter = ignore_addr_set.find(stream_id.src_addr);
+        return iter != ignore_addr_set.end();
     }
 
     string md5(const char* data, size_t size) {

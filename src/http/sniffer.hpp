@@ -15,15 +15,15 @@ namespace cs::http {
 
     public:
 
-        virtual void on_client_payload(const cs::base::PayloadType&);
+        virtual void on_client_payload(const cs::base::PayloadVector&);
 
-        virtual void on_server_payload(const cs::base::PayloadType&);
+        virtual void on_server_payload(const cs::base::PayloadVector&);
 
         virtual void on_connection_close();
 
         virtual void on_connection_terminated(cs::base::TerminationReason);
 
-        Sniffer(const std::string&);
+        Sniffer(const cs::base::StreamIdentifier&);
 
         virtual ~Sniffer();
 
