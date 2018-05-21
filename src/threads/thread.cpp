@@ -3,8 +3,6 @@
 #include <thread>
 
 #include "cuckoo_sniffer.hpp"
-#include "base/data_processor.hpp"
-#include "base/collected_data.hpp"
 #include "base/sniffer.hpp"
 #include "util/file.hpp"
 #include "threads/data_queue.hpp"
@@ -24,16 +22,16 @@ namespace cs::threads{
 //        try {
         DataEvent *data = queue->dequeue();
 
-        LOG_DEBUG << "Thread " << std::this_thread::get_id() << " get collected data.";
+//        LOG_DEBUG << "Thread " << std::this_thread::get_id() << " get collected data. " << data->size_;
 
-        auto sniffer = std::dynamic_pointer_cast<TCPSniffer>(data->sniffer_);
+        auto sniffer = data->sniffer_;
 
         switch (data->type_) {
             case DataType::CLIENT_PAYLOAD:
-                sniffer->on_client_payload(*data->payload_);
+                sniffer->on_client_payload(data->payload_, data->size_);
                 break;
             case DataType::SERVER_PAYLOAD:
-                sniffer->on_server_payload(*data->payload_);
+                sniffer->on_server_payload(data->payload_, data->size_);
                 break;
             case DataType::CLOSE:
                 sniffer->on_connection_close();

@@ -196,7 +196,7 @@ void on_new_connection(Tins::TCPIP::Stream& stream) {
 }
 
 
-void on_connection_terminated(Tins::TCPIP::Stream& stream, Tins::TCPIP::StreamFollower::TerminationReason _) {
+void on_connection_terminated(Tins::TCPIP::Stream& stream, TerminationReason _) {
     std::string stream_id = cs::util::stream_identifier(stream);
     LOG_INFO << "Connection terminated " << stream_id;
     auto sniffer = cs::SNIFFER_MANAGER.get_sniffer_info(stream_id);

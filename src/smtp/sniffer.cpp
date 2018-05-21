@@ -12,11 +12,11 @@ namespace cs::smtp {
     using namespace cs::util;
     using namespace cs::base;
 
-    void Sniffer::on_client_payload(const cs::base::PayloadType& payload) {
+    void Sniffer::on_client_payload(PayloadVector payload, size_t payload_size) {
         LOG_TRACE << "SMTP data size :" << payload.size();
     }
 
-    void Sniffer::on_server_payload(const cs::base::PayloadType& payload) {
+    void Sniffer::on_server_payload(PayloadVector payload, size_t payload_size) {
     }
 
     void Sniffer::on_connection_close() {
@@ -39,7 +39,7 @@ namespace cs::smtp {
 
     void Sniffer::on_connection_terminated(
             Tins::TCPIP::Stream &,
-            Tins::TCPIP::StreamFollower::TerminationReason) {
+            TerminationReason) {
         LOG_DEBUG << id_ << " SMTP data connection terminated.";
         cs::SNIFFER_MANAGER.erase_sniffer(id_);
     }

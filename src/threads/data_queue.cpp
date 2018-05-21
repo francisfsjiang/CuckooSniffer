@@ -7,14 +7,14 @@ namespace cs::threads {
 
     std::vector<DataQueue*> DATA_QUEUES;
 
-    DataEvent::DataEvent(std::shared_ptr<cs::base::Sniffer> sniffer, DataType type, cs::base::PayloadVector* payload)
-            :sniffer_(sniffer), type_(type), payload_(payload)
+    DataEvent::DataEvent(std::shared_ptr<cs::base::TCPSniffer> sniffer, DataType type, cs::base::PayloadVector payload, size_t size)
+            :sniffer_(sniffer), type_(type), payload_(payload), size_(size)
     {
 
     }
 
     DataEvent::~DataEvent() {
-        delete payload_;
+        delete[] payload_;
     }
 
     DataQueue::DataQueue()
@@ -30,7 +30,7 @@ namespace cs::threads {
     {
         std::lock_guard<std::mutex> lock(mutex);
         queue_.push(data);
-        LOG_TRACE << "Data_queue size after enqueue: " << queue_.size();
+//        LOG_TRACE << "Data_queue size after enqueue: " << queue_.size();
         condition_var_.notify_one();
     }
 
@@ -44,7 +44,7 @@ namespace cs::threads {
         if (!queue_.empty()) {
             DataEvent* data = queue_.front();
             queue_.pop();
-            LOG_TRACE << "Data_queue size after dequeue: " << queue_.size();
+//            LOG_TRACE << "Data_queue size after dequeue: " << queue_.size();
             return data;
         }
         else {

@@ -189,7 +189,7 @@ void Sniffer::handle_client_req(const std::vector<uint8_t>& vec) {
     }
 }
 
-void Sniffer::on_server_payload(const cs::base::PayloadType& payload) {
+void Sniffer::on_server_payload(PayloadVector payload, size_t payload_size) {
     std::vector<uint8_t> vec = std::vector<uint8_t>(stream.server_payload());
     while (vec.size() > 0) {
         vec = handle_server_NB_block(vec);
@@ -429,7 +429,7 @@ void Sniffer::on_connection_close() {
 
 void Sniffer::on_connection_terminated(
         Tins::TCPIP::Stream &,
-        Tins::TCPIP::StreamFollower::TerminationReason) {
+        TerminationReason) {
 
     LOG_DEBUG << id_ << " SAMBA connection terminated.";
     SNIFFER_MANAGER.erase_sniffer(id_);

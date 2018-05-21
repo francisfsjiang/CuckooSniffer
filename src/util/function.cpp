@@ -61,9 +61,13 @@ namespace cs::util {
     }
 
 
+    size_t noop_cb(void *ptr, size_t size, size_t nmemb, void *data) {
+        return size * nmemb;
+    }
+
     int submit_files(const File& file, const string& url)
     {
-
+        LOG_DEBUG << "Sending file, " << file.get_name() << " , " << file.get_size();
         CURL *curl;
         CURLcode res;
         struct curl_httppost *formpost=NULL;
@@ -78,6 +82,8 @@ namespace cs::util {
             just as well be a https:// URL if that is what should receive the
             data. */
             curl_easy_setopt(curl, CURLOPT_URL, url.data());
+            curl_easy_setopt(curl, CURLOPT_VERBOSE, 0L);
+            curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, noop_cb);
             /* Now specify the POST data */
 //        curl_easy_setopt(curl, CURLOPT_POSTFIELDS, "file=daniel&project=curl");
 

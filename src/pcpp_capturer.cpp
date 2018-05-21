@@ -7,14 +7,24 @@
 
 #include "IpUtils.h"
 
-
 #include "cuckoo_sniffer.hpp"
+//#include "smtp/sniffer.hpp"
+//#include "imap/sniffer.hpp"
+//#include "ftp/data_sniffer.hpp"
+//#include "ftp/command_sniffer.hpp"
+//#include "samba/sniffer.hpp"
+#include "http/sniffer.hpp"
+#include "base/sniffer.hpp"
+#include "threads/thread.hpp"
+#include "threads/data_queue.hpp"
 
 
 namespace cs {
 
     using namespace std;
     using namespace pcpp;
+    using namespace cs::base;
+    using namespace cs::threads;
 
     void PcpppCapturer::generate_ignore_list(std::set<std::string>& ip_list)
     {
@@ -49,12 +59,25 @@ namespace cs {
         iface_ = iface;
         filter_ = filter;
         stopped_ = false;
+        current_thread_id_ = 0;
+        sniffer_mannger_ = new map<uint32_t, shared_ptr<TCPSniffer>>();
+        tcp_reassembly_ = new pcpp::TcpReassembly(
+                tcp_msg_ready_callback,
+                this,
+                tcp_connection_start_callback,
+                tcp_connection_end_callback
+        );
 
         dev_ = PcapLiveDeviceList::getInstance().getPcapLiveDeviceByName(iface_);
         if (dev_ == NULL) {
             LOG_ERROR << "Couldn't find interface by provided name";
             exit(1);
         }
+        LOG_TRACE << "Capture constructed, " << this;
+    }
+
+    PcpppCapturer::~PcpppCapturer() {
+        LOG_TRACE << "Capture deconstructed, " << this;
     }
 
     void PcpppCapturer::start() {
@@ -73,7 +96,7 @@ namespace cs {
 
         LOG_INFO << "Starting packet capture on " << dev_->getIPv4Address().toString().c_str();
 
-        dev_->startCapture(on_packet_arrives, &tcp_reassembly_);
+        dev_->startCapture(on_packet_arrives, tcp_reassembly_);
 
         ApplicationEventHandler::getInstance().onApplicationInterrupted(on_app_interrupted, &stopped_);
 
@@ -83,69 +106,125 @@ namespace cs {
         dev_->stopCapture();
         dev_->close();
 
-        tcp_reassembly_.closeAllConnections();
+        tcp_reassembly_->closeAllConnections();
 
-        LOG_INFO << "Done! processed %d connections " << (int)tcp_reassembly_.getConnectionInformation().size();
+        LOG_INFO << "Done! processed %d connections " << (int)tcp_reassembly_->getConnectionInformation().size();
     }
 
     void PcpppCapturer::on_packet_arrives(RawPacket* packet, PcapLiveDevice* dev, void* tcpReassemblyCookie)
     {
         std::string data((char*)packet->getRawData(), packet->getRawDataLen());
-        LOG_TRACE << "On packet arrive." << data;
+//        LOG_TRACE << "On packet arrive." << data;
 
         TcpReassembly* tcpReassembly = (TcpReassembly*)tcpReassemblyCookie;
         tcpReassembly->reassemblePacket(packet);
     }
-
+    int tsize = 0;
     void PcpppCapturer::tcp_msg_ready_callback(int sideIndex, TcpStreamData tcpData, void* userCookie)
     {
-        LOG_TRACE << "Msg ready callback";
-        // extract the connection manager from the user cookie
-//        TcpReassemblyConnMgr* connMgr = (TcpReassemblyConnMgr*)userCookie;
-//
-//        // check if this flow already appears in the connection manager. If not add it
-//        TcpReassemblyConnMgrIter iter = connMgr->find(tcpData.getConnectionData().flowKey);
-//        if (iter == connMgr->end())
-//        {
-//            connMgr->insert(std::make_pair(tcpData.getConnectionData().flowKey, TcpReassemblyData()));
-//            iter = connMgr->find(tcpData.getConnectionData().flowKey);
-//        }
+//        LOG_TRACE << "Msg ready callback";
+        auto capture = reinterpret_cast<PcpppCapturer*>(userCookie);
+        auto conn_mgr = capture->sniffer_mannger_;
+        auto flow_key = tcpData.getConnectionData().flowKey;
+        auto iter = conn_mgr->find(flow_key);
+        if (iter == conn_mgr->end()) {
+            LOG_ERROR << "No sniffer find. " << flow_key;
+            return;
+        }
 
-        LOG_TRACE << "Site: " << sideIndex << " , size " << tcpData.getDataLength();
+//        LOG_TRACE << "Site: " << sideIndex << " , size " << tcpData.getDataLength();
+        tsize+=tcpData.getDataLength();
+//        LOG_TRACE << "total_size: " << tsize;
+        auto stream_data = new uint8_t[tcpData.getDataLength()];
+        memcpy(stream_data, tcpData.getData(), tcpData.getDataLength());
+//
+        if(sideIndex == 0) {
+            iter->second->data_callback(stream_data, tcpData.getDataLength(), DataType::CLIENT_PAYLOAD);
+        }
+        else {
+            iter->second->data_callback(stream_data, tcpData.getDataLength(), DataType::SERVER_PAYLOAD);
+        }
     }
 
     void PcpppCapturer::tcp_connection_start_callback(ConnectionData connectionData, void* userCookie)
     {
-        LOG_TRACE << "Conn start callback" ;
-        // get a pointer to the connection manager
-//        TcpReassemblyConnMgr* connMgr = (TcpReassemblyConnMgr*)userCookie;
+        auto flow_key = connectionData.flowKey;
+        LOG_TRACE << "Conn start callback. " << flow_key;
 
-//        // look for the connection in the connection manager
-//        TcpReassemblyConnMgrIter iter = connMgr->find(connectionData.flowKey);
-//
-//        // assuming it's a new connection
-//        if (iter == connMgr->end())
-//        {
-//            // add it to the connection manager
-//            connMgr->insert(std::make_pair(connectionData.flowKey, TcpReassemblyData()));
-//        }
+        auto capture = reinterpret_cast<PcpppCapturer*>(userCookie);
+        // get a pointer to the connection manager
+        StreamIdentifier stream_id(
+                connectionData.srcIP->toString(),
+                connectionData.srcPort,
+                connectionData.dstIP->toString(),
+                connectionData.dstPort,
+                flow_key
+        );
+
+        LOG_TRACE << stream_id.to_string() << " Get tcp stream." ;
+
+        cs::base::TCPSniffer* tcp_sniffer = nullptr;
+
+        switch (stream_id.dst_port) {
+//        case 25:        //SMTP
+//            tcp_sniffer = new cs::smtp::Sniffer(stream);
+//            break;
+//        case 143:       //IMAP
+//            tcp_sniffer = new cs::imap::Sniffer(stream);
+//            break;
+//        case 21:        //FTP
+//            tcp_sniffer = new cs::ftp::CommandSniffer(stream);
+//            break;
+//        case 80:        //HTTP
+            case 8888:        //HTTP
+//            if (cs::util::is_ignore_stream(stream, ignore_ipv4_address, ignore_ipv6_address)) {
+//                LOG_INFO << "Ingoring stream " << stream_id;
+//                return;
+//            }
+                tcp_sniffer = new cs::http::Sniffer(stream_id, capture->current_thread_id_);
+                break;
+//        case 445:       //SAMBA
+//            tcp_sniffer = new cs::samba::Sniffer(stream);
+//            break;
+            default:
+//            const auto& ftp_data_connection = cs::ftp::CommandSniffer::get_data_connection_pool();
+//            if (ftp_data_connection.find(port) != ftp_data_connection.end()) {
+//                tcp_sniffer = new cs::ftp::DataSniffer(stream);
+//            }
+//            else {
+//                stream.auto_cleanup_payloads(true);
+//                return;
+//            }
+                break;
+        }
+        if (!tcp_sniffer) {
+            return ;
+        }
+
+        std::shared_ptr<cs::base::TCPSniffer> sniffer_ptr = std::shared_ptr<cs::base::TCPSniffer>(tcp_sniffer);
+
+        capture->current_thread_id_++;
+        if(capture->current_thread_id_ >= cs::threads::THREADS_NUM) {
+            capture->current_thread_id_ = 0;
+        }
+
+        auto conn_mgr = capture->sniffer_mannger_;
+
+        auto iter = conn_mgr->find(flow_key);
+        if (iter == conn_mgr->end()) {
+            conn_mgr->insert(std::make_pair(flow_key, sniffer_ptr));
+
+        }
+        LOG_TRACE << "Conn start end.";
     }
 
     void PcpppCapturer::tcp_connection_end_callback(ConnectionData connectionData, TcpReassembly::ConnectionEndReason reason, void* userCookie)
     {
-        LOG_TRACE << "Conn end callback";
-        // get a pointer to the connection manager
-//        TcpReassemblyConnMgr* connMgr = (TcpReassemblyConnMgr*)userCookie;
-//
-//        // find the connection in the connection manager by the flow key
-//        TcpReassemblyConnMgrIter iter = connMgr->find(connectionData.flowKey);
-//
-//        // connection wasn't found - shouldn't get here
-//        if (iter == connMgr->end())
-//            return;
-//
-//        // remove the connection from the connection manager
-//        connMgr->erase(iter);
+        LOG_TRACE << "Conn end callback, " << tsize;
+        auto capture = reinterpret_cast<PcpppCapturer*>(userCookie);
+        auto conn_mgr = capture->sniffer_mannger_;
+        auto flow_key = connectionData.flowKey;
+        conn_mgr->erase(flow_key);
     }
 
     void PcpppCapturer::on_app_interrupted(void *cookie)

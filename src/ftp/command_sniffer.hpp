@@ -1,6 +1,8 @@
 #ifndef CUCKOOSNIFFER_FTP_SNIFFER_HPP
 #define CUCKOOSNIFFER_FTP_SNIFFER_HPP
 
+#include <map>
+
 #include "base/sniffer.hpp"
 
 namespace cs::ftp {
@@ -9,23 +11,23 @@ class CommandSniffer : public cs::base::TCPSniffer {
 
 public:
 
-    virtual void on_client_payload(const cs::base::PayloadType&);
+    void on_client_payload(cs::base::PayloadVector, size_t) override;
 
-    virtual void on_server_payload(const cs::base::PayloadType&);
+    void on_server_payload(cs::base::PayloadVector, size_t) override;
 
-    virtual void on_connection_close();
+    void on_connection_close() override;
 
-    virtual void on_connection_terminated(cs::base::TerminationReason);
+    void on_connection_terminated(cs::base::TerminationReason) override;
 
-    CommandSniffer(const std::string&);
+    CommandSniffer(const cs::base::StreamIdentifier&, int);
 
     virtual ~CommandSniffer();
 
-    static std::map<unsigned short, std::string>& get_data_connection_pool();
+    static std::map<uint16_t, std::string>& get_data_connection_pool();
 
 private:
 
-    static std::map<unsigned short, std::string> data_connection_pool_;
+    static std::map<uint16_t , std::string> data_connection_pool_;
 
     uint16_t port_;
 };

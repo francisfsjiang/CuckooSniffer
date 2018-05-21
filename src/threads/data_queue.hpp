@@ -10,6 +10,7 @@
 namespace cs::base {
 
     class Sniffer;
+    class TCPSniffer;
 
 }
 namespace cs::threads {
@@ -24,11 +25,12 @@ namespace cs::threads {
 
     class DataEvent {
     public:
-        DataEvent(std::shared_ptr<cs::base::Sniffer>, DataType, cs::base::PayloadVector*);
+        DataEvent(std::shared_ptr<cs::base::TCPSniffer>, DataType, cs::base::PayloadVector, size_t);
         ~DataEvent();
-        std::shared_ptr<cs::base::Sniffer> sniffer_;
+        std::shared_ptr<cs::base::TCPSniffer> sniffer_;
         DataType type_;
-        cs::base::PayloadVector* payload_;
+        cs::base::PayloadVector payload_;
+        size_t size_;
 
     };
 

@@ -4,8 +4,6 @@
 #include "cuckoo_sniffer.hpp"
 #include "sniffer_manager.hpp"
 #include "ftp/data_sniffer.hpp"
-#include "ftp/data_processor.hpp"
-#include "ftp/collected_data.hpp"
 #include "ftp/command_sniffer.hpp"
 #include "util/file.hpp"
 #include "util/buffer.hpp"
@@ -14,39 +12,35 @@
 namespace cs::ftp {
 
     using namespace cs::util;
+    using namespace cs::base;
 
-    void DataSniffer::on_client_payload(const cs::base::PayloadType& payload) {
+    void DataSniffer::on_client_payload(PayloadVector payload, size_t payload_size) {
 
     }
 
-    void DataSniffer::on_server_payload(const cs::base::PayloadType& payload) {
-        auto& pay_load = stream.server_payload();
+    void DataSniffer::on_server_payload(PayloadVector payload, size_t payload_size) {
         buffer_->write(
-                reinterpret_cast<const char*>(pay_load.data()),
-                pay_load.size()
+                (char*)payload,
+                payload_size
         );
     }
 
     void DataSniffer::on_connection_close() {
         LOG_DEBUG << "FTP data size: " << buffer_->size();
         auto buffer = new Buffer();
-        cs::DATA_QUEUE.enqueue(new cs::ftp::CollectedData(buffer));
 
         LOG_DEBUG << "FTP data connection close";
-        CommandSniffer::get_data_connection_pool().erase(stream.server_port());
-        cs::SNIFFER_MANAGER.erase_sniffer(id_);
+        CommandSniffer::get_data_connection_pool().erase(stream_id_.dst_port);
     }
 
     void DataSniffer::on_connection_terminated(
-            Tins::TCPIP::Stream& stream,
-            Tins::TCPIP::StreamFollower::TerminationReason) {
-        LOG_DEBUG << id_ << " FTP data connection terminated.";
-        CommandSniffer::get_data_connection_pool().erase(stream.server_port());
-        cs::SNIFFER_MANAGER.erase_sniffer(id_);
+            TerminationReason) {
+        LOG_DEBUG << " FTP data connection terminated.";
+        CommandSniffer::get_data_connection_pool().erase(stream_id_.dst_port);
     }
 
-    DataSniffer::DataSniffer(const std::string& id) : TCPSniffer(id) {
-        LOG_DEBUG << "Get FTP data connection " << id_;
+    DataSniffer::DataSniffer(const cs::base::StreamIdentifier& stream_id, int thread_id):
+        TCPSniffer(stream_id, thread_id) {
 
         buffer_ = new Buffer();
 

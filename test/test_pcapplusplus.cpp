@@ -75,9 +75,132 @@ static struct option TcpAssemblyOptions[] =
         };
 
 
+
 /**
  * A singleton class containing the configuration as requested by the user. This singleton is used throughout the application
  */
+class GlobalConfig
+{
+private:
+
+    /**
+     * A private c'tor (as this is a singleton)
+     */
+    GlobalConfig() { writeMetadata = false; outputDir = ""; writeToConsole = false; separateSides = false; maxOpenFiles = DEFAULT_MAX_NUMBER_OF_CONCURRENT_OPEN_FILES; m_RecentConnsWithActivity = NULL; }
+
+    // A least-recently-used (LRU) list of all connections seen so far. Each connection is represented by its flow key. This LRU list is used to decide which connection was seen least
+    // recently in case we reached max number of open file descriptors and we need to decide which files to close
+    LRUList<uint32_t>* m_RecentConnsWithActivity;
+
+public:
+
+    // a flag indicating whether to write a metadata file for each connection (containing several stats)
+    bool writeMetadata;
+
+    // the directory to write files to (default is current directory)
+    std::string outputDir;
+
+    // a flag indicating whether to write TCP data to actual files or to console
+    bool writeToConsole;
+
+    // a flag indicating whether to write both side of a connection to the same file (which is the default) or write each side to a separate file
+    bool separateSides;
+
+    // max number of allowed open files in each point in time
+    size_t maxOpenFiles;
+
+
+    /**
+     * A method getting connection parameters as input and returns a filename and file path as output.
+     * The filename is constructed by the IPs (src and dst) and the TCP ports (src and dst)
+     */
+    std::string getFileName(ConnectionData connData, int side, bool separareSides)
+    {
+        std::stringstream stream;
+
+        // if user chooses to write to a directory other than the current directory - add the dir path to the return value
+        if (outputDir != "")
+            stream << outputDir << SEPARATOR;
+
+        std::string sourceIP = connData.srcIP->toString();
+        std::string destIP = connData.dstIP->toString();
+
+        // for IPv6 addresses, replace ':' with '_'
+        std::replace(sourceIP.begin(), sourceIP.end(), ':', '_');
+        std::replace(destIP.begin(), destIP.end(), ':', '_');
+
+        // side == 0 means data is sent from client->server
+        if (side <= 0 || separareSides == false)
+            stream << sourceIP << "." << connData.srcPort << "-" << destIP << "." << connData.dstPort;
+        else // side == 1 means data is sent from server->client
+            stream << destIP << "." << connData.dstPort << "-" << sourceIP << "." << connData.srcPort;
+
+        // return the file path
+        return stream.str();
+    }
+
+
+    /**
+     * Open a file stream. Inputs are the filename to open and a flag indicating whether to append to an existing file or overwrite it.
+     * Return value is a pointer to the new file stream
+     */
+    std::ostream* openFileStream(std::string fileName, bool reopen)
+    {
+        // if the user chooses to write only to consoe, don't open anything and return std::cout
+        if (writeToConsole)
+            return &std::cout;
+
+        // open the file on the disk (with append or overwrite mode)
+        if (reopen)
+            return new std::ofstream(fileName.c_str(), std::ios_base::binary | std::ios_base::app);
+        else
+            return new std::ofstream(fileName.c_str(), std::ios_base::binary);
+    }
+
+
+    /**
+     * Close a file stream
+     */
+    void closeFileSteam(std::ostream* fileStream)
+    {
+        // if the user chooses to write only to console - do nothing and return
+        if (!writeToConsole)
+        {
+            // close the file stream
+            std::ofstream* fstream = (std::ofstream*)fileStream;
+            fstream->close();
+
+            // free the memory of the file stream
+            delete fstream;
+        }
+    }
+
+
+    /**
+     * Return a pointer to the least-recently-used (LRU) list of connections
+     */
+    LRUList<uint32_t>* getRecentConnsWithActivity()
+    {
+        // his is a lazy implementation - the instance isn't created until the user requests it for the first time.
+        // the side of the LRU list is determined by the max number of allowed open files at any point in time. Default is DEFAULT_MAX_NUMBER_OF_CONCURRENT_OPEN_FILES
+        // but the user can choose another number
+        if (m_RecentConnsWithActivity == NULL)
+            m_RecentConnsWithActivity = new LRUList<uint32_t>(maxOpenFiles);
+
+        // return the pointer
+        return m_RecentConnsWithActivity;
+    }
+
+
+    /**
+     * The singleton implementation of this class
+     */
+    static inline GlobalConfig& getInstance()
+    {
+        static GlobalConfig instance;
+        return instance;
+    }
+};
 
 /**
  * A struct to contain all data save on a specific connection. It contains the file streams to write to and also stats data on the connection
@@ -151,6 +274,28 @@ struct TcpReassemblyData
 typedef std::map<uint32_t, TcpReassemblyData> TcpReassemblyConnMgr;
 typedef std::map<uint32_t, TcpReassemblyData>::iterator TcpReassemblyConnMgrIter;
 
+/**
+ * Print application usage
+ */
+void printUsage()
+{
+    printf("\nUsage:\n"
+           "------\n"
+           "%s [-hvlcms] [-r input_file] [-i interface] [-o output_dir] [-e bpf_filter] [-f max_files]\n"
+           "\nOptions:\n\n"
+           "    -r input_file : Input pcap/pcapng file to analyze. Required argument for reading from file\n"
+           "    -i interface  : Use the specified interface. Can be interface name (e.g eth0) or interface IPv4 address. Required argument for capturing from live interface\n"
+           "    -o output_dir : Specify output directory (default is '.')\n"
+           "    -e bpf_filter : Apply a BPF filter to capture file or live interface, meaning TCP reassembly will only work on filtered packets\n"
+           "    -f max_files  : Maximum number of file descriptors to use\n"
+           "    -c            : Write all output to console (nothing will be written to files)\n"
+           "    -m            : Write a metadata file for each connection\n"
+           "    -s            : Write each side of each connection to a separate file (default is writing both sides of each connection to the same file)\n"
+           "    -l            : Print the list of interfaces and exit\n"
+           "    -v            : Displays the current version and exists\n"
+           "    -h            : Display this help message and exit\n\n", AppName::get().c_str());
+    exit(0);
+}
 
 /**
  * Go over all interfaces and output their names
@@ -173,7 +318,7 @@ void listInterfaces()
  */
 static void tcpReassemblyMsgReadyCallback(int sideIndex, TcpStreamData tcpData, void* userCookie)
 {
-    std::cout << "Msg ready callback";
+//    std::cout << "Msg ready callback";
     // extract the connection manager from the user cookie
     TcpReassemblyConnMgr* connMgr = (TcpReassemblyConnMgr*)userCookie;
 
@@ -324,10 +469,12 @@ static void onApplicationInterrupted(void* cookie)
 /**
  * packet capture callback - called whenever a packet arrives on the live device (in live device capturing mode)
  */
+ int total_size = 0;
 static void onPacketArrives(RawPacket* packet, PcapLiveDevice* dev, void* tcpReassemblyCookie)
 {
-    std::string data((char*)packet->getRawData(), packet->getRawDataLen());
-    std::cout << "On packet arrive." << data << std::endl;
+//    std::string data((char*)packet->getRawData(), packet->getRawDataLen());
+    total_size += packet->getRawDataLen();
+//    std::cout << "On packet arrive. " << total_size << std::endl;
     // get a pointer to the TCP reassembly instance and feed the packet arrived to it
     TcpReassembly* tcpReassembly = (TcpReassembly*)tcpReassemblyCookie;
     tcpReassembly->reassemblePacket(packet);
@@ -380,9 +527,9 @@ void doTcpReassemblyOnLiveTraffic(PcapLiveDevice* dev, TcpReassembly& tcpReassem
 int main(int argc, char* argv[])
 {
 
-    std::string interface_name = "lo0";
-//    std::string bpfFilter = "tcp port 8888";
-    std::string bpfFilter = "";
+    std::string interface_name = "en0";
+    std::string bpfFilter = "tcp port 8888";
+//    std::string bpfFilter = "";
 
     // create the object which manages info on all connections
     TcpReassemblyConnMgr connMgr;

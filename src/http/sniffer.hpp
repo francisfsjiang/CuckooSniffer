@@ -15,17 +15,17 @@ namespace cs::http {
 
     public:
 
-        virtual void on_client_payload(const cs::base::PayloadVector&);
+        void on_client_payload(cs::base::PayloadVector, size_t) override;
 
-        virtual void on_server_payload(const cs::base::PayloadVector&);
+        void on_server_payload(cs::base::PayloadVector, size_t) override;
 
-        virtual void on_connection_close();
+        void on_connection_close() override ;
 
-        virtual void on_connection_terminated(cs::base::TerminationReason);
+        void on_connection_terminated(cs::base::TerminationReason) override ;
 
-        Sniffer(const cs::base::StreamIdentifier&);
+        Sniffer(const cs::base::StreamIdentifier&, int);
 
-        virtual ~Sniffer();
+        ~Sniffer() override ;
 
     private:
 

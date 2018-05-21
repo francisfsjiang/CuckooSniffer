@@ -4,12 +4,8 @@
 #include "base/sniffer.hpp"
 
 namespace cs::util {
-
-class Buffer;
-
+    class Buffer;
 }
-
-
 
 namespace cs::ftp {
 
@@ -17,15 +13,15 @@ class DataSniffer : public cs::base::TCPSniffer {
 
 public:
 
-    virtual void on_client_payload(const cs::base::PayloadType&);
+    void on_client_payload(cs::base::PayloadVector, size_t) override;
 
-    virtual void on_server_payload(const cs::base::PayloadType&);
+    void on_server_payload(cs::base::PayloadVector, size_t) override;
 
-    virtual void on_connection_close();
+    void on_connection_close() override;
 
-    virtual void on_connection_terminated(cs::base::TerminationReason);
+    void on_connection_terminated(cs::base::TerminationReason) override;
 
-    DataSniffer(const std::string&);
+    DataSniffer(const cs::base::StreamIdentifier&, int);
 
     virtual ~DataSniffer();
 

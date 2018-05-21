@@ -26,7 +26,7 @@ set(LIB_DIRS        ${LIB_DIRS}
         )
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} --std=c++1z")
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3")
+#set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3")
 
 if (${CMAKE_HOST_SYSTEM_NAME} MATCHES "Linux")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DBOOST_LOG_DYN_LINK")
@@ -130,7 +130,7 @@ link_directories(${LIB_DIRS})
 set(SRC_FILES
         src/cuckoo_sniffer.cpp
         src/pcpp_capturer.cpp
-        src/sniffer_manager.cpp
+#        src/sniffer_manager.cpp
         src/base/sniffer.cpp
         src/util/base64.cpp
         src/util/buffer.cpp
@@ -140,8 +140,8 @@ set(SRC_FILES
         src/util/option_parser.cpp
         #        src/smtp/sniffer.cpp
         #        src/imap/sniffer.cpp
-        #        src/ftp/data_sniffer.cpp
-        #        src/ftp/command_sniffer.cpp
+        src/ftp/data_sniffer.cpp
+        src/ftp/command_sniffer.cpp
         src/http/sniffer.cpp
         src/http/data.cpp
         src/http/parser.cpp

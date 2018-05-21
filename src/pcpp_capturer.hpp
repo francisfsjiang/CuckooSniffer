@@ -11,28 +11,30 @@
 #include "PcapPlusPlusVersion.h"
 #include "LRUList.h"
 
+#include "base/sniffer.hpp"
+
 
 namespace cs {
     class PcpppCapturer {
     public:
         PcpppCapturer(std::string, std::string);
+        ~PcpppCapturer();
 
         static void generate_ignore_list(std::set<std::string>&);
 
         void start();
 
     private:
-        pcpp::TcpReassembly tcp_reassembly_ = pcpp::TcpReassembly(
-                tcp_msg_ready_callback,
-                nullptr,
-                tcp_connection_start_callback,
-                tcp_connection_end_callback
-        );
+        int current_thread_id_;
+        std::map<uint32_t, std::shared_ptr<cs::base::TCPSniffer>>* sniffer_mannger_;
+        pcpp::TcpReassembly* tcp_reassembly_;
         pcpp::PcapLiveDevice* dev_;
 
         std::string iface_;
         std::string filter_;
         bool stopped_;
+
+//        typedef std::function<int<>>
 
         static void tcp_msg_ready_callback(int sideIndex, pcpp::TcpStreamData tcpData, void* userCookie);
         static void on_packet_arrives(pcpp::RawPacket* packet, pcpp::PcapLiveDevice* dev, void* tcpReassemblyCookie);

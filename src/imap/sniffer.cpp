@@ -13,7 +13,7 @@ namespace cs::imap {
     using namespace cs::util;
     using namespace cs::base;
 
-    void Sniffer::on_client_payload(const cs::base::PayloadType& payload) {
+    void Sniffer::on_client_payload(PayloadVector payload, size_t payload_size) {
         if (status_ != Status::NONE) {
 
             cs::DATA_QUEUE.enqueue(new cs::imap::CollectedData(sniffer_data_));
@@ -70,7 +70,7 @@ namespace cs::imap {
 
     }
 
-    void Sniffer::on_server_payload(const cs::base::PayloadType& payload) {
+    void Sniffer::on_server_payload(PayloadVector payload, size_t payload_size) {
         switch (status_) {
             case Status::NONE:
                 break;
@@ -99,7 +99,7 @@ namespace cs::imap {
 
     void Sniffer::on_connection_terminated(
             Tins::TCPIP::Stream &,
-            Tins::TCPIP::StreamFollower::TerminationReason) {
+            TerminationReason) {
         LOG_DEBUG << id_ << " IMAP connection terminated.";
         cs::SNIFFER_MANAGER.erase_sniffer(id_);
     }

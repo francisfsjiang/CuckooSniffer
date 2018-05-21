@@ -64,10 +64,10 @@ namespace cs::http {
 
 
     size_t HTTPParser::perform_parsing(const Buffer& buffer) {
-        LOG_TRACE << buffer.data_to_read();
+//        LOG_TRACE << buffer.data_to_read();
         size_t ret = http_parser_execute(parser_, parser_settings_, buffer.data_to_read(), buffer.size());
-        LOG_TRACE << http_errno_name(http_errno(parser_->http_errno));
-        LOG_TRACE << http_errno_description(http_errno(parser_->http_errno));
+//        LOG_TRACE << http_errno_name(http_errno(parser_->http_errno));
+//        LOG_TRACE << http_errno_description(http_errno(parser_->http_errno));
         return ret;
     }
 
@@ -140,10 +140,10 @@ namespace cs::http {
     }
 
     int HTTPParser::on_body(http_parser* parser, const char* data, size_t size) {
-        LOG_TRACE << "on_body, " << size;
+//        LOG_TRACE << "on_body, " << size;
         auto p = static_cast<HTTPParser*>(parser->data);
         p->current_data_->body_->write(data, size);
-        LOG_TRACE << p->current_data_->body_->size();
+//        LOG_TRACE << p->current_data_->body_->size();
         return 0;
 
     }

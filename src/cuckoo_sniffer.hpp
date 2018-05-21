@@ -14,7 +14,7 @@
 namespace cs {
 
     namespace base {
-        typedef std::vector<uint8_t> PayloadVector;
+        typedef uint8_t* PayloadVector;
     }
 
     extern boost::log::sources::severity_logger <boost::log::trivial::severity_level> lg;
