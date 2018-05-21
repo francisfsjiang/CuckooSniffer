@@ -10,8 +10,8 @@
 #include "cuckoo_sniffer.hpp"
 //#include "smtp/sniffer.hpp"
 //#include "imap/sniffer.hpp"
-//#include "ftp/data_sniffer.hpp"
-//#include "ftp/command_sniffer.hpp"
+#include "ftp/data_sniffer.hpp"
+#include "ftp/command_sniffer.hpp"
 //#include "samba/sniffer.hpp"
 #include "http/sniffer.hpp"
 #include "base/sniffer.hpp"
@@ -172,17 +172,16 @@ namespace cs {
 //        case 143:       //IMAP
 //            tcp_sniffer = new cs::imap::Sniffer(stream);
 //            break;
-//        case 21:        //FTP
-//            tcp_sniffer = new cs::ftp::CommandSniffer(stream);
-//            break;
+        case 21:        //FTP
+            tcp_sniffer = new cs::ftp::CommandSniffer(stream_id, capture->current_thread_id_);
+            break;
 //        case 80:        //HTTP
-            case 8888:        //HTTP
 //            if (cs::util::is_ignore_stream(stream, ignore_ipv4_address, ignore_ipv6_address)) {
 //                LOG_INFO << "Ingoring stream " << stream_id;
 //                return;
 //            }
-                tcp_sniffer = new cs::http::Sniffer(stream_id, capture->current_thread_id_);
-                break;
+//                tcp_sniffer = new cs::http::Sniffer(stream_id, capture->current_thread_id_);
+//                break;
 //        case 445:       //SAMBA
 //            tcp_sniffer = new cs::samba::Sniffer(stream);
 //            break;

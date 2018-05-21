@@ -20,6 +20,7 @@ namespace cs::ftp {
                 (char*)payload,
                 payload_size
         );
+        LOG_TRACE << "Client: " << command;
         static const std::regex get_file_command("RETR (.*)");
         std::smatch match;
         std::string caught_str;
@@ -42,8 +43,9 @@ namespace cs::ftp {
                 (char*)payload,
                 payload_size
         );
+        LOG_TRACE << "Server: " << command;
 
-        static const std::regex open_port_command("227 Entering Passive Mode \\(([\\d,]*)\\).");
+        static const std::regex open_port_command("227 Entering Passive Mode \\(([\\d,]*)\\)");
 
         std::smatch match;
         std::string caught_str;

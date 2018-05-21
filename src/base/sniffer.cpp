@@ -29,7 +29,7 @@ namespace cs::base {
 
     std::string StreamIdentifier::to_string() const {
         char buffer[100];
-        sprintf(buffer, "%s:%zu->%s%zu;%u\0", src_addr.data(), src_port, dst_addr.data(), dst_port, hash_key);
+        sprintf(buffer, "%s:%zu->%s:%zu;%u\0", src_addr.data(), src_port, dst_addr.data(), dst_port, hash_key);
         return std::string(buffer);
     }
 
