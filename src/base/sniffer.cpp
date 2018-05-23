@@ -16,7 +16,7 @@ namespace cs::base {
         this->dst_addr = dst_addr;
         this->dst_port = dst_port;
         char buffer[100];
-        sprintf(buffer, "%s%zu%s%zu\0", src_addr.data(), src_port, dst_addr.data(), dst_port);
+        sprintf(buffer, "%s%hu%s%hu", src_addr.data(), src_port, dst_addr.data(), dst_port);
         this->hash_key = hash_fn(std::string(buffer));
     }
     StreamIdentifier::StreamIdentifier(const std::string& src_addr, uint16_t src_port, const std::string& dst_addr, uint16_t dst_port, uint32_t hash_key) {
@@ -29,7 +29,7 @@ namespace cs::base {
 
     std::string StreamIdentifier::to_string() const {
         char buffer[100];
-        sprintf(buffer, "%s:%zu->%s:%zu;%u\0", src_addr.data(), src_port, dst_addr.data(), dst_port, hash_key);
+        sprintf(buffer, "%s:%hu->%s:%hu;%u", src_addr.data(), src_port, dst_addr.data(), dst_port, hash_key);
         return std::string(buffer);
     }
 
@@ -83,12 +83,12 @@ namespace cs::base {
         cs::threads::DATA_QUEUES[thread_id_]->enqueue(de);
     }
 
-    void TCPSniffer::data_callback(
-            std::shared_ptr<cs::base::TCPSniffer> sniffer_ptr,
-            cs::base::PayloadVector stream_data,
-            size_t stream_data_size,
-            cs::threads::DataType type
-    ) {
-        sniffer_ptr->data_callback(stream_data, stream_data_size, type);
-    }
+//    void TCPSniffer::data_callback(
+//            std::shared_ptr<cs::base::TCPSniffer> sniffer_ptr,
+//            cs::base::PayloadVector stream_data,
+//            size_t stream_data_size,
+//            cs::threads::DataType type
+//    ) {
+//        sniffer_ptr->data_callback(stream_data, stream_data_size, type);
+//    }
 }

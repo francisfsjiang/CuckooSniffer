@@ -22,6 +22,8 @@ namespace cs {
 
         static void generate_ignore_list(std::set<std::string>&);
 
+        int get_thread_id();
+
         void start();
 
     private:

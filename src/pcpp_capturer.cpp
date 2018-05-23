@@ -80,6 +80,14 @@ namespace cs {
         LOG_TRACE << "Capture deconstructed, " << this;
     }
 
+    int PcpppCapturer::get_thread_id() {
+        int id = current_thread_id_++;
+        if(current_thread_id_ >= cs::threads::THREADS_NUM) {
+            current_thread_id_ = 0;
+        }
+        return id;
+    }
+
     void PcpppCapturer::start() {
         if (!dev_->open()) {
             LOG_ERROR << "Cannot open interface";
@@ -128,7 +136,7 @@ namespace cs {
         auto flow_key = tcpData.getConnectionData().flowKey;
         auto iter = conn_mgr->find(flow_key);
         if (iter == conn_mgr->end()) {
-            LOG_ERROR << "No sniffer find. " << flow_key;
+//            LOG_ERROR << "No sniffer find. " << flow_key;
             return;
         }
 
@@ -149,7 +157,7 @@ namespace cs {
     void PcpppCapturer::tcp_connection_start_callback(ConnectionData connectionData, void* userCookie)
     {
         auto flow_key = connectionData.flowKey;
-        LOG_TRACE << "Conn start callback. " << flow_key;
+//        LOG_TRACE << "Conn start callback. " << flow_key;
 
         auto capture = reinterpret_cast<PcpppCapturer*>(userCookie);
         // get a pointer to the connection manager
@@ -161,7 +169,6 @@ namespace cs {
                 flow_key
         );
 
-        LOG_TRACE << stream_id.to_string() << " Get tcp stream." ;
 
         cs::base::TCPSniffer* tcp_sniffer = nullptr;
 
@@ -172,40 +179,36 @@ namespace cs {
 //        case 143:       //IMAP
 //            tcp_sniffer = new cs::imap::Sniffer(stream);
 //            break;
-        case 21:        //FTP
-            tcp_sniffer = new cs::ftp::CommandSniffer(stream_id, capture->current_thread_id_);
-            break;
+            case 21:        //FTP
+                tcp_sniffer = new cs::ftp::CommandSniffer(stream_id, -1);
+                break;
 //        case 80:        //HTTP
 //            if (cs::util::is_ignore_stream(stream, ignore_ipv4_address, ignore_ipv6_address)) {
 //                LOG_INFO << "Ingoring stream " << stream_id;
 //                return;
 //            }
-//                tcp_sniffer = new cs::http::Sniffer(stream_id, capture->current_thread_id_);
+//                tcp_sniffer = new cs::http::Sniffer(stream_id, capture->get_thread_id());
 //                break;
 //        case 445:       //SAMBA
 //            tcp_sniffer = new cs::samba::Sniffer(stream);
 //            break;
             default:
-//            const auto& ftp_data_connection = cs::ftp::CommandSniffer::get_data_connection_pool();
-//            if (ftp_data_connection.find(port) != ftp_data_connection.end()) {
-//                tcp_sniffer = new cs::ftp::DataSniffer(stream);
-//            }
-//            else {
-//                stream.auto_cleanup_payloads(true);
-//                return;
-//            }
+                auto& ftp_data_connection = cs::ftp::CommandSniffer::get_data_connection_pool();
+                auto iter = ftp_data_connection.find(make_pair(stream_id.dst_addr, stream_id.dst_port));
+
+                if (iter != ftp_data_connection.end()) {
+                    tcp_sniffer = new cs::ftp::DataSniffer(stream_id, capture->get_thread_id(), iter->second.first, iter->second.second);
+                    ftp_data_connection.erase(iter);
+                }
                 break;
         }
         if (!tcp_sniffer) {
             return ;
         }
 
+        LOG_TRACE << stream_id.to_string() << " Get tcp stream." ;
         std::shared_ptr<cs::base::TCPSniffer> sniffer_ptr = std::shared_ptr<cs::base::TCPSniffer>(tcp_sniffer);
 
-        capture->current_thread_id_++;
-        if(capture->current_thread_id_ >= cs::threads::THREADS_NUM) {
-            capture->current_thread_id_ = 0;
-        }
 
         auto conn_mgr = capture->sniffer_mannger_;
 
@@ -223,7 +226,14 @@ namespace cs {
         auto capture = reinterpret_cast<PcpppCapturer*>(userCookie);
         auto conn_mgr = capture->sniffer_mannger_;
         auto flow_key = connectionData.flowKey;
-        conn_mgr->erase(flow_key);
+        auto iter = conn_mgr->find(flow_key);
+        if (iter == conn_mgr->end()) {
+            return;
+        }
+        iter->second->data_callback(nullptr, 0, DataType::CLOSE);
+
+
+        conn_mgr->erase(iter);
     }
 
     void PcpppCapturer::on_app_interrupted(void *cookie)

@@ -21,13 +21,15 @@ public:
 
     void on_connection_terminated(cs::base::TerminationReason) override;
 
-    DataSniffer(const cs::base::StreamIdentifier&, int);
+    DataSniffer(const cs::base::StreamIdentifier&, int, std::string, int);
 
     virtual ~DataSniffer();
 
 private:
 
     cs::util::Buffer* buffer_;
+    int side_;
+    std::string file_name_;
 
 };
 

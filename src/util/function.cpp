@@ -56,7 +56,7 @@ namespace cs::util {
         curl_global_init(CURL_GLOBAL_ALL);
 
         for (auto f: file_vec) {
-            submit_files(*f, cs::CONFIG["submit_url"]);
+            submit_file(*f, cs::CONFIG["submit_url"]);
         }
     }
 
@@ -65,7 +65,11 @@ namespace cs::util {
         return size * nmemb;
     }
 
-    int submit_files(const File& file, const string& url)
+    int submit_file(const File& file) {
+        submit_file(file, cs::CONFIG["submit_url"]);
+    }
+
+    int submit_file(const File& file, const string& url)
     {
         LOG_DEBUG << "Sending file, " << file.get_name() << " , " << file.get_size();
         CURL *curl;

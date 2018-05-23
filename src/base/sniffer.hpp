@@ -67,18 +67,18 @@ namespace cs::base {
 
         virtual ~TCPSniffer();
 
-        void data_callback(
+        virtual void data_callback(
                 cs::base::PayloadVector stream_data,
                 size_t stream_data_size,
                 cs::threads::DataType type
         );
 
-        static void data_callback(
-                std::shared_ptr<cs::base::TCPSniffer> sniffer_ptr,
-                cs::base::PayloadVector stream_data,
-                size_t stream_data_size,
-                cs::threads::DataType type
-        );
+//        static void data_callback(
+//                std::shared_ptr<cs::base::TCPSniffer> sniffer_ptr,
+//                cs::base::PayloadVector stream_data,
+//                size_t stream_data_size,
+//                cs::threads::DataType type
+//        );
     };
 
 }

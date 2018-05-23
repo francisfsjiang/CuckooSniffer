@@ -6,6 +6,9 @@
 #include "base/sniffer.hpp"
 
 namespace cs::ftp {
+    struct dcp_cmp{
+        bool operator()(const std::pair<std::string, uint16_t>& lhs, const std::pair<std::string, uint16_t>& rhs) const;
+    };
 
 class CommandSniffer : public cs::base::TCPSniffer {
 
@@ -23,13 +26,25 @@ public:
 
     virtual ~CommandSniffer();
 
-    static std::map<uint16_t, std::string>& get_data_connection_pool();
+    void data_callback(
+            cs::base::PayloadVector stream_data,
+            size_t stream_data_size,
+            cs::threads::DataType type
+    ) override;
 
+
+
+    typedef std::map<
+            std::pair<std::string, uint16_t>,
+            std::pair<std::string, int>,
+            dcp_cmp> DataConnectionPool;
+
+    static DataConnectionPool data_connection_pool_;
+
+    static DataConnectionPool& get_data_connection_pool();
 private:
 
-    static std::map<uint16_t , std::string> data_connection_pool_;
-
-    uint16_t port_;
+    int current_port_;
 };
 
 }

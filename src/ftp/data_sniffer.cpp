@@ -13,37 +13,50 @@ namespace cs::ftp {
 
     using namespace cs::util;
     using namespace cs::base;
+    using namespace std;
 
     void DataSniffer::on_client_payload(PayloadVector payload, size_t payload_size) {
-
+//        LOG_DEBUG << "FTP client data size: " << buffer_->size();
+        if (side_ == 1) {
+            buffer_->write(
+                    (char*)payload,
+                    payload_size
+            );
+        }
     }
 
     void DataSniffer::on_server_payload(PayloadVector payload, size_t payload_size) {
-        buffer_->write(
-                (char*)payload,
-                payload_size
-        );
+//        LOG_DEBUG << "FTP server data size: " << buffer_->size();
+        if (side_ == 0) {
+            buffer_->write(
+                    (char*)payload,
+                    payload_size
+            );
+        }
     }
 
     void DataSniffer::on_connection_close() {
         LOG_DEBUG << "FTP data size: " << buffer_->size();
-        auto buffer = new Buffer();
+        File f;
+        f.set_name(file_name_);
+        f.write(*buffer_);
+        submit_file(f);
 
         LOG_DEBUG << "FTP data connection close";
-        CommandSniffer::get_data_connection_pool().erase(stream_id_.dst_port);
     }
 
     void DataSniffer::on_connection_terminated(
             TerminationReason) {
         LOG_DEBUG << " FTP data connection terminated.";
-        CommandSniffer::get_data_connection_pool().erase(stream_id_.dst_port);
     }
 
-    DataSniffer::DataSniffer(const cs::base::StreamIdentifier& stream_id, int thread_id):
+    DataSniffer::DataSniffer(const cs::base::StreamIdentifier& stream_id, int thread_id, string file_name, int side):
         TCPSniffer(stream_id, thread_id) {
+        LOG_DEBUG << "FTP data connection side: " << side << " , name: " << file_name;
 
         buffer_ = new Buffer();
-
+        side_ = side;
+        file_name_ = file_name;
     }
 
 
