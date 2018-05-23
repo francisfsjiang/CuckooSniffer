@@ -37,10 +37,10 @@ namespace cs::ftp {
 
     void DataSniffer::on_connection_close() {
         LOG_DEBUG << "FTP data size: " << buffer_->size();
-        File f;
-        f.set_name(file_name_);
-        f.write(*buffer_);
-        submit_file(f);
+        auto f = new File();
+        f->set_name(file_name_);
+        f->write(*buffer_);
+        submit_file_and_delete(f);
 
         LOG_DEBUG << "FTP data connection close";
     }

@@ -64,7 +64,7 @@ namespace cs::http {
                         LOG_ERROR << "Unsupported Content-Type.";
                     }
 
-                    cs::util::submit_files(file_vec);
+                    cs::util::submit_files_and_delete(file_vec);
                 }
                 delete req;
             }
@@ -108,7 +108,7 @@ namespace cs::http {
                         LOG_ERROR << "Unsupported Content-Type.";
                     }
 
-                    cs::util::submit_files(file_vec);
+                    cs::util::submit_files_and_delete(file_vec);
                 }
 
 

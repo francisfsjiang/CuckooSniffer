@@ -12,7 +12,7 @@
 //#include "imap/sniffer.hpp"
 #include "ftp/data_sniffer.hpp"
 #include "ftp/command_sniffer.hpp"
-//#include "samba/sniffer.hpp"
+#include "samba/sniffer.hpp"
 #include "http/sniffer.hpp"
 #include "base/sniffer.hpp"
 #include "threads/thread.hpp"
@@ -179,9 +179,9 @@ namespace cs {
 //        case 143:       //IMAP
 //            tcp_sniffer = new cs::imap::Sniffer(stream);
 //            break;
-            case 21:        //FTP
-                tcp_sniffer = new cs::ftp::CommandSniffer(stream_id, -1);
-                break;
+//            case 21:        //FTP
+//                tcp_sniffer = new cs::ftp::CommandSniffer(stream_id, -1);
+//                break;
 //        case 80:        //HTTP
 //            if (cs::util::is_ignore_stream(stream, ignore_ipv4_address, ignore_ipv6_address)) {
 //                LOG_INFO << "Ingoring stream " << stream_id;
@@ -189,18 +189,18 @@ namespace cs {
 //            }
 //                tcp_sniffer = new cs::http::Sniffer(stream_id, capture->get_thread_id());
 //                break;
-//        case 445:       //SAMBA
-//            tcp_sniffer = new cs::samba::Sniffer(stream);
-//            break;
-            default:
-                auto& ftp_data_connection = cs::ftp::CommandSniffer::get_data_connection_pool();
-                auto iter = ftp_data_connection.find(make_pair(stream_id.dst_addr, stream_id.dst_port));
-
-                if (iter != ftp_data_connection.end()) {
-                    tcp_sniffer = new cs::ftp::DataSniffer(stream_id, capture->get_thread_id(), iter->second.first, iter->second.second);
-                    ftp_data_connection.erase(iter);
-                }
-                break;
+        case 445:       //SAMBA
+            tcp_sniffer = new cs::samba::Sniffer(stream_id, capture->get_thread_id());
+            break;
+//            default:
+//                auto& ftp_data_connection = cs::ftp::CommandSniffer::get_data_connection_pool();
+//                auto iter = ftp_data_connection.find(make_pair(stream_id.dst_addr, stream_id.dst_port));
+//
+//                if (iter != ftp_data_connection.end()) {
+//                    tcp_sniffer = new cs::ftp::DataSniffer(stream_id, capture->get_thread_id(), iter->second.first, iter->second.second);
+//                    ftp_data_connection.erase(iter);
+//                }
+//                break;
         }
         if (!tcp_sniffer) {
             return ;

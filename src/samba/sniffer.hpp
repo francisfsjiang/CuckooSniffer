@@ -1,6 +1,8 @@
 #ifndef CUCKOOSNIFFER_SAMBA_SNIFFER_HPP
 #define CUCKOOSNIFFER_SAMBA_SNIFFER_HPP
 
+#include <map>
+
 #include "base/sniffer.hpp"
 
 namespace cs {
@@ -29,7 +31,7 @@ public:
 
     void on_connection_terminated(cs::base::TerminationReason) override;
 
-    Sniffer(const StreamIdentifier&, int);
+    Sniffer(const cs::base::StreamIdentifier&, int);
 
     virtual ~Sniffer();
 

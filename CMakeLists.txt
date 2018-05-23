@@ -147,7 +147,7 @@ set(SRC_FILES
         src/http/parser.cpp
         src/http/parser/http_parser.c
         src/http/multipart_parser.cpp
-        #        src/samba/sniffer.cpp
+        src/samba/sniffer.cpp
         src/threads/thread.cpp
         src/threads/data_queue.cpp
         src/mime/Mime.cpp

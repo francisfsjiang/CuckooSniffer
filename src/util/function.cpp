@@ -52,26 +52,27 @@ namespace cs::util {
         return os.str();
     }
 
-    int submit_files(const vector<File*>& file_vec) {
+    int submit_files_and_delete(vector<File *>& file_vec) {
         curl_global_init(CURL_GLOBAL_ALL);
 
-        for (auto f: file_vec) {
-            submit_file(*f, cs::CONFIG["submit_url"]);
+        for (int i = 0; i < file_vec.size(); ++i) {
+
+            submit_file_and_delete(file_vec[i], cs::CONFIG["submit_url"]);
         }
     }
 
+
+    int submit_file_and_delete(File* &file) {
+        submit_file_and_delete(file, cs::CONFIG["submit_url"]);
+    }
 
     size_t noop_cb(void *ptr, size_t size, size_t nmemb, void *data) {
         return size * nmemb;
     }
 
-    int submit_file(const File& file) {
-        submit_file(file, cs::CONFIG["submit_url"]);
-    }
-
-    int submit_file(const File& file, const string& url)
+    int submit_file_and_delete(File* &file, const string &url)
     {
-        LOG_DEBUG << "Sending file, " << file.get_name() << " , " << file.get_size();
+        LOG_DEBUG << "Sending file, " << file->get_name() << " , " << file->get_size() << " , " << file->get_md5();
         CURL *curl;
         CURLcode res;
         struct curl_httppost *formpost=NULL;
@@ -91,17 +92,17 @@ namespace cs::util {
             /* Now specify the POST data */
 //        curl_easy_setopt(curl, CURLOPT_POSTFIELDS, "file=daniel&project=curl");
 
-            const string& name = file.get_name();
-            const string& mime_type = file.get_mime_type();
+            const string& name = file->get_name();
+            const string& mime_type = file->get_mime_type();
 
 
             curl_formadd(
                     &formpost,
                     &lastptr,
-                    CURLFORM_COPYNAME, file.get_name().data(),
+                    CURLFORM_COPYNAME, file->get_name().data(),
                     CURLFORM_BUFFER, name.c_str(),
-                    CURLFORM_BUFFERPTR, file.get_buffer()->data_to_read(),
-                    CURLFORM_BUFFERLENGTH, file.get_size(),
+                    CURLFORM_BUFFERPTR, file->get_buffer()->data_to_read(),
+                    CURLFORM_BUFFERLENGTH, file->get_size(),
                     CURLFORM_CONTENTTYPE, mime_type.c_str(),
                     CURLFORM_END
             );
@@ -119,6 +120,7 @@ namespace cs::util {
             /* always cleanup */
             curl_easy_cleanup(curl);
         }
+        delete file;
         return 0;
 
     }

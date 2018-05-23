@@ -22,9 +22,9 @@ namespace cs::util {
 
     std::string md5(const char*, size_t);
 
-    int submit_files(const std::vector<File*>& );
-    int submit_file(const File&);
-    int submit_file(const File&, const std::string& url);
+    int submit_files_and_delete(std::vector<File *>&);
+    int submit_file_and_delete(File* &);
+    int submit_file_and_delete(File* &, const std::string &url);
 
 }
 

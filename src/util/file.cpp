@@ -32,6 +32,8 @@ namespace cs::util {
 
     bool File::set_size(uint64_t size) {
         buffer_->resize(size);
+        buffer_->set_reader_pos(0);
+        buffer_->set_writer_pos(size);
         return false;
     }
 
