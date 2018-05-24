@@ -1,22 +1,52 @@
 #include "imap/sniffer.hpp"
 
 #include <iostream>
+#include <regex>
 
 #include "cuckoo_sniffer.hpp"
 #include "util/function.hpp"
 #include "util/buffer.hpp"
 #include "sniffer_manager.hpp"
-#include "imap/data_processor.hpp"
-#include "imap/collected_data.hpp"
+#include "util/mail_process.hpp"
 
 namespace cs::imap {
+
+    using namespace std;
     using namespace cs::util;
     using namespace cs::base;
+
+    std::vector<cs::util::File*> process(Buffer* buffer) {
+
+        std::string data = std::string(buffer->data_to_read(), buffer->size());
+
+        std::cout << "stat process imap data" << std::endl;
+        //std::cout << data << std::endl << std::endl;
+
+        static const std::regex departer("\\* \\d* FETCH \\(UID \\d* (?:RFC822.SIZE \\d* )?BODY\\[\\] \\{\\d*\\}([\\s^\\S]*?)\n\\)\r\n");
+        std::smatch match;
+        try
+        {
+            while (regex_search(data, match, departer))
+            {
+                util::mail_process(match.str(1));
+                data = match.suffix();
+            }
+
+        }
+        catch (const std::exception&)
+        {
+            std::cerr << "Regex error" << std::endl;
+        }
+
+    }
+
 
     void Sniffer::on_client_payload(PayloadVector payload, size_t payload_size) {
         if (status_ != Status::NONE) {
 
-            cs::DATA_QUEUE.enqueue(new cs::imap::CollectedData(sniffer_data_));
+            auto file_vec = process(sniffer_data_);
+            submit_files_and_delete(file_vec);
+
 
             status_ = Status::NONE;
             sniffer_data_ = nullptr;
@@ -32,8 +62,8 @@ namespace cs::imap {
         std::string command, caught_str;
 
         command = std::string(
-                payload.begin(),
-                payload.end()
+                reinterpret_cast<char*>(payload),
+                payload_size
         );
         try
         {
@@ -70,6 +100,7 @@ namespace cs::imap {
 
     }
 
+
     void Sniffer::on_server_payload(PayloadVector payload, size_t payload_size) {
         switch (status_) {
             case Status::NONE:
@@ -77,14 +108,14 @@ namespace cs::imap {
             case Status::MULTI:
 //        std::cout << "server payload " << std::endl << data << std::endl;
                 sniffer_data_->write(
-                        reinterpret_cast<const char*>(payload.data()),
-                        payload.size()
+                        reinterpret_cast<const char*>(payload),
+                        payload_size
                 );
                 break;
             case Status::PART:
                 sniffer_data_->write(
-                        reinterpret_cast<const char*>(payload.data()),
-                        payload.size()
+                        reinterpret_cast<const char*>(payload),
+                        payload_size
                 );
                 break;
             default:
@@ -94,38 +125,15 @@ namespace cs::imap {
 
     void Sniffer::on_connection_close() {
         std::cout << "Connection Close" << std::endl;
-        cs::SNIFFER_MANAGER.erase_sniffer(id_);
     }
 
     void Sniffer::on_connection_terminated(
-            Tins::TCPIP::Stream &,
             TerminationReason) {
-        LOG_DEBUG << id_ << " IMAP connection terminated.";
-        cs::SNIFFER_MANAGER.erase_sniffer(id_);
+        LOG_DEBUG << stream_id_.to_string() << " IMAP connection terminated.";
     }
 
-    Sniffer::Sniffer(const std::string& stream_id) : TCPSniffer(stream_id) {
+    Sniffer::Sniffer(const cs::base::StreamIdentifier& stream_id, int thread_id) : TCPSniffer(stream_id, thread_id) {
         std::cout << "get 143 connection" << std::endl;
-        stream.auto_cleanup_client_data(true);
-        stream.auto_cleanup_server_data(true);
-        stream.client_data_callback(
-                [this](const Tins::TCPIP::Stream &tcp_stream) {
-                    this->on_client_payload(tcp_stream);
-                }
-        );
-
-        stream.server_data_callback(
-                [this](const Tins::TCPIP::Stream &tcp_stream) {
-                    this->on_server_payload(tcp_stream);
-                }
-        );
-
-        stream.stream_closed_callback(
-                [this](const Tins::TCPIP::Stream &tcp_stream) {
-                    this->on_connection_close(tcp_stream);
-                }
-        );
-
     }
 
     Sniffer::~Sniffer() {

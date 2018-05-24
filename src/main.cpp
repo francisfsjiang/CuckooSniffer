@@ -61,7 +61,7 @@ int main(int argc, const char* argv[]) {
 
     cs::threads::start_threads(2);
 
-    std::string filter = "tcp port 445";
+    std::string filter = "tcp port 25";
 //    std::string filter = "";
 
     cs::PcpppCapturer pcppp_capturer(interface_name, filter);

@@ -138,8 +138,8 @@ set(SRC_FILES
         src/util/function.cpp
         src/util/mail_process.cpp
         src/util/option_parser.cpp
-        #        src/smtp/sniffer.cpp
-        #        src/imap/sniffer.cpp
+                src/smtp/sniffer.cpp
+                src/imap/sniffer.cpp
         src/ftp/data_sniffer.cpp
         src/ftp/command_sniffer.cpp
         src/http/sniffer.cpp

@@ -3,9 +3,8 @@
 #include "cuckoo_sniffer.hpp"
 #include "sniffer_manager.hpp"
 #include "util/buffer.hpp"
-#include "base/data_processor.hpp"
-#include "smtp/collected_data.hpp"
-#include "smtp/data_processor.hpp"
+#include "util/function.hpp"
+#include "util/mail_process.hpp"
 
 namespace cs::smtp {
 
@@ -13,57 +12,39 @@ namespace cs::smtp {
     using namespace cs::base;
 
     void Sniffer::on_client_payload(PayloadVector payload, size_t payload_size) {
-        LOG_TRACE << "SMTP data size :" << payload.size();
+        LOG_TRACE << "SMTP client data size :" << payload_size;
+        client_buffer_->write(reinterpret_cast<char*>(payload), payload_size);
     }
 
     void Sniffer::on_server_payload(PayloadVector payload, size_t payload_size) {
+        LOG_TRACE << "SMTP server data size :" << payload_size;
     }
 
     void Sniffer::on_connection_close() {
-        LOG_TRACE << "SMTP data size :" << stream.client_payload().size();
-        LOG_DEBUG << id_ << " " << "SMTP Connection Close" << std::endl;
+        LOG_DEBUG << stream_id_.to_string() << " " << "SMTP Connection Close" << std::endl;
 
-        //TODO make this process in threa
-        auto& client_pay_load = stream.client_payload();
-        auto client_buffer = new Buffer();
-        client_buffer->write(
-                reinterpret_cast<const char *>(client_pay_load.data()),
-//                (const char *)client_pay_load.data(),
-                client_pay_load.size()
-        );
+        auto file_vec = mail_process(std::string(
+                client_buffer_->data_to_read(),
+                client_buffer_->size()
+        ));
 
-//        cs::DATA_QUEUE.enqueue(new cs::smtp::CollectedData(client_buffer));
+        submit_files_and_delete(file_vec);
 
-        cs::SNIFFER_MANAGER.erase_sniffer(id_);
     }
 
     void Sniffer::on_connection_terminated(
-            Tins::TCPIP::Stream &,
             TerminationReason) {
-        LOG_DEBUG << id_ << " SMTP data connection terminated.";
-        cs::SNIFFER_MANAGER.erase_sniffer(id_);
+        LOG_DEBUG << stream_id_.to_string() << " SMTP data connection terminated.";
     }
 
-    Sniffer::Sniffer(const string& id) : TCPSniffer(id) {
+    Sniffer::Sniffer(const cs::base::StreamIdentifier& stream_id, int thread_id) : TCPSniffer(stream_id, thread_id) {
 
-        stream.ignore_server_data();
-        stream.auto_cleanup_client_data(false);
-        stream.client_data_callback(
-                [this](const Tins::TCPIP::Stream& tcp_stream) {
-                    this -> on_client_payload(tcp_stream);
-                }
-        );
-
-        stream.stream_closed_callback(
-                [this](const Tins::TCPIP::Stream &tcp_stream) {
-                    this -> on_connection_close(tcp_stream);
-                }
-        );
+        client_buffer_ = new Buffer();
 
     }
 
     Sniffer::~Sniffer() {
-        cs::SNIFFER_MANAGER.erase_sniffer(id_);
+        delete client_buffer_;
     }
 
 }

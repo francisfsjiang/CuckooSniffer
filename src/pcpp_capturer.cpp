@@ -8,8 +8,8 @@
 #include "IpUtils.h"
 
 #include "cuckoo_sniffer.hpp"
-//#include "smtp/sniffer.hpp"
-//#include "imap/sniffer.hpp"
+#include "smtp/sniffer.hpp"
+#include "imap/sniffer.hpp"
 #include "ftp/data_sniffer.hpp"
 #include "ftp/command_sniffer.hpp"
 #include "samba/sniffer.hpp"
@@ -173,12 +173,12 @@ namespace cs {
         cs::base::TCPSniffer* tcp_sniffer = nullptr;
 
         switch (stream_id.dst_port) {
-//        case 25:        //SMTP
-//            tcp_sniffer = new cs::smtp::Sniffer(stream);
-//            break;
-//        case 143:       //IMAP
-//            tcp_sniffer = new cs::imap::Sniffer(stream);
-//            break;
+        case 25:        //SMTP
+            tcp_sniffer = new cs::smtp::Sniffer(stream_id, capture->get_thread_id());
+            break;
+        case 143:       //IMAP
+            tcp_sniffer = new cs::imap::Sniffer(stream_id, capture->get_thread_id());
+            break;
 //            case 21:        //FTP
 //                tcp_sniffer = new cs::ftp::CommandSniffer(stream_id, -1);
 //                break;
@@ -189,9 +189,9 @@ namespace cs {
 //            }
 //                tcp_sniffer = new cs::http::Sniffer(stream_id, capture->get_thread_id());
 //                break;
-        case 445:       //SAMBA
-            tcp_sniffer = new cs::samba::Sniffer(stream_id, capture->get_thread_id());
-            break;
+//        case 445:       //SAMBA
+//            tcp_sniffer = new cs::samba::Sniffer(stream_id, capture->get_thread_id());
+//            break;
 //            default:
 //                auto& ftp_data_connection = cs::ftp::CommandSniffer::get_data_connection_pool();
 //                auto iter = ftp_data_connection.find(make_pair(stream_id.dst_addr, stream_id.dst_port));

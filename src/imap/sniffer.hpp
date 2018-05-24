@@ -20,7 +20,7 @@ public:
 
     void on_connection_terminated(cs::base::TerminationReason) override;
 
-    Sniffer(const StreamIdentifier&, int);
+    Sniffer(const cs::base::StreamIdentifier&, int);
 
     virtual ~Sniffer();
 
