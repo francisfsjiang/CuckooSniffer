@@ -7,7 +7,8 @@
 
 #include <openssl/md5.h>
 #include <curl/curl.h>
-
+#include <boost/property_tree/ptree.hpp>
+#include <boost/property_tree/json_parser.hpp>
 
 #include "util/file.hpp"
 #include "util/buffer.hpp"
@@ -70,6 +71,19 @@ namespace cs::util {
         return size * nmemb;
     }
 
+    string get_custom_data(File* file) {
+        using namespace boost::property_tree;
+        ptree root;
+        root.put("src_ip", file->ip_.src_addr);
+        root.put("src_port", file->ip_.src_port);
+        root.put("dst_ip", file->ip_.dst_addr);
+        root.put("dst_port", file->ip_.dst_port);
+
+        stringstream is;
+        write_json(is ,root);
+        return is.str();
+    }
+
     int submit_file_and_delete(File* &file, const string &url)
     {
         LOG_DEBUG << "Sending file, " << file->get_name() << " , " << file->get_size() << " , " << file->get_md5();
@@ -92,20 +106,28 @@ namespace cs::util {
             /* Now specify the POST data */
 //        curl_easy_setopt(curl, CURLOPT_POSTFIELDS, "file=daniel&project=curl");
 
-            const string& name = file->get_name();
-            const string& mime_type = file->get_mime_type();
+            if(file->name_.empty()) {
+                file->name_ = file->get_md5();
+            }
 
+            string custom_data = get_custom_data(file);
+            curl_formadd(&formpost,
+                         &lastptr,
+                         CURLFORM_COPYNAME, "custom",
+                         CURLFORM_COPYCONTENTS, custom_data.c_str(),
+                         CURLFORM_END);
 
             curl_formadd(
                     &formpost,
                     &lastptr,
-                    CURLFORM_COPYNAME, file->get_name().data(),
-                    CURLFORM_BUFFER, name.c_str(),
+                    CURLFORM_COPYNAME, file->name_.data(),
+                    CURLFORM_BUFFER, file->name_.c_str(),
                     CURLFORM_BUFFERPTR, file->get_buffer()->data_to_read(),
                     CURLFORM_BUFFERLENGTH, file->get_size(),
-                    CURLFORM_CONTENTTYPE, mime_type.c_str(),
+                    CURLFORM_CONTENTTYPE, file->mime_type_.c_str(),
                     CURLFORM_END
             );
+
 
             curl_easy_setopt(curl, CURLOPT_HTTPPOST, formpost);
 

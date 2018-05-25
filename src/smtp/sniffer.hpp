@@ -28,7 +28,8 @@ public:
 private:
 
     cs::util::Buffer* client_buffer_;
-
+    bool start_data_;
+    bool quitted_;
 };
 
 }

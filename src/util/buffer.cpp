@@ -40,6 +40,12 @@ namespace cs::util {
         memcpy(data_, buffer.data_, capacity_);
     }
 
+    size_t Buffer::clear() {
+        size_t origin_size = size();
+        reader_pos_ = 0;
+        writer_pos_ = 0;
+        return origin_size;
+    }
     size_t Buffer::resize() {
         return resize(capacity_ << 1);
     }

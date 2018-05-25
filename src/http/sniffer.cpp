@@ -17,14 +17,6 @@ namespace cs::http {
     using namespace cs::base;
     using namespace cs::util;
 
-    set<string> suspicious_type = {
-            "application/octet-stream",
-            "application/zip",
-            "text/x-python",
-            "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-            "application/vnd.openxmlformats-officedocument.presentationml.presentation",
-    };
-
     void Sniffer::on_client_payload(PayloadVector payload, size_t payload_size) {
         client_buffer_->write(
                 reinterpret_cast<const char *>(payload),

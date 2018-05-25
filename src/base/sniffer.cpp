@@ -10,6 +10,10 @@ namespace cs::base {
 
     std::hash<std::string> hash_fn;
 
+    StreamIdentifier::StreamIdentifier() {
+
+    }
+
     StreamIdentifier::StreamIdentifier(const std::string& src_addr, uint16_t src_port, const std::string& dst_addr, uint16_t dst_port) {
         this->src_addr = src_addr;
         this->src_port = src_port;

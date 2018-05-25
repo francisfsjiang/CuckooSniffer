@@ -22,6 +22,8 @@ namespace cs::util {
 
         ~Buffer();
 
+        size_t clear();
+
         size_t resize();
         size_t resize(size_t);
         size_t grow(size_t);

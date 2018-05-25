@@ -3,13 +3,13 @@
 
 #include <string>
 #include <sstream>
+#include <base/sniffer.hpp>
 
 namespace cs { namespace util {
 
         class Buffer;
 
         class File {
-
         public:
 
             File();
@@ -24,23 +24,26 @@ namespace cs { namespace util {
 
             std::string get_md5();
 
-            const std::string& get_mime_type() const;
+            std::string get_mime_type() const;
             void set_mime_type(const std::string&);
 
-            const std::string& get_name() const;
+            std::string get_name() const;
             void set_name(const std::string&);
+
+            void set_attached_info(const std::string&);
+            void set_ip_info(const cs::base::StreamIdentifier&);
 
 
             ~File();
 
             Buffer* get_buffer() const;
 
-        private:
             Buffer* buffer_;
 
             std::string mime_type_;
             std::string name_;
-
+            std::string attached_info_;
+            cs::base::StreamIdentifier ip_;
 
         };
 

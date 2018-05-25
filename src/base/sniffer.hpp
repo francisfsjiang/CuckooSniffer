@@ -13,6 +13,7 @@ namespace cs::base {
 
     class StreamIdentifier {
     public:
+        StreamIdentifier();
         StreamIdentifier(const std::string&, uint16_t, const std::string&, uint16_t);
         StreamIdentifier(const std::string&, uint16_t, const std::string&, uint16_t, uint32_t);
         std::string src_addr;

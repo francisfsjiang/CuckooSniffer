@@ -45,7 +45,7 @@ namespace cs::util {
         return md5(buffer_->data_to_read(), buffer_->size());
     }
 
-    const std::string& File::get_mime_type() const {
+    std::string File::get_mime_type() const {
         return mime_type_;
     }
 
@@ -53,7 +53,7 @@ namespace cs::util {
         mime_type_ = mime_type;
     }
 
-    const std::string& File::get_name() const {
+    std::string File::get_name() const {
         return name_;
     }
 
@@ -70,4 +70,11 @@ namespace cs::util {
         return buffer_;
     }
 
+    void File::set_attached_info(const std::string &str) {
+        attached_info_ = str;
+    }
+
+    void File::set_ip_info(const cs::base::StreamIdentifier& stream_id) {
+        ip_ = stream_id;
+    }
 }
