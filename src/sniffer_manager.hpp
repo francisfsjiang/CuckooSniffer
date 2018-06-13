@@ -5,41 +5,51 @@
 #include <map>
 #include <thread>
 #include <mutex>
+#include <set>
+#include <queue>
+
 
 namespace cs::base {
-    class StreamIdentifier;
-    class Sniffer;
+    class TCPSniffer;
 }
 
 namespace cs {
 
-class SnifferManager {
+    typedef uint32_t FlowKeyType;
+    typedef std::shared_ptr<cs::base::TCPSniffer> SnifferPtr;
+    typedef std::pair<int, FlowKeyType> PQueueType;
 
-public:
-    static SnifferManager instance;
+    class SnifferManager {
 
-    static SnifferManager &get_instance();
+    public:
+        SnifferManager();
+        ~SnifferManager();
 
-    void append_sniffer(const cs::base::StreamIdentifier&, std::shared_ptr<cs::base::Sniffer>, int);
 
-    std::pair<std::shared_ptr<cs::base::Sniffer>, int> get_sniffer_info(const cs::base::StreamIdentifier&);
+        SnifferPtr find(FlowKeyType);
 
-    void erase_sniffer(const cs::base::StreamIdentifier&);
+        void insert(FlowKeyType, SnifferPtr);
 
-private:
+        void close_and_erase(FlowKeyType);
 
-    struct sniffer_container_cmp {
-        bool operator()(const cs::base::StreamIdentifier& lhs, const cs::base::StreamIdentifier& rhs) const;
+        void handle_time_out();
+
+    private:
+
+        void put_into_bucket();
+
+        const int TIMEOUT_VAL = 60;
+
+
+        std::map<FlowKeyType, std::pair<SnifferPtr, int>> sniffer_container_;
+
+        std::function<bool(const PQueueType& left, const PQueueType& right)> cmp_ =
+                [](const PQueueType& left, const PQueueType& right) { return left.first > right.first;};
+        std::priority_queue<PQueueType, std::vector<PQueueType>, decltype(cmp_)> timeout_queue_;
+
+        int get_current_time();
+
     };
-    std::map<cs::base::StreamIdentifier, std::pair<std::shared_ptr<cs::base::Sniffer>, int>, sniffer_container_cmp> sniffer_container;
-
-    std::mutex lock_;
-
-    SnifferManager();
-
-};
-
-extern SnifferManager& SNIFFER_MANAGER;
 
 }
 

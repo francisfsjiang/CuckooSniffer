@@ -14,15 +14,10 @@
 #include "pcpp_capturer.hpp"
 
 
-
-
-
-
 std::set<std::string> ignored_ip_address = {
         "127.0.0.1",
         "::1"
 };
-
 
 
 //void on_connection_terminated(const cs::base::StreamIdentifier& stream_id, TerminationReason _) {
@@ -61,7 +56,7 @@ int main(int argc, const char* argv[]) {
 
     cs::threads::start_threads(2);
 
-    std::string filter = "tcp port 25";
+    std::string filter = "tcp port 143";
 //    std::string filter = "";
 
     cs::PcpppCapturer pcppp_capturer(interface_name, filter);

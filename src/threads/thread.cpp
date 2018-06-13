@@ -41,6 +41,7 @@ namespace cs::threads{
                 break;
         }
         delete data;
+//        LOG_DEBUG << "Thread " << std::this_thread::get_id() << " finish collected data. " ;
         return 1;
     }
 

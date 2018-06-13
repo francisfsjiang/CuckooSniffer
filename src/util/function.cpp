@@ -73,11 +73,14 @@ namespace cs::util {
 
     string get_custom_data(File* file) {
         using namespace boost::property_tree;
+        ptree custom;
+        custom.put("src_ip", file->ip_.src_addr);
+        custom.put("src_port", file->ip_.src_port);
+        custom.put("dst_ip", file->ip_.dst_addr);
+        custom.put("dst_port", file->ip_.dst_port);
+
         ptree root;
-        root.put("src_ip", file->ip_.src_addr);
-        root.put("src_port", file->ip_.src_port);
-        root.put("dst_ip", file->ip_.dst_addr);
-        root.put("dst_port", file->ip_.dst_port);
+        root.push_back(ptree::value_type("source", custom));
 
         stringstream is;
         write_json(is ,root);

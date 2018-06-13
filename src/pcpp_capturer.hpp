@@ -15,6 +15,8 @@
 
 
 namespace cs {
+    class SnifferManager;
+
     class PcpppCapturer {
     public:
         PcpppCapturer(std::string, std::string);
@@ -28,7 +30,7 @@ namespace cs {
 
     private:
         int current_thread_id_;
-        std::map<uint32_t, std::shared_ptr<cs::base::TCPSniffer>>* sniffer_mannger_;
+        SnifferManager* sniffer_mannger_;
         pcpp::TcpReassembly* tcp_reassembly_;
         pcpp::PcapLiveDevice* dev_;
 

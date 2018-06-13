@@ -130,7 +130,7 @@ link_directories(${LIB_DIRS})
 set(SRC_FILES
         src/cuckoo_sniffer.cpp
         src/pcpp_capturer.cpp
-#        src/sniffer_manager.cpp
+        src/sniffer_manager.cpp
         src/base/sniffer.cpp
         src/util/base64.cpp
         src/util/buffer.cpp
