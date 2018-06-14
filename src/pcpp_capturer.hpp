@@ -19,7 +19,7 @@ namespace cs {
 
     class PcpppCapturer {
     public:
-        PcpppCapturer(std::string, std::string);
+        PcpppCapturer(std::string, std::string, std::set<std::string>);
         ~PcpppCapturer();
 
         static void generate_ignore_list(std::set<std::string>&);
@@ -33,6 +33,7 @@ namespace cs {
         SnifferManager* sniffer_mannger_;
         pcpp::TcpReassembly* tcp_reassembly_;
         pcpp::PcapLiveDevice* dev_;
+        std::set<std::string> ignored_ip_address_;
 
         std::string iface_;
         std::string filter_;
