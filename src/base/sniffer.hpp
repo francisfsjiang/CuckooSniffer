@@ -4,6 +4,7 @@
 #include <cstdint>
 #include <vector>
 #include <string>
+#include <memory>
 
 namespace cs::threads {
     enum class DataType;

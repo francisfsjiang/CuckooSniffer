@@ -7,6 +7,7 @@
 #include <mutex>
 #include <set>
 #include <queue>
+#include <functional>
 
 
 namespace cs::base {
