@@ -2,4 +2,3 @@
 	path = deps/pcapplusplus
 	url = https://github.com/seladb/PcapPlusPlus.git
 	branch = master
-	commit = 4ab80599c3d3095b251f4f4210e9f7405c8b05ad
