@@ -164,8 +164,8 @@ target_link_libraries(CuckooSniffer libcuckoo_sniffer ${LIBS})
 add_executable(Test test/test.cpp)
 target_link_libraries(Test libcuckoo_sniffer ${LIBS})
 
-add_executable(TestHTTP test/test_http.cpp)
-target_link_libraries(TestHTTP libcuckoo_sniffer ${LIBS})
+#add_executable(TestHTTP test/test_http.cpp)
+#target_link_libraries(TestHTTP libcuckoo_sniffer ${LIBS})
 
 add_executable(TestPcapplusplus test/test_pcapplusplus.cpp)
 target_link_libraries(TestPcapplusplus ${LIBS} )
