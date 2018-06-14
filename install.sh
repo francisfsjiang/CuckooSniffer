@@ -9,8 +9,16 @@ cd deps/pcapplusplus/
 
 ./configure-linux.sh --default
 
+make -j 6
+
 cd ../..
 
 mkdir build
 
 cd build
+
+cmake ..
+
+make -j 6
+
+
