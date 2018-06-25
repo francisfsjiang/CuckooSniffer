@@ -12,11 +12,14 @@
 #include <boost/log/support/date_time.hpp>
 #include <boost/filesystem.hpp>
 
+#include <boost/system/error_code.hpp>
 
 #include "threads/data_queue.hpp"
 
 
 namespace cs {
+
+    using namespace std;
 
     std::map<std::string, std::string> CONFIG;
 
@@ -29,7 +32,9 @@ namespace cs {
 
     void init_log() {
 
-        boost::filesystem::create_directories("/var/log/imcs");
+        boost::system::error_code ec;
+        boost::filesystem::create_directories("/var/log/imcs", ec);
+        cout << ec.message() << endl;
 
         boost::shared_ptr <boost::log::core> core = boost::log::core::get();
 
