@@ -32,9 +32,7 @@ namespace cs {
 
     void init_log() {
 
-        boost::system::error_code ec;
-        boost::filesystem::create_directories("/var/log/imcs", ec);
-        cout << ec.message() << endl;
+        boost::filesystem::create_directories("/var/log/imcs");
 
         boost::shared_ptr <boost::log::core> core = boost::log::core::get();
 

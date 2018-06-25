@@ -105,7 +105,9 @@ namespace cs::util {
             data. */
             curl_easy_setopt(curl, CURLOPT_URL, url.data());
             curl_easy_setopt(curl, CURLOPT_VERBOSE, 0L);
-            curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, noop_cb);
+
+//            curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, noop_cb);
+
             /* Now specify the POST data */
 //        curl_easy_setopt(curl, CURLOPT_POSTFIELDS, "file=daniel&project=curl");
 
@@ -120,14 +122,20 @@ namespace cs::util {
                          CURLFORM_COPYCONTENTS, custom_data.c_str(),
                          CURLFORM_END);
 
+            curl_formadd(&formpost,
+                         &lastptr,
+                         CURLFORM_COPYNAME, "unique",
+                         CURLFORM_COPYCONTENTS, "1",
+                         CURLFORM_END);
+
             curl_formadd(
                     &formpost,
                     &lastptr,
-                    CURLFORM_COPYNAME, file->name_.data(),
+                    CURLFORM_COPYNAME, "file",
                     CURLFORM_BUFFER, file->name_.c_str(),
                     CURLFORM_BUFFERPTR, file->get_buffer()->data_to_read(),
                     CURLFORM_BUFFERLENGTH, file->get_size(),
-                    CURLFORM_CONTENTTYPE, file->mime_type_.c_str(),
+                    CURLFORM_CONTENTTYPE, "application/octet-stream",
                     CURLFORM_END
             );
 
