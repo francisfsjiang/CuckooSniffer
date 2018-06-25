@@ -69,7 +69,7 @@ namespace cs {
 
         boost::log::core::get()->add_global_attribute("TimeStamp", boost::log::attributes::local_clock());
 //    boost::log::core::get()->add_global_attribute("ThreadID",  boost::log::attributes::current_thread_id());
-//        core->add_sink(sink);
+        core->add_sink(sink);
 
         // cout stream
         boost::shared_ptr< boost::log::sinks::text_ostream_backend > cout_backend =
