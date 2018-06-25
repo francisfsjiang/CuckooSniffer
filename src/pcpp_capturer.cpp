@@ -181,23 +181,23 @@ namespace cs {
         cs::base::TCPSniffer* tcp_sniffer = nullptr;
 
         switch (stream_id.dst_port) {
-        case 25:        //SMTP
-            tcp_sniffer = new cs::smtp::Sniffer(stream_id, capture->get_thread_id());
-            break;
-        case 143:       //IMAP
-            tcp_sniffer = new cs::imap::Sniffer(stream_id, capture->get_thread_id());
-            break;
+            case 25:        //SMTP
+                tcp_sniffer = new cs::smtp::Sniffer(stream_id, capture->get_thread_id());
+                break;
+            case 143:       //IMAP
+                tcp_sniffer = new cs::imap::Sniffer(stream_id, capture->get_thread_id());
+                break;
             case 21:        //FTP
                 tcp_sniffer = new cs::ftp::CommandSniffer(stream_id, -1);
                 break;
-        case 80:        //HTTP
-            if (
-                    capture->ignored_ip_address_.find(src_ip) != capture->ignored_ip_address_.end() ||
-                    capture->ignored_ip_address_.find(dst_ip) != capture->ignored_ip_address_.end()
-                    ) {
-                LOG_INFO << "Ingoring stream " << flow_key;
-                return;
-            }
+            case 80:        //HTTP
+                if (
+                        capture->ignored_ip_address_.find(src_ip) != capture->ignored_ip_address_.end() ||
+                        capture->ignored_ip_address_.find(dst_ip) != capture->ignored_ip_address_.end()
+                        ) {
+                    LOG_INFO << "Ingoring stream " << flow_key;
+                    return;
+                }
                 tcp_sniffer = new cs::http::Sniffer(stream_id, capture->get_thread_id());
                 break;
             case 445:       //SAMBA

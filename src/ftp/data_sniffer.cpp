@@ -40,6 +40,7 @@ namespace cs::ftp {
         auto f = new File();
         f->set_name(file_name_);
         f->write(*buffer_);
+        f->set_ip_info(this->stream_id_);
         submit_file_and_delete(f);
 
         LOG_DEBUG << "FTP data connection close";

@@ -399,7 +399,7 @@ void Sniffer::combine_data(const std::string& file_id) {
             file -> write_to_pos(p_data, len, offset);
             delete[] p_data;
         }
-
+        file -> set_ip_info(this->stream_id_);
         submit_file_and_delete(file);
 
     }

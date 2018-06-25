@@ -50,6 +50,7 @@ namespace cs::http {
                         auto f = new File();
                         f->write(*req->get_body());
                         f->set_name(f->get_md5());
+                        f->set_ip_info(this->stream_id_);
                         file_vec.push_back(f);
                     }
                     else {
@@ -94,6 +95,7 @@ namespace cs::http {
                         auto f = new File();
                         f->write(*resp->get_body());
                         f->set_name(f->get_md5());
+                        f->set_ip_info(this->stream_id_from_server_);
                         file_vec.push_back(f);
                     }
                     else {
@@ -128,12 +130,15 @@ namespace cs::http {
     }
 
     Sniffer::Sniffer(const StreamIdentifier& stream_id, int thread_id):
-            TCPSniffer(stream_id, thread_id) {
+            TCPSniffer(stream_id, thread_id),
+            stream_id_from_server_(stream_id.dst_addr, stream_id.dst_port, stream_id.src_addr, stream_id.src_port)
+    {
 
         client_buffer_ = new Buffer();
         client_parser_ = new HTTPRequestParser();
         server_buffer_ = new Buffer();
         server_parser_ = new HTTPResponseParser();
+
 
     }
 

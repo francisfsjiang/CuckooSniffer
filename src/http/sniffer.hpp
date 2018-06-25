@@ -36,6 +36,8 @@ namespace cs::http {
 
         std::string request_url_;
 
+        cs::base::StreamIdentifier stream_id_from_server_;
+
 
     };
 
