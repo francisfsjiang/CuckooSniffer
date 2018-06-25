@@ -163,7 +163,7 @@ namespace cs {
     void PcpppCapturer::tcp_connection_start_callback(ConnectionData connectionData, void* userCookie)
     {
         auto flow_key = connectionData.flowKey;
-//        LOG_TRACE << "Conn start callback. " << flow_key;
+        LOG_TRACE << "Conn start callback. " << flow_key;
 
         auto capture = reinterpret_cast<PcpppCapturer*>(userCookie);
         string src_ip = connectionData.srcIP->toString();
