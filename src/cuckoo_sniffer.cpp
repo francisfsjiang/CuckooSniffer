@@ -10,6 +10,7 @@
 #include <boost/log/utility/setup/common_attributes.hpp>
 #include <boost/log/utility/record_ordering.hpp>
 #include <boost/log/support/date_time.hpp>
+#include <boost/filesystem.hpp>
 
 
 #include "threads/data_queue.hpp"
@@ -28,11 +29,13 @@ namespace cs {
 
     void init_log() {
 
+        boost::filesystem::create_directories("/var/log/imcs");
+
         boost::shared_ptr <boost::log::core> core = boost::log::core::get();
 
         boost::shared_ptr <boost::log::sinks::text_file_backend> backend =
                 boost::make_shared<boost::log::sinks::text_file_backend>(
-                        boost::log::keywords::file_name = "cs_%Y%m%d_%H%M%S_%5N.log",
+                        boost::log::keywords::file_name = "/var/log/imcs/imcs_sniffer_%Y%m%d_%H%M%S_%5N.log",
                         boost::log::keywords::rotation_size = 5 * 1024 * 1024,
                         boost::log::keywords::time_based_rotation =
                                 boost::log::sinks::file::rotation_at_time_point(0, 0, 0)
